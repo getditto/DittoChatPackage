@@ -1,16 +1,16 @@
-///
+//
 //  RoomsListRowItem.swift
 //  DittoChat
 //
 //  Created by Eric Turner on 2/17/23.
-//
 //  Copyright © 2023 DittoLive Incorporated. All rights reserved.
+//
 
 import SwiftUI
 
 struct RoomsListRowItem: View {
     let room: Room
-    
+
     var body: some View {
         Text(room.name)
     }

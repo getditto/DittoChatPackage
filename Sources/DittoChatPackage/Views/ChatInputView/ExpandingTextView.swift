@@ -3,12 +3,12 @@
 //  DittoChat
 //
 //  Created by Maximilian Alexander on 7/19/22.
+//  Copyright © 2022 DittoLive Incorporated. All rights reserved.
 //
 
 import SwiftUI
 
 struct ExpandingTextView: View {
-
     /**
      * This is a UITextView Adapter to SwiftUI
      */
@@ -27,15 +27,15 @@ struct ExpandingTextView: View {
             return view
         }
 
-        func updateUIView(_ uiView: UITextView, context: Context) {
-            uiView.text = self.text
+        func updateUIView(_ uiView: UITextView, context _: Context) {
+            uiView.text = text
             DispatchQueue.main.async {
-                self.textDidChange(uiView)
+                textDidChange(uiView)
             }
         }
 
         func makeCoordinator() -> Coordinator {
-            return Coordinator(text: $text, textDidChange: textDidChange)
+            Coordinator(text: $text, textDidChange: textDidChange)
         }
 
         class Coordinator: NSObject, UITextViewDelegate {
@@ -43,16 +43,15 @@ struct ExpandingTextView: View {
             let textDidChange: (UITextView) -> Void
 
             init(text: Binding<String>, textDidChange: @escaping (UITextView) -> Void) {
-                self._text = text
+                _text = text
                 self.textDidChange = textDidChange
             }
 
             func textViewDidChange(_ textView: UITextView) {
-                self.text = textView.text
-                self.textDidChange(textView)
+                text = textView.text
+                textDidChange(textView)
             }
 
-            
             func textViewDidBeginEditing(_ textView: UITextView) {
                 if textView.textColor == UIColor.lightGray {
                     textView.text = ""
@@ -69,27 +68,26 @@ struct ExpandingTextView: View {
         }
     }
 
-    
     @Binding var text: String
 
     let minHeight: CGFloat = UIFont.systemFont(ofSize: UIFont.labelFontSize).lineHeight
     @State private var height: CGFloat?
 
     var body: some View {
-        WrappedTextView(text: $text, textDidChange: self.textDidChange)
+        WrappedTextView(text: $text, textDidChange: textDidChange)
             .frame(height: height ?? minHeight)
     }
 
     private func textDidChange(_ textView: UITextView) {
         guard let lineHeight = textView.font?.lineHeight else { return }
-        self.height = max(textView.contentSize.height, lineHeight)
+        height = max(textView.contentSize.height, lineHeight)
     }
 }
 
 #if DEBUG
-struct ExpandingTextView_Previews: PreviewProvider {
-    static var previews: some View {
-        ExpandingTextView(text: .constant("foo"))
+    struct ExpandingTextView_Previews: PreviewProvider {
+        static var previews: some View {
+            ExpandingTextView(text: .constant("foo"))
+        }
     }
-}
 #endif

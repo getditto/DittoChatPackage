@@ -3,6 +3,7 @@
 //  DittoChat
 //
 //  Created by Maximilian Alexander on 7/20/22.
+//  Copyright © 2022 DittoLive Incorporated. All rights reserved.
 //
 
 import SwiftUI
@@ -27,7 +28,7 @@ struct RoomEditScreen: View {
                 Section {
                     HStack {
                         Spacer()
-                        
+
                         Button {
                             viewModel.createRoom()
                             dismiss()
@@ -35,7 +36,7 @@ struct RoomEditScreen: View {
                             Text("Create Room")
                         }
                         .disabled(viewModel.saveButtonDisabled)
-                        
+
                         Spacer()
                     }
                 }
@@ -48,7 +49,6 @@ struct RoomEditScreen: View {
                     } label: {
                         Text("Cancel")
                     }
-
                 }
             }
         }
@@ -56,11 +56,11 @@ struct RoomEditScreen: View {
 }
 
 #if DEBUG
-struct RoomEditScreen_Previews: PreviewProvider {
-    static var previews: some View {
-        Group {
-            RoomEditScreen()            
+    struct RoomEditScreen_Previews: PreviewProvider {
+        static var previews: some View {
+            Group {
+                RoomEditScreen()
+            }
         }
     }
-}
 #endif

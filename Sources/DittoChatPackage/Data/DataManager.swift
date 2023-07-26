@@ -1,10 +1,10 @@
-///
+//
 //  DataManager.swift
 //  DittoChat
 //
 //  Created by Eric Turner on 1/19/23.
-//
 //  Copyright © 2023 DittoLive Incorporated. All rights reserved.
+//
 
 import Combine
 import DittoSwift
@@ -13,23 +13,23 @@ import SwiftUI
 protocol LocalDataInterface {
     var acceptLargeImages: Bool { get set }
     var acceptLargeImagesPublisher: AnyPublisher<Bool, Never> { get }
-    
+
     var privateRoomsPublisher: AnyPublisher<[Room], Never> { get }
     func addPrivateRoom(_ room: Room)
-    
+
     var archivedPrivateRoomsPublisher: AnyPublisher<[Room], Never> { get }
     func archivePrivateRoom(_ room: Room)
     @discardableResult func unarchivePrivateRoom(roomId: String) -> Room?
     func deleteArchivedPrivateRoom(roomId: String)
-    
+
     var archivedPublicRoomIDs: [String] { get }
     var archivedPublicRoomsPublisher: AnyPublisher<[Room], Never> { get }
     func archivePublicRoom(_ room: Room)
     func unarchivePublicRoom(_ room: Room)
-    
+
     var currentUserId: String? { get set }
     var currentUserIdPublisher: AnyPublisher<String?, Never> { get }
-    
+
     var basicChat: Bool { get set }
     var basicChatPublisher: AnyPublisher<Bool, Never> { get }
 }
@@ -56,7 +56,7 @@ protocol ReplicatingDataInterface {
         for token: DittoAttachmentToken,
         in collectionId: String
     ) -> DittoSwift.DittoCollection.FetchAttachmentPublisher
-    
+
     func addUser(_ usr: User)
     func currentUserPublisher() -> AnyPublisher<User?, Never>
     func allUsersPublisher() -> AnyPublisher<[User], Never>
@@ -64,25 +64,24 @@ protocol ReplicatingDataInterface {
 
 public class DataManager {
     public static let shared = DataManager()
-    public static var dittoInstance: Ditto? = nil
+    public static var dittoInstance: Ditto?
     @Published private(set) var publicRoomsPublisher: AnyPublisher<[Room], Never>
     @Published private(set) var privateRoomsPublisher: AnyPublisher<[Room], Never>
 
     private var localStore: LocalDataInterface
     private let p2pStore: ReplicatingDataInterface
-    
+
     private init() {
-        self.localStore = LocalStoreService()
-        self.p2pStore = DittoService(privateStore: localStore)
-        self.publicRoomsPublisher = p2pStore.publicRoomsPublisher.eraseToAnyPublisher()
-        self.privateRoomsPublisher = localStore.privateRoomsPublisher
+        localStore = LocalStoreService()
+        p2pStore = DittoService(privateStore: localStore)
+        publicRoomsPublisher = p2pStore.publicRoomsPublisher.eraseToAnyPublisher()
+        privateRoomsPublisher = localStore.privateRoomsPublisher
     }
 }
 
 extension DataManager {
-    
-    //MARK: Ditto Public Rooms
-        
+    // MARK: Ditto Public Rooms
+
     func room(for room: Room) -> Room? {
         p2pStore.room(for: room)
     }
@@ -98,15 +97,15 @@ extension DataManager {
     func roomPublisher(for room: Room) -> AnyPublisher<Room?, Never> {
         p2pStore.roomPublisher(for: room)
     }
-    
+
     func archiveRoom(_ room: Room) {
         p2pStore.archiveRoom(room)
     }
-    
+
     func unarchiveRoom(_ room: Room) {
         p2pStore.unarchiveRoom(room)
     }
-    
+
     func deleteRoom(_ room: Room) {
         p2pStore.deleteRoom(room)
     }
@@ -121,29 +120,29 @@ extension DataManager {
 }
 
 extension DataManager {
-    //MARK: Messages
-    
+    // MARK: Messages
+
     func createMessage(for room: Room, text: String) {
         p2pStore.createMessage(for: room, text: text)
     }
-    
+
     func createImageMessage(for room: Room, image: UIImage, text: String?) async throws {
         try await p2pStore.createImageMessage(for: room, image: image, text: text)
     }
-    
+
     func saveEditedTextMessage(_ message: Message, in room: Room) {
         p2pStore.saveEditedTextMessage(message, in: room)
     }
-    
+
     func saveDeletedImageMessage(_ message: Message, in room: Room) {
         p2pStore.saveDeletedImageMessage(message, in: room)
     }
-    
+
     func messagePublisher(for msgId: String, in collectionId: String) -> AnyPublisher<Message, Never> {
         p2pStore.messagePublisher(for: msgId, in: collectionId)
     }
 
-    func messagesPublisher(for room: Room) -> AnyPublisher<[Message], Never>{
+    func messagesPublisher(for room: Room) -> AnyPublisher<[Message], Never> {
         p2pStore.messagesPublisher(for: room)
     }
 
@@ -156,17 +155,17 @@ extension DataManager {
 }
 
 extension DataManager {
-    //MARK: Current User
-    
+    // MARK: Current User
+
     var currentUserId: String? {
         get { localStore.currentUserId }
         set { localStore.currentUserId = newValue }
     }
-    
+
     var currentUserIdPublisher: AnyPublisher<String?, Never> {
         localStore.currentUserIdPublisher
     }
-    
+
     func currentUserPublisher() -> AnyPublisher<User?, Never> {
         p2pStore.currentUserPublisher()
     }
@@ -174,7 +173,7 @@ extension DataManager {
     func allUsersPublisher() -> AnyPublisher<[User], Never> {
         p2pStore.allUsersPublisher()
     }
-    
+
     func addUser(_ usr: User) {
         p2pStore.addUser(usr)
     }
@@ -188,7 +187,7 @@ extension DataManager {
         assert(currentUserId != nil, "Error: expected currentUserId to not be NIL")
 
         let user = User(id: currentUserId!, firstName: firstName, lastName: lastName)
-        p2pStore.addUser(user)        
+        p2pStore.addUser(user)
     }
 }
 
@@ -196,7 +195,7 @@ extension DataManager {
     var sdkVersion: String {
         DittoInstance.shared.ditto.sdkVersion
     }
-    
+
     var appInfo: String {
         let name = Bundle.main.appName
         let version = Bundle.main.appVersion
@@ -205,24 +204,22 @@ extension DataManager {
     }
 }
 
-extension DataManager {    
+extension DataManager {
     var acceptLargeImages: Bool {
         get { localStore.acceptLargeImages }
         set { localStore.acceptLargeImages = newValue }
     }
-    
+
     var acceptLargeImagesPublisher: AnyPublisher<Bool, Never> {
         localStore.acceptLargeImagesPublisher
     }
 }
 
-extension DataManager {
-    public var basicChat: Bool {
+public extension DataManager {
+    var basicChat: Bool {
         get { localStore.basicChat }
         set { localStore.basicChat = newValue }
     }
-    
-    public var basicChatPublisher: AnyPublisher<Bool, Never> {
-        get { localStore.basicChatPublisher }
-    }
+
+    var basicChatPublisher: AnyPublisher<Bool, Never> { localStore.basicChatPublisher }
 }

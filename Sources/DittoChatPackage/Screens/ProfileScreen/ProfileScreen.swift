@@ -3,6 +3,7 @@
 //  DittoChat
 //
 //  Created by Maximilian Alexander on 7/20/22.
+//  Copyright © 2022 DittoLive Incorporated. All rights reserved.
 //
 
 import SwiftUI
@@ -44,9 +45,9 @@ struct ProfileScreen: View {
 }
 
 #if DEBUG
-struct ProfileScreen_Previews: PreviewProvider {
-    static var previews: some View {
-        ProfileScreen()
+    struct ProfileScreen_Previews: PreviewProvider {
+        static var previews: some View {
+            ProfileScreen()
+        }
     }
-}
 #endif

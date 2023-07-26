@@ -1,10 +1,10 @@
-///
+//
 //  SettingsScreen.swift
 //  DittoChat
 //
 //  Created by Eric Turner on 1/21/23.
-//
 //  Copyright © 2023 DittoLive Incorporated. All rights reserved.
+//
 
 import SwiftUI
 
@@ -12,26 +12,25 @@ struct SettingsScreen: View {
     @StateObject var viewModel: SettingsScreenVM
     @State var acceptLargeImages: Bool
     @State var advancedFeaturesEnabled: Bool
-    
+
     init() {
-        self._viewModel = StateObject(wrappedValue: SettingsScreenVM())
-        self.acceptLargeImages = DataManager.shared.acceptLargeImages
-        self.advancedFeaturesEnabled = !DataManager.shared.basicChat
+        _viewModel = StateObject(wrappedValue: SettingsScreenVM())
+        acceptLargeImages = DataManager.shared.acceptLargeImages
+        advancedFeaturesEnabled = !DataManager.shared.basicChat
     }
-    
+
     var body: some View {
         NavigationView {
             List {
                 Section(userSettingsTitleKey) {
                     VStack(alignment: .leading) {
-                        
                         Toggle("Enable Advanced Features", isOn: $advancedFeaturesEnabled)
                             .onChange(of: advancedFeaturesEnabled) { shouldEnable in
                                 viewModel.enableAdvancedFeatures(useAdvanced: shouldEnable)
                             }
 
                         Divider()
-                        
+
                         Toggle("Enable Large Images", isOn: $acceptLargeImages)
                             .onChange(of: acceptLargeImages) { accept in
                                 viewModel.setLargeImagesPrefs(accept)
@@ -48,19 +47,19 @@ struct SettingsScreen: View {
                     } label: {
                         Text(presenceViewerTitleKey)
                     }
-                    
+
                     NavigationLink {
                         DataBrowserView()
                     } label: {
                         Text(dataBrowserTitleKey)
                     }
-                     
+
                     NavigationLink {
                         DiskUsageViewer()
                     } label: {
                         Text(diskUsageTitleKey)
                     }
-                    
+
                     Text(exportLogsTitleKey)
                         .onTapGesture {
                             viewModel.showExportLogsSheet = true
@@ -76,10 +75,10 @@ struct SettingsScreen: View {
                 }
                 .sheet(isPresented: $viewModel.showExportLogsSheet) {
                     ExportLogsView()
-                }                
-                
+                }
+
                 // Public Rooms
-                if viewModel.archivedPublicRooms.count > 0 {
+                if !viewModel.archivedPublicRooms.isEmpty {
                     Section(archivedPublicRoomsTitleKey) {
                         // public rooms contains Room instances fetched from Ditto
                         ForEach(viewModel.archivedPublicRooms) { room in
@@ -101,19 +100,19 @@ struct SettingsScreen: View {
                     }
                 }
 
-                if viewModel.unReplicatedPublicRooms.count > 0 {
+                if !viewModel.unReplicatedPublicRooms.isEmpty {
                     Section(unreplicatedPublicRoomsTitleKey) {
                         /* This "unreplicated"/Archived public rooms section contains "placeholder"
-                         public room instances from localStore archive (not Ditto) for which the
-                         messages subscription has been canceled. As part of the public "rooms"
-                         collection, the room will always be available in the Ditto db except when
-                         off-mesh, in which case "unreplicated" public rooms appear here.
-                         N.B.
-                         Besides simply being currenly off-mesh, there is the case in which the
-                         public room was created locally and archived before it could replicate. In
-                         this case, "restoring" the room actually deletes it, since the room data
-                         has already been evicted from the db.
-                        */
+                          public room instances from localStore archive (not Ditto) for which the
+                          messages subscription has been canceled. As part of the public "rooms"
+                          collection, the room will always be available in the Ditto db except when
+                          off-mesh, in which case "unreplicated" public rooms appear here.
+                          N.B.
+                          Besides simply being currenly off-mesh, there is the case in which the
+                          public room was created locally and archived before it could replicate. In
+                          this case, "restoring" the room actually deletes it, since the room data
+                          has already been evicted from the db.
+                         */
                         ForEach(viewModel.unReplicatedPublicRooms) { room in
                             NavigationLink {
                                 RoomView(room: room, viewModel: viewModel)
@@ -131,7 +130,7 @@ struct SettingsScreen: View {
                 }
 
                 // Private Rooms
-                if viewModel.archivedPrivateRooms.count > 0 {
+                if !viewModel.archivedPrivateRooms.isEmpty {
                     Section(archivedPrivateRoomsTitleKey) {
                         ForEach(viewModel.archivedPrivateRooms) { privRoom in
                             NavigationLink {
@@ -149,29 +148,29 @@ struct SettingsScreen: View {
                     }
                 }
 
-                if viewModel.unReplicatedPrivateRooms.count > 0 {
+                if !viewModel.unReplicatedPrivateRooms.isEmpty {
                     Section {
                         /* This "unreplicated/evicted" rooms section contains placeholder archived
                          rooms (stored as JSON in UserDefaults) for which messages have been evicted
                          and the room document has not been replicated by a peer.
-                         
+
                          It is possible that a private room appearing in this section is off-mesh or
                          out of range of any peer members of the room, and therefore unable to be
                          replicated. In this case the room could be restored when in range of a peer
                          member of the room. (Note that replication will not multi-hop across
                          devices in the mesh which are not subscribed to the private room, so
                          replication will not occur until a peer member device is in range.)
-                         
+
                          Further, if a room from this section is "restored", the placeholder room
                          instance is placed back in the privateRooms collection and will appear
                          in the rooms list (RoomsListScreen), however, the room will not contain
                          any messages until peer member replication has occurred.
-                                                  
+
                          NOTE: The swipe-to-DELETE feature for rooms in this section is to handle
                          the case where the user creates a private room without sharing it with any
                          peer, then archives it. In this case, the room cannot be restored because
                          there are no peers with its data.
-                         
+
                          Though possibly ambiguous to the user in the UI, without this DELETE
                          feature, there exists the possibility of an ever-increasing group of
                          orphaned private rooms without a way to remove them.

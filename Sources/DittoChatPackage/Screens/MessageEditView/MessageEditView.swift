@@ -1,10 +1,10 @@
-///
+//
 //  MessageEditView.swift
 //  DittoChat
 //
 //  Created by Eric Turner on 3/30/23.
-//
 //  Copyright © 2023 DittoLive Incorporated. All rights reserved.
+//
 
 import Combine
 import SwiftUI
@@ -16,30 +16,30 @@ class MessageEditVM: ObservableObject {
     var editUsrMsg: MessageWithUser
     let saveCallback: (Message) -> Void
     let cancelCallback: () -> Void
-    
+
     init(
         _ msgsUsers: (editUsrMsg: MessageWithUser, chats: ArraySlice<MessageWithUser>),
         saveEditCallback: @escaping (Message) -> Void,
         cancelEditCallback: @escaping () -> Void
     ) {
-        self.editUsrMsg = msgsUsers.editUsrMsg
-        self.editText = editUsrMsg.message.text
-        self.messagesWithUsers = msgsUsers.chats
-        self.saveCallback = saveEditCallback
-        self.cancelCallback = cancelEditCallback
+        editUsrMsg = msgsUsers.editUsrMsg
+        editText = editUsrMsg.message.text
+        messagesWithUsers = msgsUsers.chats
+        saveCallback = saveEditCallback
+        cancelCallback = cancelEditCallback
 
         Publishers.keyboardStatus
             .assign(to: &$keyboardStatus)
     }
-    
+
     var editMessage: Message {
         editUsrMsg.message
     }
-    
+
     func editCallback() {
         editUsrMsg.message.text = editText
     }
-    
+
     func saveEdit() {
         editUsrMsg.message.text = editText
         saveCallback(editUsrMsg.message)
@@ -50,14 +50,14 @@ struct MessageEditView: View {
     @Environment(\.dismiss) private var dismiss
     @StateObject var viewModel: MessageEditVM
     let roomName: String
-    
+
     init(
         _ msgsUsers: (editUsrMsg: MessageWithUser, chats: ArraySlice<MessageWithUser>),
         roomName: String,
         saveEditCallback: @escaping (Message) -> Void,
         cancelEditCallback: @escaping () -> Void
     ) {
-        self._viewModel = StateObject(
+        _viewModel = StateObject(
             wrappedValue: MessageEditVM(
                 msgsUsers,
                 saveEditCallback: saveEditCallback,
@@ -77,7 +77,6 @@ struct MessageEditView: View {
                                 .transition(.slide)
                         }
                     }
-                    
                 }
                 .scrollDismissesKeyboard(.interactively)
                 .onAppear {
@@ -87,7 +86,7 @@ struct MessageEditView: View {
                         }
                     }
                 }
-                .onChange(of: viewModel.editText) { value in
+                .onChange(of: viewModel.editText) { _ in
                     withAnimation {
                         scrollToBottom(proxy: proxy)
                     }
@@ -100,13 +99,12 @@ struct MessageEditView: View {
                     }
                 }
             }
-            
+
             Spacer()
-            
+
             ChatInputView(
                 text: $viewModel.editText,
                 onSendButtonTappedCallback: viewModel.saveEdit
-                
             )
         }
         .listStyle(.inset)
@@ -137,7 +135,7 @@ struct MessageEditView: View {
             }
         }
     }
-    
+
     @ViewBuilder
     func bubbleView(for usrMsg: MessageWithUser) -> some View {
         if usrMsg.id != viewModel.editUsrMsg.id {
@@ -152,7 +150,7 @@ struct MessageEditView: View {
                 .id(viewModel.editUsrMsg.id)
         }
     }
-    
+
     func saveEditedText(_ text: String) {
         viewModel.editUsrMsg.message.text = text
     }

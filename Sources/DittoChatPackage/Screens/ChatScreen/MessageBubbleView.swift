@@ -3,6 +3,8 @@
 //  DittoChat
 //
 //  Created by Maximilian Alexander on 7/20/22.
+//  Copyright © 2022 DittoLive Incorporated. All rights reserved.
+//
 //  Credits to: https://prafullkumar77.medium.com/swiftui-creating-a-chat-bubble-like-imessage-using-path-and-shape-67cf23ccbf62
 //
 
@@ -10,7 +12,7 @@ import Combine
 import DittoSwift
 import SwiftUI
 
-struct MessageBubbleView: View {    
+struct MessageBubbleView: View {
     @EnvironmentObject var errorHandler: ErrorHandler
     @StateObject private var viewModel: MessageBubbleVM
     @State private var needsImageSync = true
@@ -24,19 +26,19 @@ struct MessageBubbleView: View {
         messageOpCallback: ((MessageOperation, Message) -> Void)? = nil,
         isEditing: Binding<Bool>
     ) {
-        self._viewModel = StateObject(
+        _viewModel = StateObject(
             wrappedValue: MessageBubbleVM(messageWithUser.message, messagesId: messagesId)
         )
-        self.messageUser = messageWithUser
-        self._isEditing = isEditing
-        self.needsImageSync = messageWithUser.message.thumbnailImageToken != nil
+        messageUser = messageWithUser
+        _isEditing = isEditing
+        needsImageSync = messageWithUser.message.thumbnailImageToken != nil
         self.messageOpCallback = messageOpCallback
     }
-    
+
     private var user: User {
         messageUser.user
     }
-    
+
     private var message: Message {
         messageUser.message
     }
@@ -44,7 +46,7 @@ struct MessageBubbleView: View {
     private var hasThumbnail: Bool {
         message.thumbnailImageToken != nil
     }
-    
+
     private var isImageMessage: Bool {
         message.isImageMessage
     }
@@ -53,9 +55,7 @@ struct MessageBubbleView: View {
     // and always available to local user to preview at full rez
     private var largeImageAvailable: Bool {
         if message.thumbnailImageToken != nil {
-            if message.userId == DataManager.shared.currentUserId
-                || DataManager.shared.acceptLargeImages
-            {
+            if message.userId == DataManager.shared.currentUserId || DataManager.shared.acceptLargeImages {
                 return true
             }
         }
@@ -81,7 +81,7 @@ struct MessageBubbleView: View {
         }
         return user.id == DataManager.shared.currentUserId
     }
-    
+
     private var backgroundColor: Color {
         if side == .left {
             return Color(.tertiarySystemFill)
@@ -112,8 +112,8 @@ struct MessageBubbleView: View {
     }
 
     var body: some View {
-        VStack (alignment: side == .right ? .trailing : .leading, spacing: 2) {
-            Text( isSelfUser ? "" : user.fullName )
+        VStack(alignment: side == .right ? .trailing : .leading, spacing: 2) {
+            Text(isSelfUser ? "" : user.fullName)
                 .font(.system(size: UIFont.smallSystemFontSize))
                 .opacity(0.6)
 
@@ -159,7 +159,7 @@ struct MessageBubbleView: View {
             }
         }
     }
-    
+
     @ViewBuilder
     func textContentView() -> some View {
         if !message.text.isEmpty {
@@ -168,7 +168,7 @@ struct MessageBubbleView: View {
             EmptyView()
         }
     }
-    
+
     @ViewBuilder
     func attachmentContentView() -> some View {
         if let image = viewModel.thumbnailImage {
@@ -217,7 +217,7 @@ struct MessageBubbleView: View {
                 }
             }
         }
-        
+
         // Only allow delete on local user messages when not editing
         if canDelete() {
             Button {
@@ -232,10 +232,10 @@ struct MessageBubbleView: View {
                 Text(deleteTitleKey)
             }
         }
-        
+
         EmptyView()
     }
-    
+
     @ViewBuilder
     func deleteAlertContent() -> some View {
         VStack {
@@ -245,7 +245,7 @@ struct MessageBubbleView: View {
                     message
                 )
             }
-            Button(cancelTitleKey, role: .cancel) { }
+            Button(cancelTitleKey, role: .cancel) {}
         }
     }
 
@@ -259,7 +259,7 @@ struct MessageBubbleView: View {
         guard !isEditing else { return false }
         return isSelfUser && !isImageMessage
     }
-        
+
     private func canDelete() -> Bool {
         guard !isEditing else { return false }
         return isSelfUser
@@ -274,19 +274,18 @@ struct MessageBubbleView: View {
         preview: Bool,
         isEditing: Binding<Bool> = .constant(false)
     ) {
-        self._viewModel = StateObject(
+        _viewModel = StateObject(
             wrappedValue: MessageBubbleVM(
                 Message(roomId: "abc", text: "Hello World!"),
                 messagesId: messagesId
             )
         )
-        self._isEditing = isEditing
-        self.messageUser = messageWithUser
-        self.forPreview = preview
-        self.messageOpCallback = nil
+        _isEditing = isEditing
+        messageUser = messageWithUser
+        forPreview = preview
+        messageOpCallback = nil
     }
 }
-
 
 struct MessageBubbleShape: Shape {
     enum Side {
@@ -297,38 +296,37 @@ struct MessageBubbleShape: Shape {
     let side: Side
 
     func path(in rect: CGRect) -> Path {
-        return (side == .left) ? getLeftBubblePath(in: rect) : getRightBubblePath(in: rect)
+        (side == .left) ? getLeftBubblePath(in: rect) : getRightBubblePath(in: rect)
     }
 
     private func getLeftBubblePath(in rect: CGRect) -> Path {
         let width = rect.width
         let height = rect.height
-        let path = Path { p in
-            p.move(to: CGPoint(x: 25, y: height))
-            p.addLine(to: CGPoint(x: width - 20, y: height))
-            p.addCurve(to: CGPoint(x: width, y: height - 20),
-                       control1: CGPoint(x: width - 8, y: height),
-                       control2: CGPoint(x: width, y: height - 8))
-            p.addLine(to: CGPoint(x: width, y: 20))
-            p.addCurve(to: CGPoint(x: width - 20, y: 0),
-                       control1: CGPoint(x: width, y: 8),
-                       control2: CGPoint(x: width - 8, y: 0))
-            p.addLine(to: CGPoint(x: 21, y: 0))
-            p.addCurve(to: CGPoint(x: 4, y: 20),
-                       control1: CGPoint(x: 12, y: 0),
-                       control2: CGPoint(x: 4, y: 8))
-            p.addLine(to: CGPoint(x: 4, y: height - 11))
-            p.addCurve(to: CGPoint(x: 0, y: height),
-                       control1: CGPoint(x: 4, y: height - 1),
-                       control2: CGPoint(x: 0, y: height))
-            p.addLine(to: CGPoint(x: -0.05, y: height - 0.01))
-            p.addCurve(to: CGPoint(x: 11.0, y: height - 4.0),
-                       control1: CGPoint(x: 4.0, y: height + 0.5),
-                       control2: CGPoint(x: 8, y: height - 1))
-            p.addCurve(to: CGPoint(x: 25, y: height),
-                       control1: CGPoint(x: 16, y: height),
-                       control2: CGPoint(x: 20, y: height))
-
+        let path = Path { path in
+            path.move(to: CGPoint(x: 25, y: height))
+            path.addLine(to: CGPoint(x: width - 20, y: height))
+            path.addCurve(to: CGPoint(x: width, y: height - 20),
+                          control1: CGPoint(x: width - 8, y: height),
+                          control2: CGPoint(x: width, y: height - 8))
+            path.addLine(to: CGPoint(x: width, y: 20))
+            path.addCurve(to: CGPoint(x: width - 20, y: 0),
+                          control1: CGPoint(x: width, y: 8),
+                          control2: CGPoint(x: width - 8, y: 0))
+            path.addLine(to: CGPoint(x: 21, y: 0))
+            path.addCurve(to: CGPoint(x: 4, y: 20),
+                          control1: CGPoint(x: 12, y: 0),
+                          control2: CGPoint(x: 4, y: 8))
+            path.addLine(to: CGPoint(x: 4, y: height - 11))
+            path.addCurve(to: CGPoint(x: 0, y: height),
+                          control1: CGPoint(x: 4, y: height - 1),
+                          control2: CGPoint(x: 0, y: height))
+            path.addLine(to: CGPoint(x: -0.05, y: height - 0.01))
+            path.addCurve(to: CGPoint(x: 11.0, y: height - 4.0),
+                          control1: CGPoint(x: 4.0, y: height + 0.5),
+                          control2: CGPoint(x: 8, y: height - 1))
+            path.addCurve(to: CGPoint(x: 25, y: height),
+                          control1: CGPoint(x: 16, y: height),
+                          control2: CGPoint(x: 20, y: height))
         }
         return path
     }
@@ -336,98 +334,96 @@ struct MessageBubbleShape: Shape {
     private func getRightBubblePath(in rect: CGRect) -> Path {
         let width = rect.width
         let height = rect.height
-        let path = Path { p in
-            p.move(to: CGPoint(x: 25, y: height))
-            p.addLine(to: CGPoint(x:  20, y: height))
-            p.addCurve(to: CGPoint(x: 0, y: height - 20),
-                       control1: CGPoint(x: 8, y: height),
-                       control2: CGPoint(x: 0, y: height - 8))
-            p.addLine(to: CGPoint(x: 0, y: 20))
-            p.addCurve(to: CGPoint(x: 20, y: 0),
-                       control1: CGPoint(x: 0, y: 8),
-                       control2: CGPoint(x: 8, y: 0))
-            p.addLine(to: CGPoint(x: width - 21, y: 0))
-            p.addCurve(to: CGPoint(x: width - 4, y: 20),
-                       control1: CGPoint(x: width - 12, y: 0),
-                       control2: CGPoint(x: width - 4, y: 8))
-            p.addLine(to: CGPoint(x: width - 4, y: height - 11))
-            p.addCurve(to: CGPoint(x: width, y: height),
-                       control1: CGPoint(x: width - 4, y: height - 1),
-                       control2: CGPoint(x: width, y: height))
-            p.addLine(to: CGPoint(x: width + 0.05, y: height - 0.01))
-            p.addCurve(to: CGPoint(x: width - 11, y: height - 4),
-                       control1: CGPoint(x: width - 4, y: height + 0.5),
-                       control2: CGPoint(x: width - 8, y: height - 1))
-            p.addCurve(to: CGPoint(x: width - 25, y: height),
-                       control1: CGPoint(x: width - 16, y: height),
-                       control2: CGPoint(x: width - 20, y: height))
-
+        let path = Path { path in
+            path.move(to: CGPoint(x: 25, y: height))
+            path.addLine(to: CGPoint(x: 20, y: height))
+            path.addCurve(to: CGPoint(x: 0, y: height - 20),
+                          control1: CGPoint(x: 8, y: height),
+                          control2: CGPoint(x: 0, y: height - 8))
+            path.addLine(to: CGPoint(x: 0, y: 20))
+            path.addCurve(to: CGPoint(x: 20, y: 0),
+                          control1: CGPoint(x: 0, y: 8),
+                          control2: CGPoint(x: 8, y: 0))
+            path.addLine(to: CGPoint(x: width - 21, y: 0))
+            path.addCurve(to: CGPoint(x: width - 4, y: 20),
+                          control1: CGPoint(x: width - 12, y: 0),
+                          control2: CGPoint(x: width - 4, y: 8))
+            path.addLine(to: CGPoint(x: width - 4, y: height - 11))
+            path.addCurve(to: CGPoint(x: width, y: height),
+                          control1: CGPoint(x: width - 4, y: height - 1),
+                          control2: CGPoint(x: width, y: height))
+            path.addLine(to: CGPoint(x: width + 0.05, y: height - 0.01))
+            path.addCurve(to: CGPoint(x: width - 11, y: height - 4),
+                          control1: CGPoint(x: width - 4, y: height + 0.5),
+                          control2: CGPoint(x: width - 8, y: height - 1))
+            path.addCurve(to: CGPoint(x: width - 25, y: height),
+                          control1: CGPoint(x: width - 16, y: height),
+                          control2: CGPoint(x: width - 20, y: height))
         }
         return path
     }
 }
 
-
 #if DEBUG
-import Fakery
-struct MessageBubbleView_Previews: PreviewProvider {
-    static let faker = Faker()
+    import Fakery
+    struct MessageBubbleView_Previews: PreviewProvider {
+        static let faker = Faker()
 
-    static var messagesWithUsers: [MessageWithUser] = [
-        MessageWithUser(
-            message: Message(
-                id: UUID().uuidString,
-                createdOn: Date(),
-                roomId: publicKey,
-                text: Self.faker.lorem.sentence(),
-                userId: "max"
+        static var messagesWithUsers: [MessageWithUser] = [
+            MessageWithUser(
+                message: Message(
+                    id: UUID().uuidString,
+                    createdOn: Date(),
+                    roomId: publicKey,
+                    text: Self.faker.lorem.sentence(),
+                    userId: "max"
+                ),
+                user: User(id: "max", firstName: "Maximilian", lastName: "Alexander")
             ),
-            user: User(id: "max", firstName: "Maximilian", lastName: "Alexander")
-        ),
-        MessageWithUser(
-            message: Message(
-                id: UUID().uuidString,
-                createdOn: Date(),
-                roomId: publicKey,
-                text: Self.faker.lorem.paragraph(sentencesAmount: 12),
-                userId: "me"
+            MessageWithUser(
+                message: Message(
+                    id: UUID().uuidString,
+                    createdOn: Date(),
+                    roomId: publicKey,
+                    text: Self.faker.lorem.paragraph(sentencesAmount: 12),
+                    userId: "me"
+                ),
+                user: User(
+                    id: "me",
+                    firstName: "Me",
+                    lastName: "NotYou"
+                )
             ),
-            user: User(
-                id: "me",
-                firstName: "Me",
-                lastName: "NotYou"
-            )
-        ),
-        MessageWithUser(
-            message: Message(
-                id: UUID().uuidString,
-                createdOn: Date(),
-                roomId: publicKey,
-                text: Self.faker.lorem.sentence(),
-                userId: "max"
+            MessageWithUser(
+                message: Message(
+                    id: UUID().uuidString,
+                    createdOn: Date(),
+                    roomId: publicKey,
+                    text: Self.faker.lorem.sentence(),
+                    userId: "max"
+                ),
+                user: User(id: "max", firstName: "Maximilian", lastName: "Alexander")
             ),
-            user: User(id: "max", firstName: "Maximilian", lastName: "Alexander")
-        ),
-        MessageWithUser(
-            message: Message(
-                id: UUID().uuidString,
-                createdOn: Date(),
-                roomId: publicKey,
-                text: Self.faker.lorem.sentence(),
-                userId: "me"
+            MessageWithUser(
+                message: Message(
+                    id: UUID().uuidString,
+                    createdOn: Date(),
+                    roomId: publicKey,
+                    text: Self.faker.lorem.sentence(),
+                    userId: "me"
+                ),
+                user: User(id: "me", firstName: "Me", lastName: "NotYou")
             ),
-            user: User(id: "me", firstName: "Me", lastName: "NotYou")
-        )
-    ]
+        ]
 
-    static var previews: some View {
-        ScrollView {
-            LazyVStack(spacing: 0) {
-                ForEach(messagesWithUsers) { m in
-                    MessageBubbleView(messageWithUser: m, preview: true)
+        static var previews: some View {
+            ScrollView {
+                LazyVStack(spacing: 0) {
+                    ForEach(messagesWithUsers) { message in
+                        MessageBubbleView(messageWithUser: message, preview: true)
+                    }
                 }
             }
         }
     }
-}
 #endif

@@ -6,7 +6,7 @@ import Foundation
 import MessageUI
 import UIKit
 
-private struct Config {
+private enum Config {
     static let logsDirectoryName = "ditto-debug-logs"
     static let logFileName = "DittoLogs.txt"
     static let zippedLogFileName = "DittoLogs.zip"
@@ -21,9 +21,7 @@ private struct Config {
     }()
 
     /// URL within `logsDirectory` for our latest debug logs to stream.
-    static var logFileURL: URL! = {
-        return Self.logsDirectory.appendingPathComponent(Config.logFileName)
-    }()
+    static var logFileURL: URL! = Self.logsDirectory.appendingPathComponent(Config.logFileName)
 
     /// A temporary location into which we can store zipped logs before sharing
     /// them via a share sheet.
@@ -36,7 +34,6 @@ private struct Config {
 /// LogManager acts as a thin interface over our stored log files and
 /// offers functionality to share zipped logs with an iOS share sheet.
 struct LogManager {
-
     // MARK: - Singleton
 
     public static let shared = LogManager()
@@ -55,7 +52,7 @@ struct LogManager {
         do {
             try FileManager().createDirectory(at: Config.logsDirectory,
                                               withIntermediateDirectories: true)
-        } catch let error {
+        } catch {
             print("Failed to create logs directory: \(error)")
             return nil
         }
@@ -77,7 +74,7 @@ struct LogManager {
                                options: [.forUploading], error: &nsError) { tempURL in
             do {
                 try FileManager().moveItem(at: tempURL, to: Config.zippedLogsURL)
-            } catch let error {
+            } catch {
                 print("Failed to move zipped logs into location: \(error)")
             }
         }

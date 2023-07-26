@@ -1,10 +1,10 @@
-///
+//
 //  DittoToolsUtilities.swift
 //  DittoChat
 //
 //  Created by Eric Turner on 1/31/23.
-//®
 //  Copyright © 2023 DittoLive Incorporated. All rights reserved.
+//
 
 import DittoDataBrowser
 import DittoDiskUsage
@@ -36,4 +36,3 @@ struct ExportLogsView: View {
         ExportLogs()
     }
 }
-

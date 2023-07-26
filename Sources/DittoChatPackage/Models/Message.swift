@@ -3,6 +3,7 @@
 //  DittoChat
 //
 //  Created by Maximilian Alexander on 7/19/22.
+//  Copyright © 2022 DittoLive Incorporated. All rights reserved.
 //
 
 import DittoSwift
@@ -22,21 +23,21 @@ struct Message: Identifiable, Equatable {
     var userId: String
     var largeImageToken: DittoAttachmentToken?
     var thumbnailImageToken: DittoAttachmentToken?
-    
+
     var isImageMessage: Bool {
         thumbnailImageToken != nil || largeImageToken != nil
-    }    
+    }
 }
 
 extension Message {
     init(document: DittoDocument) {
-        self.id = document[dbIdKey].stringValue
-        self.createdOn = DateFormatter.isoDate.date(from: document[createdOnKey].stringValue) ?? Date()
-        self.roomId = document[roomIdKey].stringValue
-        self.text = document[textKey].stringValue
-        self.userId = document[userIdKey].stringValue
-        self.largeImageToken = document[largeImageTokenKey].attachmentToken
-        self.thumbnailImageToken = document[thumbnailImageTokenKey].attachmentToken
+        id = document[dbIdKey].stringValue
+        createdOn = DateFormatter.isoDate.date(from: document[createdOnKey].stringValue) ?? Date()
+        roomId = document[roomIdKey].stringValue
+        text = document[textKey].stringValue
+        userId = document[userIdKey].stringValue
+        largeImageToken = document[largeImageTokenKey].attachmentToken
+        thumbnailImageToken = document[thumbnailImageTokenKey].attachmentToken
     }
 }
 
@@ -46,7 +47,7 @@ extension Message {
         createdOn: Date? = nil,
         roomId: String,
         text: String? = nil,
-        userId: String? = nil,
+        userId _: String? = nil,
         largeImageToken: DittoAttachmentToken? = nil,
         thumbnailImageToken: DittoAttachmentToken? = nil
     ) {
@@ -54,7 +55,7 @@ extension Message {
         self.createdOn = createdOn ?? Date()
         self.roomId = roomId
         self.text = text ?? ""
-        self.userId = DataManager.shared.currentUserId ?? createdByUnknownKey
+        userId = DataManager.shared.currentUserId ?? createdByUnknownKey
         self.largeImageToken = largeImageToken
         self.thumbnailImageToken = thumbnailImageToken
     }
@@ -69,7 +70,7 @@ extension Message {
             textKey: text,
             userIdKey: userId,
             largeImageTokenKey: largeImageToken,
-            thumbnailImageTokenKey: thumbnailImageToken
+            thumbnailImageTokenKey: thumbnailImageToken,
         ]
     }
 }

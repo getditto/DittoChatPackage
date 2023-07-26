@@ -15,10 +15,11 @@ let package = Package(
     dependencies: [
         .package(url: "https://github.com/getditto/DittoSwiftPackage", from: "4.0.0"),
         .package(url: "https://github.com/getditto/DittoSwiftTools", from: "4.0.0"),
-        //.package(url: "https://github.com/apple/swift-collections", from: "1.0.0"),
         .package(url: "https://github.com/twostraws/CodeScanner", from: "2.0.0"),
         .package(url: "https://github.com/vadymmarkov/Fakery", from: "5.0.0"),
         .package(url: "https://github.com/apple/swift-collections", from: "1.0.0"),
+//        .package(url: "https://github.com/realm/SwiftLint.git", from: "0.0.0"),
+//        .package(url: "https://github.com/nicklockwood/SwiftFormat", from: "0.50.4"),
     ],
     targets: [
         .target(
@@ -32,7 +33,9 @@ let package = Package(
                 .product(name: "CodeScanner", package: "CodeScanner"),
                 .product(name: "Fakery", package: "Fakery"),
                 .product(name: "OrderedCollections", package: "swift-collections"),
-            ]),
+            ]
+//            plugins: [.plugin(name: "SwiftLintPlugin", package: "SwiftLint")]
+        ),
         .testTarget(
             name: "DittoChatPackageTests",
             dependencies: ["DittoChatPackage"]),

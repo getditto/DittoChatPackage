@@ -3,11 +3,13 @@
 //  DittoChat
 //
 //  Created by Eric Turner on 12/22/22.
+//  Copyright © 2022 DittoLive Incorporated. All rights reserved.
 //
 
 import Foundation
 
 // MARK: Model Keys
+
 let collectionIdKey = "collectionId"
 let collectionsKey = "collections"
 let createdByKey = "createdBy"
@@ -39,8 +41,8 @@ let timestampKey = "timestamp"
 let userIdKey = "userId"
 let usersKey = "users"
 
-
 // MARK: UI Keys
+
 let alertTitleKey = "Alert"
 let appTitleKey = "Ditto Chat"
 let archiveTitleKey = "Archive"
@@ -74,8 +76,8 @@ let saveTitleKey = "Save"
 let scanPrivateRoomTitleKey = "Scan Private Room"
 let viewImageTitleKey = "View Image"
 
+// MARK: Settings Keys
 
-//MARK: Settings Keys
 let archivedPrivateRoomsTitleKey = "Archived Private Rooms"
 let archivedPublicRoomsTitleKey = "Archived Public Rooms"
 let evictedPrivateRoomsTitleKey = "Evicted Private Rooms"
@@ -86,8 +88,8 @@ let settingsTitleKey = "Settings"
 let unreplicatedPublicRoomsTitleKey = "Archived Public Rooms Not Synced"
 let userSettingsTitleKey = "User Settings"
 
+// MARK: RoomDetailsView Keys
 
-//MARK: RoomDetailsView Keys
 let collectionIdLabelKey = "CollectionId:"
 let carriageReturnKey = "\n"
 let createdByLabelKey = "CreatedBy:"
@@ -105,16 +107,16 @@ let unknownUserNameKey = "UnknownUserName"
 let usernameKey = "username"
 let usersLabelKey = "Users:"
 
+// MARK: Tools Keys
 
-//MARK: Tools Keys
 let dittoToolsKey = "Ditto Tools"
 let dataBrowserTitleKey = "Data Browser"
 let diskUsageTitleKey = "Disk Usage"
 let exportLogsTitleKey = "Export Logs"
 let presenceViewerTitleKey = "Presence Viewer"
 
-
 // MARK: UserDefaults Keys
+
 let archivedPublicRoomsKey = "archivedPublicRooms"
 let publicRoomsIDArchiveKey = "publicRoomsIDArchive"
 let archivedPrivateRoomsKey = "archivedPrivateRooms"
@@ -123,6 +125,7 @@ let acceptLargeImagesKey = "acceptLargeImages"
 let basicChatKey = "basicChat"
 
 // MARK: Image Keys
+
 let arrowUpKey = "arrow.up"
 let cameraFillKey = "camera.fill"
 let checkmarkKey = "checkmark"
@@ -137,4 +140,3 @@ let qrCodeKey = "qrcode"
 let qrCodeViewfinderKey = "qrcode.viewfinder"
 let shareImageIconKey = "photo"
 let unnamedLargeImageFileKey = "UnnamedLargeImage.jpg"
-

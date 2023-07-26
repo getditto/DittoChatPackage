@@ -3,6 +3,7 @@
 //  DittoChat
 //
 //  Created by Maximilian Alexander on 7/18/22.
+//  Copyright © 2022 DittoLive Incorporated. All rights reserved.
 //
 
 import SwiftUI
@@ -18,9 +19,9 @@ struct AvatarView: View {
 }
 
 #if DEBUG
-struct AvatarView_Previews: PreviewProvider {
-    static var previews: some View {
-        AvatarView()
+    struct AvatarView_Previews: PreviewProvider {
+        static var previews: some View {
+            AvatarView()
+        }
     }
-}
 #endif

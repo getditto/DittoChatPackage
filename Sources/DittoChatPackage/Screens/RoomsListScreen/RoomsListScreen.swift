@@ -3,17 +3,15 @@
 //  DittoChat
 //
 //  Created by Eric Turner on 2/17/23.
-//
 //  Copyright © 2023 DittoLive Incorporated. All rights reserved.
+//
 
 import SwiftUI
 
 public struct RoomsListScreen: View {
     @ObservedObject var viewModel = RoomsListScreenVM()
-    
-    public init() {
-        
-    }
+
+    public init() {}
 
     public var body: some View {
         List {
@@ -24,7 +22,7 @@ public struct RoomsListScreen: View {
                     }
                 }
             }
-            Section( viewModel.publicRooms.count > 0 ? publicRoomsTitleKey : "" ) {
+            Section(!viewModel.publicRooms.isEmpty ? publicRoomsTitleKey : "") {
                 ForEach(viewModel.publicRooms) { room in
                     NavigationLink(destination: ChatScreen(room: room)) {
                         RoomsListRowItem(room: room)
@@ -37,8 +35,8 @@ public struct RoomsListScreen: View {
                     }
                 }
             }
-            
-            Section( viewModel.privateRooms.count > 0 ? privateRoomsTitleKey : "" ) {
+
+            Section(!viewModel.privateRooms.isEmpty ? privateRoomsTitleKey : "") {
                 ForEach(viewModel.privateRooms) { room in
                     NavigationLink(destination: ChatScreen(room: room)) {
                         RoomsListRowItem(room: room)
@@ -74,7 +72,7 @@ public struct RoomsListScreen: View {
             SettingsScreen()
         }
         .toolbar {
-            ToolbarItemGroup(placement: .navigationBarLeading ) {
+            ToolbarItemGroup(placement: .navigationBarLeading) {
                 Button {
                     viewModel.profileButtonAction()
                 } label: {
@@ -86,7 +84,7 @@ public struct RoomsListScreen: View {
                     Image(systemName: gearShapeKey)
                 }
             }
-            ToolbarItemGroup(placement: .principal ) {
+            ToolbarItemGroup(placement: .principal) {
                 Text(appTitleKey)
                     .fontWeight(.bold)
             }
@@ -107,11 +105,11 @@ public struct RoomsListScreen: View {
 }
 
 #if DEBUG
-struct RoomsListScreen_Previews: PreviewProvider {
-    static var previews: some View {
-        NavigationView {
-            RoomsListScreen()
+    struct RoomsListScreen_Previews: PreviewProvider {
+        static var previews: some View {
+            NavigationView {
+                RoomsListScreen()
+            }
         }
     }
-}
 #endif

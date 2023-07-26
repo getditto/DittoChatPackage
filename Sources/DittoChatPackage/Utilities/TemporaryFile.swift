@@ -1,8 +1,9 @@
 //
 //  TemporaryFile.swift
-//  Pics
+//  DittoChat
 //
 //  Created by Maximilian Alexander on 12/10/20.
+//  Copyright © 2020 DittoLive Incorporated. All rights reserved.
 //
 
 import Foundation
@@ -26,8 +27,8 @@ struct TemporaryFile {
     init(creatingTempDirectoryForFilename filename: String) throws {
         let (directory, deleteDirectory) = try FileManager.default
             .urlForUniqueTemporaryDirectory()
-        self.directoryURL = directory
-        self.fileURL = directory.appendingPathComponent(filename)
+        directoryURL = directory
+        fileURL = directory.appendingPathComponent(filename)
         self.deleteDirectory = deleteDirectory
     }
 }
@@ -40,13 +41,11 @@ extension FileManager {
     ///
     /// - Note: You should not rely on the existence of the temporary directory
     ///   after the app is exited.
-    func urlForUniqueTemporaryDirectory(preferredName: String? = nil) throws
-        -> (url: URL, deleteDirectory: () throws -> Void)
-    {
+    func urlForUniqueTemporaryDirectory(preferredName: String? = nil) throws -> (url: URL, deleteDirectory: () throws -> Void) {
         let basename = preferredName ?? UUID().uuidString
 
         var counter = 0
-        var createdSubdirectory: URL? = nil
+        var createdSubdirectory: URL?
         repeat {
             do {
                 let subdirName = counter == 0 ? basename : "\(basename)-\(counter)"

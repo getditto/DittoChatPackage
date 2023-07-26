@@ -3,6 +3,7 @@
 //  DittoChat
 //
 //  Created by Maximilian Alexander on 7/19/22.
+//  Copyright © 2022 DittoLive Incorporated. All rights reserved.
 //
 
 import DittoSwift
@@ -19,9 +20,9 @@ struct User: Identifiable, Hashable, Equatable {
 
 extension User {
     init(document: DittoDocument) {
-        self.id = document[dbIdKey].stringValue
-        self.firstName = document[firstNameKey].stringValue
-        self.lastName = document[lastNameKey].stringValue
+        id = document[dbIdKey].stringValue
+        firstName = document[firstNameKey].stringValue
+        lastName = document[lastNameKey].stringValue
     }
 }
 
@@ -35,7 +36,7 @@ extension User {
     }
 }
 
-extension User {    
+extension User {
     func docDictionary() -> [String: Any?] {
         [
             dbIdKey: id,

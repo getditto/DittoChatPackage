@@ -1,12 +1,11 @@
-///
+//
 //  ChatScreen.swift
 //  DittoChat
 //
 //  Created by Eric Turner on 02/24/23.
-//
 //  Copyright © 2023 DittoLive Incorporated. All rights reserved.
+//
 
-import SwiftUI
 import PhotosUI
 import SwiftUI
 
@@ -15,7 +14,7 @@ public struct ChatScreen: View {
     @EnvironmentObject var errorHandler: ErrorHandler
 
     public init(room: Room) {
-        self._viewModel = StateObject(wrappedValue: ChatScreenVM(room: room))
+        _viewModel = StateObject(wrappedValue: ChatScreenVM(room: room))
     }
 
     var navBarTitle: String {
@@ -25,7 +24,7 @@ public struct ChatScreen: View {
             return viewModel.roomName
         }
     }
-    
+
     public var body: some View {
         VStack {
             ScrollViewReader { proxy in
@@ -49,7 +48,7 @@ public struct ChatScreen: View {
                         scrollToBottom(proxy: proxy)
                     }
                 }
-                .onChange(of: viewModel.messagesWithUsers.count) { value in
+                .onChange(of: viewModel.messagesWithUsers.count) { _ in
                     DispatchQueue.main.async {
                         withAnimation {
                             scrollToBottom(proxy: proxy)
@@ -67,7 +66,7 @@ public struct ChatScreen: View {
             HStack(alignment: .top) {
                 photosPickerButtonView
                     .padding(.top, 4)
-                
+
                 ChatInputView(
                     text: $viewModel.inputText,
                     onSendButtonTappedCallback: viewModel.sendMessage
@@ -103,21 +102,21 @@ public struct ChatScreen: View {
                 }
             }
         }
-        .sheet(isPresented: $viewModel.presentProfileScreen) {// basic chat mode
+        .sheet(isPresented: $viewModel.presentProfileScreen) { // basic chat mode
             ProfileScreen()
         }
-        .sheet(isPresented: $viewModel.presentSettingsView) {// basic chat mode
+        .sheet(isPresented: $viewModel.presentSettingsView) { // basic chat mode
             SettingsScreen()
         }
         .toolbar {
             // basic chat mode
             if viewModel.isBasicChatScreen {
-                ToolbarItemGroup(placement: .navigationBarLeading ) {
-                Button {
-                    viewModel.presentProfileScreen = true
-                } label: {
-                    Image(systemName: personCircleKey)
-                }
+                ToolbarItemGroup(placement: .navigationBarLeading) {
+                    Button {
+                        viewModel.presentProfileScreen = true
+                    } label: {
+                        Image(systemName: personCircleKey)
+                    }
                     Button {
                         viewModel.presentSettingsView = true
                     } label: {
@@ -150,12 +149,11 @@ public struct ChatScreen: View {
             }
         }
     }
-    
+
     var photosPickerButtonView: some View {
         PhotosPicker(selection: $viewModel.selectedItem,
                      matching: .images,
-                     photoLibrary: .shared()
-        ) {
+                     photoLibrary: .shared()) {
             Image(systemName: cameraFillKey)
                 .symbolRenderingMode(.multicolor)
                 .font(.system(size: 28))
@@ -166,18 +164,18 @@ public struct ChatScreen: View {
             Task {
                 do {
                     let imageData = try await newValue?.loadTransferable(type: Data.self)
-                    
+
                     if let image = UIImage(data: imageData ?? Data()) {
                         viewModel.selectedImage = image
-                        
+
                         do {
                             try await viewModel.sendImageMessage()
                         } catch {
-                            self.errorHandler.handle(error: error)
+                            errorHandler.handle(error: error)
                         }
                     }
                 } catch {
-                    self.errorHandler.handle(error: AttachmentError.iCloudLibraryImageFail)
+                    errorHandler.handle(error: AttachmentError.iCloudLibraryImageFail)
                 }
             }
         }
@@ -189,9 +187,9 @@ public struct ChatScreen: View {
 }
 
 #if DEBUG
-struct ChatScreen_Previews: PreviewProvider {
-    static var previews: some View {
-        ChatScreen(room: Room(id: "abc", name: "My Room", messagesId: "def", isPrivate: true))
+    struct ChatScreen_Previews: PreviewProvider {
+        static var previews: some View {
+            ChatScreen(room: Room(id: "abc", name: "My Room", messagesId: "def", isPrivate: true))
+        }
     }
-}
 #endif

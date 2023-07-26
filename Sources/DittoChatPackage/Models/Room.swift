@@ -1,10 +1,10 @@
-///
+//
 //  PrivateRoom.swift
 //  DittoChat
 //
 //  Created by Eric Turner on 1/12/23.
-//
 //  Copyright © 2023 DittoLive Incorporated. All rights reserved.
+//
 
 import DittoSwift
 import Foundation
@@ -23,13 +23,13 @@ public struct Room: Identifiable, Hashable, Equatable {
 
 extension Room {
     init(document: DittoDocument) {
-        self.id = document[dbIdKey].stringValue
-        self.name = document[nameKey].stringValue
-        self.messagesId = document[messagesIdKey].stringValue
-        self.isPrivate = document[isPrivateKey].boolValue
-        self.collectionId = document[collectionIdKey].string
-        self.createdBy = document[createdByKey].stringValue
-        self.createdOn = DateFormatter.isoDate.date(from: document[createdOnKey].stringValue) ?? Date()
+        id = document[dbIdKey].stringValue
+        name = document[nameKey].stringValue
+        messagesId = document[messagesIdKey].stringValue
+        isPrivate = document[isPrivateKey].boolValue
+        collectionId = document[collectionIdKey].string
+        createdBy = document[createdByKey].stringValue
+        createdOn = DateFormatter.isoDate.date(from: document[createdOnKey].stringValue) ?? Date()
     }
 }
 
@@ -68,10 +68,10 @@ extension Room {
     }
 }
 
-extension Room {
+public extension Room {
     // This "dummy" object is a Room object used by DittoChatApp.swift
     // to initialize a basic chat mode ChatScreen as root view
-    public static var basicChatDummy: Room {
+    static var basicChatDummy: Room {
         Room(
             id: publicKey,
             name: publicRoomTitleKey,
@@ -80,4 +80,3 @@ extension Room {
         )
     }
 }
-
