@@ -14,6 +14,7 @@ class ProfileScreenViewModel: ObservableObject {
     @Published var saveButtonDisabled = false
     @Published var firstName: String = ""
     @Published var lastName: String = ""
+    @Published var isValid = true
 
     init() {
         DataManager.shared

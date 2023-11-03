@@ -153,7 +153,8 @@ public struct ChatScreen: View {
     var photosPickerButtonView: some View {
         PhotosPicker(selection: $viewModel.selectedItem,
                      matching: .images,
-                     photoLibrary: .shared()) {
+                     photoLibrary: .shared())
+        {
             Image(systemName: cameraFillKey)
                 .symbolRenderingMode(.multicolor)
                 .font(.system(size: 28))
@@ -187,9 +188,9 @@ public struct ChatScreen: View {
 }
 
 #if DEBUG
-    struct ChatScreen_Previews: PreviewProvider {
-        static var previews: some View {
-            ChatScreen(room: Room(id: "abc", name: "My Room", messagesId: "def", isPrivate: true))
-        }
+struct ChatScreen_Previews: PreviewProvider {
+    static var previews: some View {
+        ChatScreen(room: Room(id: "abc", name: "My Room", messagesId: "def", isPrivate: true))
     }
+}
 #endif

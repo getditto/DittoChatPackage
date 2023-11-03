@@ -43,7 +43,11 @@ public class DittoInstance {
         // Prevent Xcode previews from syncing: non preview simulators and real devices can sync
         let isPreview: Bool = ProcessInfo.processInfo.environment["XCODE_RUNNING_FOR_PREVIEWS"] == "1"
         if !isPreview {
-            try! ditto.startSync()
+            do {
+                try ditto.startSync()
+            } catch {
+                print("ERROR: failed to start sync with error \(error)")
+            }
         }
     }
 }
@@ -51,7 +55,7 @@ public class DittoInstance {
 class DittoService: ReplicatingDataInterface {
     @Published var publicRoomsPublisher = CurrentValueSubject<[Room], Never>([])
     @Published fileprivate private(set) var allPublicRooms: [Room] = []
-    private var allPublicRoomsCancellable: AnyCancellable = .init {}
+    private var allPublicRoomsCancellable: AnyCancellable = .init { /*create cancellable*/ }
     private var cancellables = Set<AnyCancellable>()
 
     // private in-memory stores of subscriptions for rooms and messages
@@ -150,7 +154,7 @@ extension DittoService {
         if room.isPrivate {
             addPrivateRoomSubscriptions(roomId: room.id, collectionId: room.collectionId!, messagesId: room.messagesId)
         } else {
-            let mSub = ditto.store[room.messagesId].findAll().subscribe()
+            let mSub = ditto.store[room.messagesId].find("roomId == $args.roomId", args: ["roomId": room.id,]).subscribe()
             publicRoomMessagesSubscriptions[room.id] = mSub
         }
     }
@@ -193,32 +197,32 @@ extension DittoService {
 extension DittoService {
     // MARK: Users
 
-    func currentUserPublisher() -> AnyPublisher<User?, Never> {
+    func currentUserPublisher() -> AnyPublisher<ChatUser?, Never> {
         privateStore.currentUserIdPublisher
-            .map { userId -> AnyPublisher<User?, Never> in
+            .map { userId -> AnyPublisher<ChatUser?, Never> in
                 guard let userId else {
-                    return Just<User?>(nil).eraseToAnyPublisher()
+                    return Just<ChatUser?>(nil).eraseToAnyPublisher()
                 }
                 return self.ditto.store.collection(usersKey)
                     .findByID(userId)
                     .singleDocumentLiveQueryPublisher()
                     .compactMap { doc, _ in doc }
-                    .map { User(document: $0) }
+                    .map { ChatUser(document: $0) }
                     .eraseToAnyPublisher()
             }
             .switchToLatest()
             .eraseToAnyPublisher()
     }
 
-    func addUser(_ usr: User) {
+    func addUser(_ usr: ChatUser) {
         _ = try? ditto.store.collection(usersKey)
             .upsert(usr.docDictionary())
     }
 
-    func allUsersPublisher() -> AnyPublisher<[User], Never> {
+    func allUsersPublisher() -> AnyPublisher<[ChatUser], Never> {
         ditto.store.collection(usersKey).findAll().liveQueryPublisher()
             .map { docs, _ in
-                docs.map { User(document: $0) }
+                docs.map { ChatUser(document: $0) }
             }
             .eraseToAnyPublisher()
     }
@@ -238,7 +242,7 @@ extension DittoService {
 
     func messagesPublisher(for room: Room) -> AnyPublisher<[Message], Never> {
         ditto.store.collection(room.messagesId)
-            .findAll()
+            .find("roomId == $args.roomId", args: ["roomId": room.id,])
             .sort(createdOnKey, direction: .ascending)
             .liveQueryPublisher()
             .map { docs, _ in
@@ -256,13 +260,18 @@ extension DittoService {
             return
         }
 
-        try! ditto.store.collection(room.messagesId)
-            .upsert([
-                createdOnKey: DateFormatter.isoDate.string(from: Date()),
-                roomIdKey: room.id,
-                textKey: text,
-                userIdKey: userId,
-            ] as [String: Any?])
+        let fileToUpsert: [String: Any?] = [
+            createdOnKey: DateFormatter.isoDate.string(from: Date()),
+            roomIdKey: room.id,
+            textKey: text,
+            userIdKey: userId,
+        ]
+
+        do {
+            try ditto.store.collection(room.messagesId).upsert(fileToUpsert)
+        } catch {
+            print("failed to upsert message")
+        }
     }
 
     func saveEditedTextMessage(_ message: Message, in room: Room) {
@@ -390,7 +399,7 @@ extension DittoService {
 
     // example filename output: John-Doe_thumbnail_2023-05-19T23-19-01Z.jpg
     private func attachmentFilename(
-        for _: User?,
+        for _: ChatUser?,
         type: AttachmentType,
         timestamp: String,
         ext: String = jpgExtKey
@@ -403,9 +412,9 @@ extension DittoService {
         return fname
     }
 
-    private func user(for userId: String) -> User? {
+    private func user(for userId: String) -> ChatUser? {
         if let doc = ditto.store[usersKey].findByID(userId).exec() {
-            return User(document: doc)
+            return ChatUser(document: doc)
         }
         return nil
     }
@@ -461,10 +470,22 @@ extension DittoService {
         return room
     }
 
-    func createRoom(name: String, isPrivate: Bool) {
+    /// This function returns a room from the Ditto db for the given room id. The id argument will be passed from the UI, In other cases, they are rooms from a publisher of Room instances.
+    func findPublicRoomById(id: String) -> Room? {
+        guard let doc = ditto.store[publicRoomsCollectionId].findByID(id).exec() else {
+            print("DittoService.\(#function): WARNING (except for archived private rooms)" +
+                " - expected non-nil room room.id: \(id)"
+            )
+            return nil
+        }
+        let room = Room(document: doc)
+        return room
+    }
+
+    func createRoom(name: String, isPrivate: Bool) -> DittoDocumentID? {
         let roomId = UUID().uuidString
-        let messagesId = UUID().uuidString
-        let collectionId = isPrivate ? UUID().uuidString : publicRoomsCollectionId
+        let messagesId = messagesKey // Switching to static collection for access control
+        let collectionId = isPrivate ? "Room-" + UUID().uuidString : publicRoomsCollectionId
 
         let room = Room(
             id: roomId,
@@ -476,13 +497,15 @@ extension DittoService {
 
         addSubscriptions(for: room)
 
-        try! ditto.store[collectionId].upsert(
+        let createdRoom = try? ditto.store[collectionId].upsert(
             room.docDictionary()
         )
 
         if isPrivate {
             privateStore.addPrivateRoom(room)
         }
+
+        return createdRoom
     }
 
     func joinPrivateRoom(qrCode: String) {
@@ -523,16 +546,22 @@ extension DittoService {
             return
         }
 
-        // Create default Public room with pre-configured id, messagesId
-        try! ditto.store.collection(publicRoomsCollectionId)
-            .upsert([
-                dbIdKey: publicKey,
-                nameKey: publicRoomTitleKey,
-                collectionIdKey: publicRoomsCollectionId,
-                messagesIdKey: publicMessagesIdKey, // PUBLIC_MESSAGES_ID,
-                createdOnKey: DateFormatter.isoDate.string(from: Date()),
-                isPrivateKey: false,
-            ] as [String: Any?])
+        let fileToUpsert: [String: Any?] = [
+            dbIdKey: publicKey,
+            nameKey: publicRoomTitleKey,
+            collectionIdKey: publicRoomsCollectionId,
+            messagesIdKey: publicMessagesIdKey, // PUBLIC_MESSAGES_ID,
+            createdOnKey: DateFormatter.isoDate.string(from: Date()),
+            isPrivateKey: false,
+        ]
+
+        do {
+            // Create default Public room with pre-configured id, messagesId
+            try ditto.store.collection(publicRoomsCollectionId)
+                .upsert(fileToUpsert)
+        } catch {
+            print("failed to upsert public room.")
+        }
     }
 }
 
@@ -610,9 +639,20 @@ extension DittoService {
         // Currently, only deletion of a private room is exposed in the UI
         if room.isPrivate {
             deletePrivateRoom(room)
+        } else if room.id != publicKey {
+            deletePublicRoom(room)
         } else {
             print("DittoService.\(#function): WARNING - unexpected request to delete PUBLIC room. Not supported")
         }
+    }
+
+    func deletePublicRoom(_ room: Room) {
+        removeSubscriptions(for: room)
+        evictRoom(room)
+
+        // additionally remove roomDoc and message collection from DB
+        ditto.store[publicRoomsCollectionId].findByID(room.id).remove()
+        ditto.store[messagesKey].find("roomId == $args.roomId", args: ["roomId": room.id,]).remove()
     }
 
     func deletePrivateRoom(_ room: Room) {
@@ -656,7 +696,7 @@ extension DittoService {
 
     private func evictPublicRoom(_ room: Room) {
         // evict all messages in collection
-        ditto.store[room.messagesId].findAll().evict()
+        ditto.store[room.messagesId].find("roomId == $args.roomId", args: ["roomId": room.id,]).evict()
 
         // evict the messages collection
         ditto.store[collectionsKey].findByID(room.messagesId).evict()

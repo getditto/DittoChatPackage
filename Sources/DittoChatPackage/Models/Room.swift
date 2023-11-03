@@ -1,5 +1,5 @@
 //
-//  PrivateRoom.swift
+//  Room.swift
 //  DittoChat
 //
 //  Created by Eric Turner on 1/12/23.
@@ -9,7 +9,7 @@
 import DittoSwift
 import Foundation
 
-extension Room: Codable {}
+extension Room: Codable { /*Adding codable protocol*/ }
 
 public struct Room: Identifiable, Hashable, Equatable {
     public let id: String

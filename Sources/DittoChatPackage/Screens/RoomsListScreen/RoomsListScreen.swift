@@ -11,7 +11,7 @@ import SwiftUI
 public struct RoomsListScreen: View {
     @ObservedObject var viewModel = RoomsListScreenVM()
 
-    public init() {}
+    public init() { /*Make init private access level*/ }
 
     public var body: some View {
         List {
@@ -58,13 +58,13 @@ public struct RoomsListScreen: View {
         .sheet(isPresented: $viewModel.presentProfileScreen) {
             ProfileScreen()
         }
-        .sheet(isPresented: $viewModel.presentScannerView) {
-            ScannerView(
-                successAction: { code in
-                    viewModel.joinPrivateRoom(code: code)
-                }
-            )
-        }
+//        .sheet(isPresented: $viewModel.presentScannerView) {
+//            ScannerView(
+//                successAction: { code in
+//                    viewModel.joinPrivateRoom(code: code)
+//                }
+//            )
+//        }
         .sheet(isPresented: $viewModel.presentCreateRoomScreen) {
             RoomEditScreen()
         }
@@ -89,11 +89,11 @@ public struct RoomsListScreen: View {
                     .fontWeight(.bold)
             }
             ToolbarItemGroup(placement: .navigationBarTrailing) {
-                Button {
-                    viewModel.scanButtonAction()
-                } label: {
-                    Label(scanPrivateRoomTitleKey, systemImage: qrCodeViewfinderKey)
-                }
+//                Button {
+//                    viewModel.scanButtonAction()
+//                } label: {
+//                    Label(scanPrivateRoomTitleKey, systemImage: qrCodeViewfinderKey)
+//                }
                 Button {
                     viewModel.createRoomButtonAction()
                 } label: {
@@ -105,11 +105,11 @@ public struct RoomsListScreen: View {
 }
 
 #if DEBUG
-    struct RoomsListScreen_Previews: PreviewProvider {
-        static var previews: some View {
-            NavigationView {
-                RoomsListScreen()
-            }
+struct RoomsListScreen_Previews: PreviewProvider {
+    static var previews: some View {
+        NavigationView {
+            RoomsListScreen()
         }
     }
+}
 #endif

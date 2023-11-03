@@ -1,5 +1,5 @@
 //
-//  PreviewView.swift
+//  AttachmentPreview.swift
 //  DittoChat
 //
 //  Created by Eric Turner on 1/29/23.
@@ -56,9 +56,7 @@ struct AttachmentPreviewController: UIViewControllerRepresentable {
         return navCon
     }
 
-    func updateUIViewController(
-        _: UIViewController, context _: Context
-    ) {}
+    func updateUIViewController(_: UIViewController, context _: Context) { /*protocol conformance*/ }
 
     func makeCoordinator() -> Coordinator {
         Coordinator(parent: self)

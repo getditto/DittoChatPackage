@@ -24,7 +24,7 @@ extension DateFormatter {
     }
 
     static var isoDateFull: ISO8601DateFormatter {
-        let format = Self.isoDate
+        let format = isoDate
         format.formatOptions = [.withFullDate]
         return format
     }
@@ -95,10 +95,12 @@ extension Bundle {
 }
 
 extension CGFloat {
+    @MainActor
     static var screenWidth: CGFloat {
         UIScreen.main.bounds.width
     }
 
+    @MainActor
     static var screenHeight: CGFloat {
         UIScreen.main.bounds.height
     }
@@ -109,7 +111,7 @@ extension CGFloat {
  */
 struct SizePreferenceKey: PreferenceKey {
     static var defaultValue: CGSize = .zero
-    static func reduce(value _: inout CGSize, nextValue _: () -> CGSize) {}
+    static func reduce(value _: inout CGSize, nextValue _: () -> CGSize) { /*Implement*/ }
 }
 
 extension View {
@@ -130,6 +132,7 @@ enum KeyboardChangeEvent {
 
 // https://www.vadimbulavin.com/how-to-move-swiftui-view-when-keyboard-covers-text-field/
 extension Publishers {
+    @MainActor
     static var keyboardStatus: AnyPublisher<KeyboardChangeEvent, Never> {
         let willShow = NotificationCenter.default.publisher(for: UIApplication.keyboardWillShowNotification)
             .map { _ in KeyboardChangeEvent.willShow }

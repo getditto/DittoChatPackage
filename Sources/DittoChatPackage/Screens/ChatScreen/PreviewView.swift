@@ -29,9 +29,7 @@ struct PreviewViewController: UIViewControllerRepresentable {
         return controller
     }
 
-    func updateUIViewController(
-        _: QLPreviewController, context _: Context
-    ) {}
+    func updateUIViewController(_: QLPreviewController, context _: Context) { /*protocol conformance*/ }
 
     func makeCoordinator() -> Coordinator {
         Coordinator(parent: self)

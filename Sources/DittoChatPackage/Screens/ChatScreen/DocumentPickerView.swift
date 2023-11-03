@@ -26,7 +26,7 @@ struct DocumentPickerController: UIViewControllerRepresentable {
         return picker
     }
 
-    func updateUIViewController(_: UIDocumentPickerViewController, context _: UIViewControllerRepresentableContext<DocumentPickerController>) {}
+    func updateUIViewController(_: UIDocumentPickerViewController, context _: UIViewControllerRepresentableContext<DocumentPickerController>) { /*protocol conformance*/ }
 
     func makeCoordinator() -> Coordinator {
         Coordinator(parent: self)
@@ -68,8 +68,10 @@ struct DocumentPickerController: UIViewControllerRepresentable {
     }
 }
 
+#if DEBUG
 struct DocumentPicker_Previews: PreviewProvider {
     static var previews: some View {
         DocumentPickerController()
     }
 }
+#endif

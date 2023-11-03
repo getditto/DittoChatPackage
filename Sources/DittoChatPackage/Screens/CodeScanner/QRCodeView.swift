@@ -49,6 +49,7 @@ struct QRCodeView: View {
     }
 }
 
+#if DEBUG
 struct QRCodeView_Previews: PreviewProvider {
     static var previews: some View {
         QRCodeView(
@@ -57,3 +58,4 @@ struct QRCodeView_Previews: PreviewProvider {
         )
     }
 }
+#endif

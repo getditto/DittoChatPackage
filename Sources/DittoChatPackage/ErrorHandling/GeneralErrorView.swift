@@ -44,6 +44,7 @@ struct GeneralErrorView: View {
     }
 }
 
+#if DEBUG
 struct GeneralErrorView_Previews: PreviewProvider {
     static var previews: some View {
         NavigationView {
@@ -52,3 +53,4 @@ struct GeneralErrorView_Previews: PreviewProvider {
         }
     }
 }
+#endif

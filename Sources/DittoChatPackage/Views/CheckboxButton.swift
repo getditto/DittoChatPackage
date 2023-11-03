@@ -16,7 +16,8 @@ public struct CheckboxButton: View {
 
     public init(isChecked: Binding<Bool>,
                 size: CGSize = CGSize(width: 20, height: 20),
-                action: ((Bool) -> Void)? = nil) {
+                action: ((Bool) -> Void)? = nil)
+    {
         _isChecked = isChecked
         self.size = size
         self.action = action
@@ -48,6 +49,7 @@ public struct CheckboxButton: View {
     public var height: CGFloat { size.height }
 }
 
+#if DEBUG
 struct CheckboxButton_Previews: PreviewProvider {
     @State var isChecked = false
     static var previews: some View {
@@ -57,3 +59,4 @@ struct CheckboxButton_Previews: PreviewProvider {
         }
     }
 }
+#endif

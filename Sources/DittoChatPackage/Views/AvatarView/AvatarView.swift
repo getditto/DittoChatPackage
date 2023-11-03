@@ -19,9 +19,9 @@ struct AvatarView: View {
 }
 
 #if DEBUG
-    struct AvatarView_Previews: PreviewProvider {
-        static var previews: some View {
-            AvatarView()
-        }
+struct AvatarView_Previews: PreviewProvider {
+    static var previews: some View {
+        AvatarView()
     }
+}
 #endif

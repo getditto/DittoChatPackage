@@ -1,5 +1,5 @@
 //
-//  MessageBubble.swift
+//  MessageBubbleView.swift
 //  DittoChat
 //
 //  Created by Maximilian Alexander on 7/20/22.
@@ -35,7 +35,7 @@ struct MessageBubbleView: View {
         self.messageOpCallback = messageOpCallback
     }
 
-    private var user: User {
+    private var user: ChatUser {
         messageUser.user
     }
 
@@ -232,7 +232,6 @@ struct MessageBubbleView: View {
                 Text(deleteTitleKey)
             }
         }
-
         EmptyView()
     }
 
@@ -245,7 +244,7 @@ struct MessageBubbleView: View {
                     message
                 )
             }
-            Button(cancelTitleKey, role: .cancel) {}
+            Button(cancelTitleKey, role: .cancel) { /*No action on this button*/ }
         }
     }
 
@@ -364,66 +363,66 @@ struct MessageBubbleShape: Shape {
     }
 }
 
-#if DEBUG
-    import Fakery
-    struct MessageBubbleView_Previews: PreviewProvider {
-        static let faker = Faker()
-
-        static var messagesWithUsers: [MessageWithUser] = [
-            MessageWithUser(
-                message: Message(
-                    id: UUID().uuidString,
-                    createdOn: Date(),
-                    roomId: publicKey,
-                    text: Self.faker.lorem.sentence(),
-                    userId: "max"
-                ),
-                user: User(id: "max", firstName: "Maximilian", lastName: "Alexander")
-            ),
-            MessageWithUser(
-                message: Message(
-                    id: UUID().uuidString,
-                    createdOn: Date(),
-                    roomId: publicKey,
-                    text: Self.faker.lorem.paragraph(sentencesAmount: 12),
-                    userId: "me"
-                ),
-                user: User(
-                    id: "me",
-                    firstName: "Me",
-                    lastName: "NotYou"
-                )
-            ),
-            MessageWithUser(
-                message: Message(
-                    id: UUID().uuidString,
-                    createdOn: Date(),
-                    roomId: publicKey,
-                    text: Self.faker.lorem.sentence(),
-                    userId: "max"
-                ),
-                user: User(id: "max", firstName: "Maximilian", lastName: "Alexander")
-            ),
-            MessageWithUser(
-                message: Message(
-                    id: UUID().uuidString,
-                    createdOn: Date(),
-                    roomId: publicKey,
-                    text: Self.faker.lorem.sentence(),
-                    userId: "me"
-                ),
-                user: User(id: "me", firstName: "Me", lastName: "NotYou")
-            ),
-        ]
-
-        static var previews: some View {
-            ScrollView {
-                LazyVStack(spacing: 0) {
-                    ForEach(messagesWithUsers) { message in
-                        MessageBubbleView(messageWithUser: message, preview: true)
-                    }
-                }
-            }
-        }
-    }
-#endif
+//#if DEBUG
+//    import Fakery
+//    struct MessageBubbleView_Previews: PreviewProvider {
+//        static let faker = Faker()
+//
+//        static var messagesWithUsers: [MessageWithUser] = [
+//            MessageWithUser(
+//                message: Message(
+//                    id: UUID().uuidString,
+//                    createdOn: Date(),
+//                    roomId: publicKey,
+//                    text: Self.faker.lorem.sentence(),
+//                    userId: "max"
+//                ),
+//                user: ChatUser(id: "max", firstName: "Maximilian", lastName: "Alexander")
+//            ),
+//            MessageWithUser(
+//                message: Message(
+//                    id: UUID().uuidString,
+//                    createdOn: Date(),
+//                    roomId: publicKey,
+//                    text: Self.faker.lorem.paragraph(sentencesAmount: 12),
+//                    userId: "me"
+//                ),
+//                user: ChatUser(
+//                    id: "me",
+//                    firstName: "Me",
+//                    lastName: "NotYou"
+//                )
+//            ),
+//            MessageWithUser(
+//                message: Message(
+//                    id: UUID().uuidString,
+//                    createdOn: Date(),
+//                    roomId: publicKey,
+//                    text: Self.faker.lorem.sentence(),
+//                    userId: "max"
+//                ),
+//                user: ChatUser(id: "max", firstName: "Maximilian", lastName: "Alexander")
+//            ),
+//            MessageWithUser(
+//                message: Message(
+//                    id: UUID().uuidString,
+//                    createdOn: Date(),
+//                    roomId: publicKey,
+//                    text: Self.faker.lorem.sentence(),
+//                    userId: "me"
+//                ),
+//                user: ChatUser(id: "me", firstName: "Me", lastName: "NotYou")
+//            ),
+//        ]
+//
+//        static var previews: some View {
+//            ScrollView {
+//                LazyVStack(spacing: 0) {
+//                    ForEach(messagesWithUsers) { message in
+//                        MessageBubbleView(messageWithUser: message, preview: true)
+//                    }
+//                }
+//            }
+//        }
+//    }
+//#endif

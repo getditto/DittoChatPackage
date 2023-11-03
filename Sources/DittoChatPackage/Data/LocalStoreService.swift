@@ -1,5 +1,5 @@
 //
-//  LocalStore.swift
+//  LocalStoreService.swift
 //  DittoChat
 //
 //  Created by Eric Turner on 1/19/23.
@@ -59,7 +59,7 @@ class LocalStoreService: LocalDataInterface {
     }
 
     var currentUserIdPublisher: AnyPublisher<String?, Never> {
-        defaults.userIdPublisher
+        defaults.chatUserIdPublisher
     }
 
     // MARK: Private Rooms
@@ -205,7 +205,7 @@ private extension UserDefaults {
         }
     }
 
-    var userIdPublisher: AnyPublisher<String?, Never> {
+    var chatUserIdPublisher: AnyPublisher<String?, Never> {
         UserDefaults.standard
             .publisher(for: \.userId)
             .eraseToAnyPublisher()
