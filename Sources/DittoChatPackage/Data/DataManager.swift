@@ -65,7 +65,7 @@ protocol ReplicatingDataInterface {
 
 public class DataManager {
     public static let shared = DataManager()
-    @Published private(set) var publicRoomsPublisher: AnyPublisher<[Room], Never>
+    @Published public private(set) var publicRoomsPublisher: AnyPublisher<[Room], Never>
     @Published private(set) var privateRoomsPublisher: AnyPublisher<[Room], Never>
 
     private var localStore: LocalDataInterface
@@ -86,11 +86,11 @@ extension DataManager {
         p2pStore.room(for: room)
     }
 
-    func findPublicRoomById(id: String) -> Room? {
+    public func findPublicRoomById(id: String) -> Room? {
         p2pStore.findPublicRoomById(id: id)
     }
 
-    func createRoom(name: String, isPrivate: Bool) -> DittoDocumentID? {
+    public func createRoom(name: String, isPrivate: Bool) -> DittoDocumentID? {
         return p2pStore.createRoom(name: name, isPrivate: isPrivate)
     }
 
@@ -110,7 +110,7 @@ extension DataManager {
         p2pStore.unarchiveRoom(room)
     }
 
-    func deleteRoom(_ room: Room) {
+    public func deleteRoom(_ room: Room) {
         p2pStore.deleteRoom(room)
     }
 
