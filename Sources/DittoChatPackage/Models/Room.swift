@@ -13,12 +13,22 @@ extension Room: Codable { /*Adding codable protocol*/ }
 
 public struct Room: Identifiable, Hashable, Equatable {
     public let id: String
-    let name: String
-    let messagesId: String
-    private(set) var isPrivate: Bool
-    let collectionId: String?
-    let createdBy: String
-    let createdOn: Date
+    public let name: String
+    public let messagesId: String
+    public private(set) var isPrivate: Bool
+    public let collectionId: String?
+    public let createdBy: String
+    public let createdOn: Date
+
+    public init(id: String, name: String, messagesId: String, isPrivate: Bool, collectionId: String?, createdBy: String, createdOn: Date) {
+        self.id = id
+        self.name = name
+        self.messagesId = messagesId
+        self.isPrivate = isPrivate
+        self.collectionId = collectionId
+        self.createdBy = createdBy
+        self.createdOn = createdOn
+    }
 }
 
 extension Room {
