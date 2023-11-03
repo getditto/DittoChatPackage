@@ -40,42 +40,6 @@ struct SettingsScreen: View {
                             .padding(.top, 8)
                     }
                 }
-                // DittoSwiftTools
-                Section {
-                    NavigationLink {
-                        PresenceViewer()
-                    } label: {
-                        Text(presenceViewerTitleKey)
-                    }
-
-                    NavigationLink {
-                        DataBrowserView()
-                    } label: {
-                        Text(dataBrowserTitleKey)
-                    }
-
-                    NavigationLink {
-                        DiskUsageViewer()
-                    } label: {
-                        Text(diskUsageTitleKey)
-                    }
-
-                    Text(exportLogsTitleKey)
-                        .onTapGesture {
-                            viewModel.showExportLogsSheet = true
-                        }
-                } header: {
-                    Text(dittoToolsKey)
-                } footer: {
-                    HStack {
-                        Spacer()
-                        Text(viewModel.versionFooter)
-                        Spacer()
-                    }
-                }
-                .sheet(isPresented: $viewModel.showExportLogsSheet) {
-                    ExportLogsView()
-                }
 
                 // Public Rooms
                 if !viewModel.archivedPublicRooms.isEmpty {
@@ -218,8 +182,10 @@ struct SettingsScreen: View {
     }
 }
 
+#if DEBUG
 struct SettingsScreen_Previews: PreviewProvider {
     static var previews: some View {
         SettingsScreen()
     }
 }
+#endif

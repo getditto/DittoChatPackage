@@ -16,15 +16,25 @@ struct RoomEditScreen: View {
         NavigationView {
             Form {
                 Section {
-                    TextField("Room Name", text: $viewModel.name)
+                    TextField("Room Name", text: Binding(
+                        get: { viewModel.name },
+                        set: { newValue in
+                            if newValue.isValidInput(newValue) {
+                                viewModel.name = String(newValue.prefix(2500))
+                                viewModel.isValid = true
+                            } else {
+                                viewModel.isValid = false
+                            }
+                        }
+                    ))
                 }
-                Section {
-                    HStack {
-                        CheckboxButton(isChecked: $viewModel.roomIsPrivate)
-                        Text("Private Room")
-                        Spacer()
-                    }
-                }
+//                Section {
+//                    HStack {
+//                        CheckboxButton(isChecked: $viewModel.roomIsPrivate)
+//                        Text("Private Room")
+//                        Spacer()
+//                    }
+//                }
                 Section {
                     HStack {
                         Spacer()
@@ -56,11 +66,11 @@ struct RoomEditScreen: View {
 }
 
 #if DEBUG
-    struct RoomEditScreen_Previews: PreviewProvider {
-        static var previews: some View {
-            Group {
-                RoomEditScreen()
-            }
+struct RoomEditScreen_Previews: PreviewProvider {
+    static var previews: some View {
+        Group {
+            RoomEditScreen()
         }
     }
+}
 #endif

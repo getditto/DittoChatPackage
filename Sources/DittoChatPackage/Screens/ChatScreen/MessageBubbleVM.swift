@@ -114,7 +114,8 @@ struct ImageAttachmentFetcher {
     func fetch(with token: DittoAttachmentToken?,
                from collectionId: String,
                onProgress: @escaping ProgressHandler,
-               onComplete: @escaping CompletionHandler) {
+               onComplete: @escaping CompletionHandler)
+    {
         guard let token else { return }
 
         // Fetch the thumbnail data from Ditto, calling the progress handler to

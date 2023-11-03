@@ -28,8 +28,10 @@ class MessageEditVM: ObservableObject {
         saveCallback = saveEditCallback
         cancelCallback = cancelEditCallback
 
-        Publishers.keyboardStatus
-            .assign(to: &$keyboardStatus)
+        DispatchQueue.main.async {
+            Publishers.keyboardStatus
+                .assign(to: &self.$keyboardStatus)
+        }
     }
 
     var editMessage: Message {

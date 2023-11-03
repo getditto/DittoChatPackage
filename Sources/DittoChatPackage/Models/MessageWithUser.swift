@@ -8,9 +8,10 @@
 
 import Foundation
 
+// User messages
 struct MessageWithUser: Identifiable, Hashable, Equatable {
     var message: Message
-    var user: User
+    var user: ChatUser
     var id: String {
         message.id
     }

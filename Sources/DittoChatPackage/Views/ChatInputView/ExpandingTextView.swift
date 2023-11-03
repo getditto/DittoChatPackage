@@ -78,6 +78,7 @@ struct ExpandingTextView: View {
             .frame(height: height ?? minHeight)
     }
 
+    @MainActor
     private func textDidChange(_ textView: UITextView) {
         guard let lineHeight = textView.font?.lineHeight else { return }
         height = max(textView.contentSize.height, lineHeight)
@@ -85,9 +86,9 @@ struct ExpandingTextView: View {
 }
 
 #if DEBUG
-    struct ExpandingTextView_Previews: PreviewProvider {
-        static var previews: some View {
-            ExpandingTextView(text: .constant("foo"))
-        }
+struct ExpandingTextView_Previews: PreviewProvider {
+    static var previews: some View {
+        ExpandingTextView(text: .constant("foo"))
     }
+}
 #endif

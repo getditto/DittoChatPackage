@@ -15,7 +15,7 @@ class SettingsScreenVM: ObservableObject {
     @Published var archivedPrivateRooms: [Room] = []
     @Published var unReplicatedPrivateRooms: [Room] = []
     @Published var showExportLogsSheet = false
-    @Published var users: [User] = []
+    @Published var users: [ChatUser] = []
     @Published var acceptLargeImages = DataManager.shared.acceptLargeImages
     private var cancellables = Set<AnyCancellable>()
 

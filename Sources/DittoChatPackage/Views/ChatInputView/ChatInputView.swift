@@ -41,9 +41,9 @@ struct ChatInputView: View {
 }
 
 #if DEBUG
-    struct ChatInputView_Previews: PreviewProvider {
-        static var previews: some View {
-            ChatInputView(text: .constant("Hellosdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfasdfasdfsdfsdfsdfsdf")) {}
-        }
+struct ChatInputView_Previews: PreviewProvider {
+    static var previews: some View {
+        ChatInputView(text: .constant("Hello how are you this fine evening?")) { /*for previews only*/ }
     }
+}
 #endif

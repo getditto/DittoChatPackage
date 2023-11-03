@@ -23,8 +23,10 @@ struct RoomView: View {
     }
 }
 
+//#if DEBUG
 // struct RoomView_Previews: PreviewProvider {
 //    static var previews: some View {
 //        RoomView()
 //    }
 // }
+//#endif

@@ -16,6 +16,7 @@ struct RoomsListRowItem: View {
     }
 }
 
+#if DEBUG
 struct RoomsListRowItem_Previews: PreviewProvider {
     static var previews: some View {
         RoomsListRowItem(
@@ -28,3 +29,4 @@ struct RoomsListRowItem_Previews: PreviewProvider {
         )
     }
 }
+#endif

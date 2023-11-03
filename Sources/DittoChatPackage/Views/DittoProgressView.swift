@@ -1,5 +1,5 @@
 //
-//  CircularProgressView.swift
+//  DittoProgressView.swift
 //  DittoChat
 //
 // Credit to Sarun W.
@@ -80,6 +80,7 @@ struct PercentageLabel: View {
     }
 }
 
+#if DEBUG
 struct DittoProgressView_Previews: PreviewProvider {
     static var previews: some View {
         VStack {
@@ -91,3 +92,4 @@ struct DittoProgressView_Previews: PreviewProvider {
         .previewLayout(.sizeThatFits)
     }
 }
+#endif

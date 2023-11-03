@@ -71,7 +71,8 @@ struct LogManager {
 
         // Runs synchronously, so no need to co-ordinate multiple callers
         coordinator.coordinate(readingItemAt: Config.logsDirectory,
-                               options: [.forUploading], error: &nsError) { tempURL in
+                               options: [.forUploading], error: &nsError)
+        { tempURL in
             do {
                 try FileManager().moveItem(at: tempURL, to: Config.zippedLogsURL)
             } catch {

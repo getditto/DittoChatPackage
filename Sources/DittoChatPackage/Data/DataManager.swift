@@ -38,7 +38,8 @@ protocol ReplicatingDataInterface {
     var publicRoomsPublisher: CurrentValueSubject<[Room], Never> { get }
 
     func room(for room: Room) -> Room?
-    func createRoom(name: String, isPrivate: Bool)
+    func findPublicRoomById(id: String) -> Room?
+    func createRoom(name: String, isPrivate: Bool) -> DittoDocumentID?
     func joinPrivateRoom(qrCode: String)
     func roomPublisher(for room: Room) -> AnyPublisher<Room?, Never>
 
@@ -57,14 +58,13 @@ protocol ReplicatingDataInterface {
         in collectionId: String
     ) -> DittoSwift.DittoCollection.FetchAttachmentPublisher
 
-    func addUser(_ usr: User)
-    func currentUserPublisher() -> AnyPublisher<User?, Never>
-    func allUsersPublisher() -> AnyPublisher<[User], Never>
+    func addUser(_ usr: ChatUser)
+    func currentUserPublisher() -> AnyPublisher<ChatUser?, Never>
+    func allUsersPublisher() -> AnyPublisher<[ChatUser], Never>
 }
 
 public class DataManager {
     public static let shared = DataManager()
-    public static var dittoInstance: Ditto?
     @Published private(set) var publicRoomsPublisher: AnyPublisher<[Room], Never>
     @Published private(set) var privateRoomsPublisher: AnyPublisher<[Room], Never>
 
@@ -86,8 +86,12 @@ extension DataManager {
         p2pStore.room(for: room)
     }
 
-    func createRoom(name: String, isPrivate: Bool) {
-        p2pStore.createRoom(name: name, isPrivate: isPrivate)
+    func findPublicRoomById(id: String) -> Room? {
+        p2pStore.findPublicRoomById(id: id)
+    }
+
+    func createRoom(name: String, isPrivate: Bool) -> DittoDocumentID? {
+        return p2pStore.createRoom(name: name, isPrivate: isPrivate)
     }
 
     func joinPrivateRoom(qrCode: String) {
@@ -166,19 +170,20 @@ extension DataManager {
         localStore.currentUserIdPublisher
     }
 
-    func currentUserPublisher() -> AnyPublisher<User?, Never> {
+    func currentUserPublisher() -> AnyPublisher<ChatUser?, Never> {
         p2pStore.currentUserPublisher()
     }
 
-    func allUsersPublisher() -> AnyPublisher<[User], Never> {
+    func allUsersPublisher() -> AnyPublisher<[ChatUser], Never> {
         p2pStore.allUsersPublisher()
     }
 
-    func addUser(_ usr: User) {
+    func addUser(_ usr: ChatUser) {
         p2pStore.addUser(usr)
     }
 
-    func saveCurrentUser(firstName: String, lastName: String) {
+    public func saveCurrentUser(firstName: String, lastName: String) {
+        // TODO: create mechanism to allow for an app to pass in the User or at least check if first and last name match. or maybe pass in an ID?
         if currentUserId == nil {
             let userId = UUID().uuidString
             currentUserId = userId
@@ -186,7 +191,7 @@ extension DataManager {
 
         assert(currentUserId != nil, "Error: expected currentUserId to not be NIL")
 
-        let user = User(id: currentUserId!, firstName: firstName, lastName: lastName)
+        let user = ChatUser(id: currentUserId!, firstName: firstName, lastName: lastName)
         p2pStore.addUser(user)
     }
 }
