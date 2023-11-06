@@ -23,32 +23,32 @@ public class DittoInstance {
         }
 
         ditto = dittoShared
-        // Ditto(identity: identity)
-
-        // update to v4 AddWins
-        do {
-            try ditto.disableSyncWithV3()
-        } catch {
-            print("ERROR: disableSyncWithV3() failed with error \"\(error)\"")
-        }
-
-        if loggingEnabled {
-            // make sure log level is set _before_ starting ditto
-            DittoLogger.minimumLogLevel = .debug
-            if let logFileURL = LogManager.shared.logFileURL {
-                DittoLogger.setLogFileURL(logFileURL)
-            }
-        }
-
-        // Prevent Xcode previews from syncing: non preview simulators and real devices can sync
-        let isPreview: Bool = ProcessInfo.processInfo.environment["XCODE_RUNNING_FOR_PREVIEWS"] == "1"
-        if !isPreview {
-            do {
-                try ditto.startSync()
-            } catch {
-                print("ERROR: failed to start sync with error \(error)")
-            }
-        }
+//        // Ditto(identity: identity)
+//
+//        // update to v4 AddWins
+//        do {
+//            try ditto.disableSyncWithV3()
+//        } catch {
+//            print("ERROR: disableSyncWithV3() failed with error \"\(error)\"")
+//        }
+//
+//        if loggingEnabled {
+//            // make sure log level is set _before_ starting ditto
+//            DittoLogger.minimumLogLevel = .debug
+//            if let logFileURL = LogManager.shared.logFileURL {
+//                DittoLogger.setLogFileURL(logFileURL)
+//            }
+//        }
+//
+//        // Prevent Xcode previews from syncing: non preview simulators and real devices can sync
+//        let isPreview: Bool = ProcessInfo.processInfo.environment["XCODE_RUNNING_FOR_PREVIEWS"] == "1"
+//        if !isPreview {
+//            do {
+//                try ditto.startSync()
+//            } catch {
+//                print("ERROR: failed to start sync with error \(error)")
+//            }
+//        }
     }
 }
 
