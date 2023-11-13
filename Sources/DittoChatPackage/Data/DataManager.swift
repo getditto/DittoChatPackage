@@ -161,7 +161,7 @@ extension DataManager {
 extension DataManager {
     // MARK: Current User
 
-    var currentUserId: String? {
+    public var currentUserId: String? {
         get { localStore.currentUserId }
         set { localStore.currentUserId = newValue }
     }
@@ -174,7 +174,7 @@ extension DataManager {
         p2pStore.currentUserPublisher()
     }
 
-    func allUsersPublisher() -> AnyPublisher<[ChatUser], Never> {
+    public func allUsersPublisher() -> AnyPublisher<[ChatUser], Never> {
         p2pStore.allUsersPublisher()
     }
 
