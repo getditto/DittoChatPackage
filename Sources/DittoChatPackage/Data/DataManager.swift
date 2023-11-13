@@ -161,7 +161,7 @@ extension DataManager {
 extension DataManager {
     // MARK: Current User
 
-    var currentUserId: String? {
+    public var currentUserId: String? {
         get { localStore.currentUserId }
         set { localStore.currentUserId = newValue }
     }

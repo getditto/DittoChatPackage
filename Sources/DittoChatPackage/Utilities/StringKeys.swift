@@ -39,7 +39,7 @@ let textKey = "text"
 let thumbnailImageTokenKey = "thumbnailImageToken"
 let timestampKey = "timestamp"
 let userIdKey = "userId"
-let usersKey = "users"
+let usersKey = "chatUsers"
 
 // MARK: UI Keys
 
