@@ -9,11 +9,11 @@
 import DittoSwift
 import Foundation
 
-struct ChatUser: Identifiable, Hashable, Equatable {
-    var id: String
-    var firstName: String
-    var lastName: String
-    var fullName: String {
+public struct ChatUser: Identifiable, Hashable, Equatable {
+    public var id: String
+    public var firstName: String
+    public var lastName: String
+    public var fullName: String {
         firstName + " " + lastName
     }
 }

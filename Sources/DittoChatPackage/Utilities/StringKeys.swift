@@ -32,14 +32,14 @@ let messagesKey = "messages"
 let nameKey = "name"
 let privateRoomsKey = "privateRooms"
 let publicKey = "public"
-let publicMessagesIdKey = "1440174b9330e430b46da939f0b04a34a40e10ac8073671156da174fef1ffaef"
+let publicMessagesIdKey = "messages"
 let publicRoomsCollectionId = "rooms"
 let roomIdKey = "roomId"
 let textKey = "text"
 let thumbnailImageTokenKey = "thumbnailImageToken"
 let timestampKey = "timestamp"
 let userIdKey = "userId"
-let usersKey = "chatUsers"
+let usersKey = "users"
 
 // MARK: UI Keys
 

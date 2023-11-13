@@ -174,7 +174,7 @@ extension DataManager {
         p2pStore.currentUserPublisher()
     }
 
-    func allUsersPublisher() -> AnyPublisher<[ChatUser], Never> {
+    public func allUsersPublisher() -> AnyPublisher<[ChatUser], Never> {
         p2pStore.allUsersPublisher()
     }
 
