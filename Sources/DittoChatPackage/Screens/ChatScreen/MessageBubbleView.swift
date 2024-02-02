@@ -83,9 +83,11 @@ struct MessageBubbleView: View {
     }
 
     private var backgroundColor: Color {
+        #if !os(tvOS)
         if side == .left {
             return Color(.tertiarySystemFill)
         }
+        #endif
         return .accentColor
     }
 
@@ -114,7 +116,9 @@ struct MessageBubbleView: View {
     var body: some View {
         VStack(alignment: side == .right ? .trailing : .leading, spacing: 2) {
             Text(isSelfUser ? "" : user.fullName)
+                #if !os(tvOS)
                 .font(.system(size: UIFont.smallSystemFontSize))
+                #endif
                 .opacity(0.6)
 
             HStack {
@@ -131,7 +135,9 @@ struct MessageBubbleView: View {
                         .padding(textInsets)
 
                     Text(DateFormatter.shortTime.string(from: message.createdOn))
+                        #if !os(tvOS)
                         .font(.system(size: UIFont.smallSystemFontSize))
+                        #endif
                         .padding(textInsets)
                 }
                 .background(backgroundColor)

@@ -27,12 +27,14 @@ public struct RoomsListScreen: View {
                     NavigationLink(destination: ChatScreen(room: room)) {
                         RoomsListRowItem(room: room)
                     }
+                    #if !os(tvOS)
                     .swipeActions(edge: .trailing, allowsFullSwipe: false) {
                         Button(settingsHideTitleKey) {
                             viewModel.archiveRoom(room)
                         }
                         .tint(.red)
                     }
+                    #endif
                 }
             }
 
@@ -41,20 +43,24 @@ public struct RoomsListScreen: View {
                     NavigationLink(destination: ChatScreen(room: room)) {
                         RoomsListRowItem(room: room)
                     }
+                    #if !os(tvOS)
                     .swipeActions(edge: .trailing, allowsFullSwipe: false) {
                         Button(settingsLeaveTitleKey) {
                             viewModel.archiveRoom(room)
                         }
                         .tint(.red)
                     }
+                    #endif
                 }
             }
         }
+        #if !os(tvOS)
         .navigationBarTitleDisplayMode(.inline)
 //        .navigationDestination(for: Room.self) { room in
 //            ChatScreen(room: room)
 //                .withErrorHandling()
 //        }
+        #endif
         .sheet(isPresented: $viewModel.presentProfileScreen) {
             ProfileScreen()
         }

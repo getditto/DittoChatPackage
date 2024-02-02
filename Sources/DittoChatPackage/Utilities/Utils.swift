@@ -140,6 +140,7 @@ enum KeyboardChangeEvent {
     case willShow, didShow, willHide, didHide, unchanged
 }
 
+#if !os(tvOS)
 // https://www.vadimbulavin.com/how-to-move-swiftui-view-when-keyboard-covers-text-field/
 extension Publishers {
     @MainActor
@@ -160,3 +161,4 @@ extension Publishers {
             .eraseToAnyPublisher()
     }
 }
+#endif

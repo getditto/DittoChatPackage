@@ -20,7 +20,9 @@ class ChatScreenVM: ObservableObject {
     @Published var messagesWithUsers = [MessageWithUser]()
     var room: Room
 
+    #if !os(tvOS)
     @Published var selectedItem: PhotosPickerItem?
+    #endif
     @Published var selectedImage: UIImage?
     @Published var presentAttachmentView = false
     var attachmentMessage: Message?
@@ -67,10 +69,12 @@ class ChatScreenVM: ObservableObject {
             }
             .assign(to: &$roomName)
 
+        #if !os(tvOS)
         DispatchQueue.main.async {
             Publishers.keyboardStatus
                 .assign(to: &self.$keyboardStatus)
         }
+        #endif
     }
 
     func sendMessage() {
@@ -97,7 +101,9 @@ class ChatScreenVM: ObservableObject {
 
         await MainActor.run {
             inputText = ""
+            #if !os(tvOS)
             selectedItem = nil
+            #endif
             selectedImage = nil
         }
     }

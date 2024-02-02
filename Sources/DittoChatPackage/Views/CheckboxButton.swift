@@ -31,7 +31,9 @@ public struct CheckboxButton: View {
             Image(systemName: checkmarkKey)
                 .imageScale(.small)
                 .frame(width: size.width, height: size.height)
+                #if !os(tvOS)
                 .background(Color(UIColor.systemBackground))
+                #endif
                 .foregroundColor(
                     isChecked ? (colorScheme == .dark ? Color.white : Color.black) : Color.clear
                 )

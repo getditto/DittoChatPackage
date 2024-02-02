@@ -54,12 +54,14 @@ struct SettingsScreen: View {
                             } label: {
                                 Label(room.name, systemImage: messageFillKey)
                             }
+                            #if !os(tvOS)
                             .swipeActions(edge: .trailing) {
                                 Button(restoreTitleKey) {
                                     viewModel.unarchiveRoom(room)
                                 }
                             }
                             .tint(.green)
+                            #endif
                         }
                     }
                 }
@@ -83,12 +85,14 @@ struct SettingsScreen: View {
                             } label: {
                                 Label(room.name, systemImage: messageFillKey)
                             }
+                            #if !os(tvOS)
                             .swipeActions(edge: .trailing) {
                                 Button(restoreTitleKey) {
                                     viewModel.unarchiveRoom(room)
                                 }
                             }
                             .tint(.green)
+                            #endif
                         }
                     }
                 }
@@ -102,12 +106,14 @@ struct SettingsScreen: View {
                             } label: {
                                 Label(privRoom.name, systemImage: messageFillKey)
                             }
+                            #if !os(tvOS)
                             .swipeActions(edge: .trailing) {
                                 Button(restoreTitleKey) {
                                     viewModel.unarchiveRoom(privRoom)
                                 }
                             }
                             .tint(.green)
+                            #endif
                         }
                     }
                 }
@@ -149,6 +155,7 @@ struct SettingsScreen: View {
                             } label: {
                                 Label(privRoom.name, systemImage: messageFillKey)
                             }
+                            #if !os(tvOS)
                             .swipeActions(edge: .leading, allowsFullSwipe: false) {
                                 Button(settingsDeleteTitleKey) {
                                     viewModel.deleteRoom(privRoom)
@@ -161,6 +168,7 @@ struct SettingsScreen: View {
                                 }
                             }
                             .tint(.green)
+                            #endif
                         }
                     } header: {
                         Text(evictedPrivateRoomsTitleKey).font(.subheadline)
@@ -175,9 +183,11 @@ struct SettingsScreen: View {
                     .font(.body)
                 }
             }
+            #if !os(tvOS)
             .listStyle(.insetGrouped)
             .navigationBarTitle(settingsTitleKey)
             .navigationBarTitleDisplayMode(.inline)
+            #endif
         }
     }
 }

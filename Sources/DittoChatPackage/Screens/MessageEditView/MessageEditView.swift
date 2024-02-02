@@ -28,10 +28,12 @@ class MessageEditVM: ObservableObject {
         saveCallback = saveEditCallback
         cancelCallback = cancelEditCallback
 
+        #if !os(tvOS)
         DispatchQueue.main.async {
             Publishers.keyboardStatus
                 .assign(to: &self.$keyboardStatus)
         }
+        #endif
     }
 
     var editMessage: Message {
@@ -109,8 +111,10 @@ struct MessageEditView: View {
                 onSendButtonTappedCallback: viewModel.saveEdit
             )
         }
+        #if !os(tvOS)
         .listStyle(.inset)
         .navigationBarTitleDisplayMode(.inline)
+        #endif
         .toolbar {
             ToolbarItem(placement: .navigationBarLeading) {
                 Button {
