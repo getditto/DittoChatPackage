@@ -64,7 +64,7 @@ public struct ChatScreen: View {
                 }
             }
             HStack(alignment: .top) {
-#if !os(tvOS)
+                #if !os(tvOS)
                 photosPickerButtonView
                     .padding(.top, 4)
                 #endif
@@ -75,7 +75,7 @@ public struct ChatScreen: View {
                 )
             }
         }
-#if !os(tvOS)
+        #if !os(tvOS)
         .listStyle(.inset)
         .navigationTitle(navBarTitle)
         .navigationBarTitleDisplayMode(.inline)
@@ -153,7 +153,7 @@ public struct ChatScreen: View {
             }
         }
     }
-#if !os(tvOS)
+    #if !os(tvOS)
     var photosPickerButtonView: some View {
         PhotosPicker(selection: $viewModel.selectedItem,
                      matching: .images,
