@@ -38,8 +38,8 @@ protocol ReplicatingDataInterface {
     var publicRoomsPublisher: CurrentValueSubject<[Room], Never> { get }
 
     func room(for room: Room) async -> Room?
-    func findPublicRoomById(id: String) -> Room?
-    func createRoom(name: String, isPrivate: Bool) -> DittoDocumentID?
+    func findPublicRoomById(id: String) async -> Room?
+    func createRoom(name: String, isPrivate: Bool) -> String?
     func joinPrivateRoom(qrCode: String)
     func roomPublisher(for room: Room) -> AnyPublisher<Room?, Never>
 
@@ -90,12 +90,12 @@ extension DataManager {
         }
     }
 
-    public func findPublicRoomById(id: String) -> Room? {
-        p2pStore.findPublicRoomById(id: id)
+    public func findPublicRoomById(id: String) async -> Room? {
+        await p2pStore.findPublicRoomById(id: id)
     }
 
 
-    public func createRoom(name: String, isPrivate: Bool) -> DittoDocumentID? {
+    public func createRoom(name: String, isPrivate: Bool) -> String? {
         return p2pStore.createRoom(name: name, isPrivate: isPrivate)
     }
 

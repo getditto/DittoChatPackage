@@ -17,46 +17,28 @@ public class DittoInstance: ObservableObject {
     private var cancellables = Set<AnyCancellable>()
 
     static var shared = DittoInstance()
-    public static var dittoShared: Ditto?
+    public static var dittoShared: Ditto!
     let ditto: Ditto
 
     init() {
-        ditto = if let dittoShared = DittoInstance.dittoShared {
-            dittoShared
-        } else {
-            Ditto(identity: DittoIdentity.offlinePlayground(appID: Env.DITTO_APP_ID))
-            try! ditto.setOfflineOnlyLicenseToken(Env.DITTO_OFFLINE_TOKEN)
+        ditto = DittoInstance.dittoShared
 
-            // make sure our log level is set _before_ starting ditto.
-            self.loggingOption = Self.storedLoggingOption()
-            resetLogging()
+        // make sure our log level is set _before_ starting ditto.
+        self.loggingOption = Self.storedLoggingOption()
+        resetLogging()
 
-            $loggingOption
-                .dropFirst()
-                .sink { [weak self] option in
-                    self?.saveLoggingOption(option)
-                    self?.resetLogging()
-                }
-                .store(in: &cancellables)
-
-            // v4 AddWins
-            do {
-                try ditto.disableSyncWithV3()
-            } catch let error {
-                print("ERROR: disableSyncWithV3() failed with error \"\(error)\"")
+        $loggingOption
+            .dropFirst()
+            .sink { [weak self] option in
+                self?.saveLoggingOption(option)
+                self?.resetLogging()
             }
+            .store(in: &cancellables)
 
-            // Prevent Xcode previews from syncing: non preview simulators and real devices can sync
-            let isPreview: Bool = ProcessInfo.processInfo.environment["XCODE_RUNNING_FOR_PREVIEWS"] == "1"
-            if !isPreview {
-                try! ditto.startSync()
-            }
-
-            do {
-                try ditto.sync.registerSubscription(query: "SELECT * FROM \(usersKey)")
-            } catch {
-                print("Error \(error)")
-            }
+        do {
+            try ditto.sync.registerSubscription(query: "SELECT * FROM \(usersKey)")
+        } catch {
+            print("Error \(error)")
         }
     }
 }
@@ -635,7 +617,31 @@ extension DittoService {
 
     }
 
-    func createRoom(name: String, isPrivate: Bool) -> DittoDocumentID? {
+    /// This function returns a room from the Ditto db for the given room id. The id argument will be passed from the UI, In other cases, they are rooms from a publisher of Room instances.
+    func findPublicRoomById(id: String) async -> Room? {
+
+        do {
+            let result = try await ditto.store.execute(query: "SELECT * FROM \"\(publicRoomsCollectionId)\" WHERE _id = :id", arguments: ["id": id])
+
+            if result.items.isEmpty {
+                print("DittoService.\(#function): WARNING (except for archived private rooms)" +
+                      " - expected non-nil room id: \(id)"
+                )
+                return nil
+            }
+
+            if let itemValue = result.items.first?.value {
+                return Room(value: itemValue)
+            }
+
+        } catch {
+            print("Error \(error)")
+        }
+
+        return nil
+    }
+
+    func createRoom(name: String, isPrivate: Bool) -> String? {
         let roomId = UUID().uuidString
         let messagesId = UUID().uuidString
         let collectionId = isPrivate ? UUID().uuidString : publicRoomsCollectionId
@@ -661,6 +667,8 @@ extension DittoService {
         if isPrivate {
             privateStore.addPrivateRoom(room)
         }
+
+        return roomId
     }
 
     func joinPrivateRoom(qrCode: String) {
