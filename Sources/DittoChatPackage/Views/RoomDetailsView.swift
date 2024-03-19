@@ -65,11 +65,11 @@ struct RoomDetailsView: View {
         .padding(.horizontal, 12)        
     }
 
-    private func user(for userId: String) -> User {
+    private func user(for userId: String) -> ChatUser {
         if let user = viewModel.users.first(where: { $0.id == userId }) {
             return user
         }
-        return User(id: unknownUserIdKey, firstName: noFirstNameKey, lastName: noLastNameKey)
+        return ChatUser(id: unknownUserIdKey, firstName: noFirstNameKey, lastName: noLastNameKey)
     }
     
     private func collectionIdString(_ str: String?) -> String {

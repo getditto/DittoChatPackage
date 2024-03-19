@@ -252,17 +252,17 @@ extension DittoService {
 extension DittoService {
     //MARK: Users
 
-    func currentUserPublisher() -> AnyPublisher<User?, Never> {
+    func currentUserPublisher() -> AnyPublisher<ChatUser?, Never> {
         privateStore.currentUserIdPublisher
-            .map { userId -> AnyPublisher<User?, Never> in
+            .map { userId -> AnyPublisher<ChatUser?, Never> in
                 guard let userId = userId else {
-                    return Just<User?>(nil).eraseToAnyPublisher()
+                    return Just<ChatUser?>(nil).eraseToAnyPublisher()
                 }
 
-                return self.ditto.store.observePublisher(query: "SELECT * FROM \(usersKey) WHERE _id = :id", arguments: ["id":userId], mapTo: User.self, onlyFirst: true)
+                return self.ditto.store.observePublisher(query: "SELECT * FROM \(usersKey) WHERE _id = :id", arguments: ["id":userId], mapTo: ChatUser.self, onlyFirst: true)
                     .catch { error in
                         assertionFailure("ERROR with \(#function)" + error.localizedDescription)
-                        return Empty<User?, Never>()
+                        return Empty<ChatUser?, Never>()
                     }
                     .removeDuplicates()
                     .compactMap { $0 } // Remove nil values
@@ -274,7 +274,7 @@ extension DittoService {
             .eraseToAnyPublisher()
     }
 
-    func addUser(_ usr: User) {
+    func addUser(_ usr: ChatUser) {
 
         Task {
             do {
@@ -285,12 +285,12 @@ extension DittoService {
         }
     }
 
-    func allUsersPublisher() -> AnyPublisher<[User], Never>  {
+    func allUsersPublisher() -> AnyPublisher<[ChatUser], Never>  {
 
-        return ditto.store.observePublisher(query: "SELECT * FROM \(usersKey)", mapTo: User.self)
+        return ditto.store.observePublisher(query: "SELECT * FROM \(usersKey)", mapTo: ChatUser.self)
             .catch { error in
                 assertionFailure("ERROR with \(#function)" + error.localizedDescription)
-                return Empty<[User], Never>()
+                return Empty<[ChatUser], Never>()
             }
             .removeDuplicates()
             .eraseToAnyPublisher()
@@ -526,7 +526,7 @@ extension DittoService {
 
     // example filename output: John-Doe_thumbnail_2023-05-19T23-19-01Z.jpg
     private func attachmentFilename(
-        for user: User?,
+        for user: ChatUser?,
         type: AttachmentType,
         timestamp: String,
         ext: String = jpgExtKey
@@ -539,12 +539,12 @@ extension DittoService {
         return fname
     }
     
-    private func user(for userId: String) async -> User? {
+    private func user(for userId: String) async -> ChatUser? {
        
        do {
            let result = try await ditto.store.execute(query: "SELECT * FROM \(usersKey) WHERE _id = :id", arguments: ["id": userId])
            if let userValue = result.items.first?.value {
-               return User(value: userValue)
+               return ChatUser(value: userValue)
            }
        } catch {
            print("Error \(error)")

@@ -17,7 +17,7 @@ class SettingsScreenVM: ObservableObject {
     @Published var showExportLogsSheet = false
     @Published var presentExportDataShare: Bool = false
     @Published var presentExportDataAlert: Bool = false
-    @Published var users: [User] = []
+    @Published var users: [ChatUser] = []
     @Published var acceptLargeImages = DataManager.shared.acceptLargeImages
     private var cancellables = Set<AnyCancellable>()
     

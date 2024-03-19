@@ -58,9 +58,9 @@ protocol ReplicatingDataInterface {
         in collectionId: String
     ) -> DittoSwift.DittoCollection.FetchAttachmentPublisher
     
-    func addUser(_ usr: User)
-    func currentUserPublisher() -> AnyPublisher<User?, Never>
-    func allUsersPublisher() -> AnyPublisher<[User], Never>
+    func addUser(_ usr: ChatUser)
+    func currentUserPublisher() -> AnyPublisher<ChatUser?, Never>
+    func allUsersPublisher() -> AnyPublisher<[ChatUser], Never>
 }
 
 public class DataManager {
@@ -175,15 +175,15 @@ extension DataManager {
         localStore.currentUserIdPublisher
     }
 
-    func currentUserPublisher() -> AnyPublisher<User?, Never> {
+    func currentUserPublisher() -> AnyPublisher<ChatUser?, Never> {
         p2pStore.currentUserPublisher()
     }
 
-    public func allUsersPublisher() -> AnyPublisher<[User], Never> {
+    public func allUsersPublisher() -> AnyPublisher<[ChatUser], Never> {
         p2pStore.allUsersPublisher()
     }
 
-    func addUser(_ usr: User) {
+    func addUser(_ usr: ChatUser) {
         p2pStore.addUser(usr)
     }
 
@@ -195,7 +195,7 @@ extension DataManager {
 
         assert(currentUserId != nil, "Error: expected currentUserId to not be NIL")
 
-        let user = User(id: currentUserId!, firstName: firstName, lastName: lastName)
+        let user = ChatUser(id: currentUserId!, firstName: firstName, lastName: lastName)
         p2pStore.addUser(user)
     }
 }

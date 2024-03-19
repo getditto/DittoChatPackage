@@ -8,7 +8,7 @@
 import DittoSwift
 import Foundation
 
-public struct User: Identifiable, Hashable, Equatable {
+public struct ChatUser: Identifiable, Hashable, Equatable {
     public var id: String
     public var firstName: String
     public var lastName: String
@@ -17,7 +17,7 @@ public struct User: Identifiable, Hashable, Equatable {
     }
 }
 
-extension User: DittoDecodable {
+extension ChatUser: DittoDecodable {
     init(value: [String: Any?]) {
         
         self.id = value[dbIdKey] as? String ?? ""
@@ -26,9 +26,9 @@ extension User: DittoDecodable {
     }
 }
 
-extension User {
-    static func unknownUser() -> User {
-        User(
+extension ChatUser {
+    static func unknownUser() -> ChatUser {
+        ChatUser(
             id: unknownUserIdKey,
             firstName: unknownUserNameKey,
             lastName: ""
@@ -36,7 +36,7 @@ extension User {
     }
 }
 
-extension User {    
+extension ChatUser {    
     func docDictionary() -> [String: Any?] {
         [
             dbIdKey: id,

@@ -53,7 +53,7 @@ class ChatScreenVM: ObservableObject {
             .map { messages, users -> [MessageWithUser] in
                 var messagesWithUsers = [MessageWithUser]()
                 for message in messages {
-                    let user = users.first(where: { $0.id == message.userId }) ?? User.unknownUser()
+                    let user = users.first(where: { $0.id == message.userId }) ?? ChatUser.unknownUser()
                     messagesWithUsers.append(MessageWithUser(message: message, user: user))
                 }
                 return messagesWithUsers

@@ -33,7 +33,7 @@ struct MessageBubbleView: View {
         self.messageOpCallback = messageOpCallback
     }
     
-    private var user: User {
+    private var user: ChatUser {
         messageUser.user
     }
     
@@ -383,7 +383,7 @@ struct MessageBubbleView_Previews: PreviewProvider {
                 text: Self.faker.lorem.sentence(),
                 userId: "max"
             ),
-            user: User(id: "max", firstName: "Maximilian", lastName: "Alexander")
+            user: ChatUser(id: "max", firstName: "Maximilian", lastName: "Alexander")
         ),
         MessageWithUser(
             message: Message(
@@ -393,7 +393,7 @@ struct MessageBubbleView_Previews: PreviewProvider {
                 text: Self.faker.lorem.paragraph(sentencesAmount: 12),
                 userId: "me"
             ),
-            user: User(
+            user: ChatUser(
                 id: "me",
                 firstName: "Me",
                 lastName: "NotYou"
@@ -407,7 +407,7 @@ struct MessageBubbleView_Previews: PreviewProvider {
                 text: Self.faker.lorem.sentence(),
                 userId: "max"
             ),
-            user: User(id: "max", firstName: "Maximilian", lastName: "Alexander")
+            user: ChatUser(id: "max", firstName: "Maximilian", lastName: "Alexander")
         ),
         MessageWithUser(
             message: Message(
@@ -417,7 +417,7 @@ struct MessageBubbleView_Previews: PreviewProvider {
                 text: Self.faker.lorem.sentence(),
                 userId: "me"
             ),
-            user: User(id: "me", firstName: "Me", lastName: "NotYou")
+            user: ChatUser(id: "me", firstName: "Me", lastName: "NotYou")
         )
     ]
 
