@@ -14,7 +14,7 @@ public struct ChatScreen: View {
     @StateObject var viewModel: ChatScreenVM
     @EnvironmentObject var errorHandler: ErrorHandler
 
-    public init(room: Room)2 {
+    public init(room: Room) {
         self._viewModel = StateObject(wrappedValue: ChatScreenVM(room: room))
     }
 
