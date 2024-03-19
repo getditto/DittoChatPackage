@@ -10,11 +10,11 @@ import SwiftUI
 import PhotosUI
 import SwiftUI
 
-struct ChatScreen: View {
+public struct ChatScreen: View {
     @StateObject var viewModel: ChatScreenVM
     @EnvironmentObject var errorHandler: ErrorHandler
 
-    public init(room: Room) {
+    public init(room: Room)2 {
         self._viewModel = StateObject(wrappedValue: ChatScreenVM(room: room))
     }
 
