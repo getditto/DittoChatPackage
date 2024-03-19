@@ -643,7 +643,12 @@ extension DittoService {
 
     func createRoom(name: String, isPrivate: Bool) -> String? {
         let roomId = UUID().uuidString
-        let messagesId = UUID().uuidString
+        let messagesId = if DittoInstance.dittoShared != nil {
+            messageKey
+        } else {
+            UUID().uuidString
+        }
+
         let collectionId = isPrivate ? UUID().uuidString : publicRoomsCollectionId
 
         let room = Room(
