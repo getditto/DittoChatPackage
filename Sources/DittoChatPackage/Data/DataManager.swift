@@ -1,10 +1,10 @@
-//
+///
 //  DataManager.swift
 //  DittoChat
 //
 //  Created by Eric Turner on 1/19/23.
-//  Copyright © 2023 DittoLive Incorporated. All rights reserved.
 //
+//  Copyright © 2023 DittoLive Incorporated. All rights reserved.
 
 import Combine
 import DittoSwift
@@ -13,23 +13,23 @@ import SwiftUI
 protocol LocalDataInterface {
     var acceptLargeImages: Bool { get set }
     var acceptLargeImagesPublisher: AnyPublisher<Bool, Never> { get }
-
+    
     var privateRoomsPublisher: AnyPublisher<[Room], Never> { get }
     func addPrivateRoom(_ room: Room)
-
+    
     var archivedPrivateRoomsPublisher: AnyPublisher<[Room], Never> { get }
     func archivePrivateRoom(_ room: Room)
     @discardableResult func unarchivePrivateRoom(roomId: String) -> Room?
     func deleteArchivedPrivateRoom(roomId: String)
-
+    
     var archivedPublicRoomIDs: [String] { get }
     var archivedPublicRoomsPublisher: AnyPublisher<[Room], Never> { get }
     func archivePublicRoom(_ room: Room)
     func unarchivePublicRoom(_ room: Room)
-
+    
     var currentUserId: String? { get set }
     var currentUserIdPublisher: AnyPublisher<String?, Never> { get }
-
+    
     var basicChat: Bool { get set }
     var basicChatPublisher: AnyPublisher<Bool, Never> { get }
 }
@@ -37,7 +37,7 @@ protocol LocalDataInterface {
 protocol ReplicatingDataInterface {
     var publicRoomsPublisher: CurrentValueSubject<[Room], Never> { get }
 
-    func room(for room: Room) -> Room?
+    func room(for room: Room) async -> Room?
     func findPublicRoomById(id: String) -> Room?
     func createRoom(name: String, isPrivate: Bool) -> DittoDocumentID?
     func joinPrivateRoom(qrCode: String)
@@ -47,7 +47,7 @@ protocol ReplicatingDataInterface {
     func unarchiveRoom(_ room: Room)
     func deleteRoom(_ room: Room)
 
-    func createMessage(for rooom: Room, text: String)
+    func createMessage(for rooom: Room, text: String) async
     func saveEditedTextMessage(_ message: Message, in room: Room)
     func saveDeletedImageMessage(_ message: Message, in room: Room)
     func createImageMessage(for room: Room, image: UIImage, text: String?) async throws
@@ -57,10 +57,10 @@ protocol ReplicatingDataInterface {
         for token: DittoAttachmentToken,
         in collectionId: String
     ) -> DittoSwift.DittoCollection.FetchAttachmentPublisher
-
-    func addUser(_ usr: ChatUser)
-    func currentUserPublisher() -> AnyPublisher<ChatUser?, Never>
-    func allUsersPublisher() -> AnyPublisher<[ChatUser], Never>
+    
+    func addUser(_ usr: User)
+    func currentUserPublisher() -> AnyPublisher<User?, Never>
+    func allUsersPublisher() -> AnyPublisher<[User], Never>
 }
 
 public class DataManager {
@@ -70,25 +70,30 @@ public class DataManager {
 
     private var localStore: LocalDataInterface
     private let p2pStore: ReplicatingDataInterface
-
+    
     private init() {
-        localStore = LocalStoreService()
-        p2pStore = DittoService(privateStore: localStore)
-        publicRoomsPublisher = p2pStore.publicRoomsPublisher.eraseToAnyPublisher()
-        privateRoomsPublisher = localStore.privateRoomsPublisher
+        self.localStore = LocalStoreService()
+        self.p2pStore = DittoService(privateStore: localStore)
+        self.publicRoomsPublisher = p2pStore.publicRoomsPublisher.eraseToAnyPublisher()
+        self.privateRoomsPublisher = localStore.privateRoomsPublisher
     }
 }
 
 extension DataManager {
+    
     // MARK: Ditto Public Rooms
 
-    func room(for room: Room) -> Room? {
-        p2pStore.room(for: room)
+    func room(for room: Room, completion: @escaping (Room?) -> Void) {
+        Task {
+            let result = await p2pStore.room(for: room)
+            completion(result)
+        }
     }
 
     public func findPublicRoomById(id: String) -> Room? {
         p2pStore.findPublicRoomById(id: id)
     }
+
 
     public func createRoom(name: String, isPrivate: Bool) -> DittoDocumentID? {
         return p2pStore.createRoom(name: name, isPrivate: isPrivate)
@@ -126,8 +131,8 @@ extension DataManager {
 extension DataManager {
     // MARK: Messages
 
-    func createMessage(for room: Room, text: String) {
-        p2pStore.createMessage(for: room, text: text)
+    func createMessage(for room: Room, text: String) async {
+        await p2pStore.createMessage(for: room, text: text)
     }
 
     func createImageMessage(for room: Room, image: UIImage, text: String?) async throws {
@@ -146,7 +151,7 @@ extension DataManager {
         p2pStore.messagePublisher(for: msgId, in: collectionId)
     }
 
-    func messagesPublisher(for room: Room) -> AnyPublisher<[Message], Never> {
+    func messagesPublisher(for room: Room) -> AnyPublisher<[Message], Never>{
         p2pStore.messagesPublisher(for: room)
     }
 
@@ -159,7 +164,7 @@ extension DataManager {
 }
 
 extension DataManager {
-    // MARK: Current User
+    //MARK: Current User
 
     public var currentUserId: String? {
         get { localStore.currentUserId }
@@ -170,20 +175,19 @@ extension DataManager {
         localStore.currentUserIdPublisher
     }
 
-    func currentUserPublisher() -> AnyPublisher<ChatUser?, Never> {
+    func currentUserPublisher() -> AnyPublisher<User?, Never> {
         p2pStore.currentUserPublisher()
     }
 
-    public func allUsersPublisher() -> AnyPublisher<[ChatUser], Never> {
+    public func allUsersPublisher() -> AnyPublisher<[User], Never> {
         p2pStore.allUsersPublisher()
     }
 
-    func addUser(_ usr: ChatUser) {
+    func addUser(_ usr: User) {
         p2pStore.addUser(usr)
     }
 
     public func saveCurrentUser(firstName: String, lastName: String) {
-        // TODO: create mechanism to allow for an app to pass in the User or at least check if first and last name match. or maybe pass in an ID?
         if currentUserId == nil {
             let userId = UUID().uuidString
             currentUserId = userId
@@ -191,7 +195,7 @@ extension DataManager {
 
         assert(currentUserId != nil, "Error: expected currentUserId to not be NIL")
 
-        let user = ChatUser(id: currentUserId!, firstName: firstName, lastName: lastName)
+        let user = User(id: currentUserId!, firstName: firstName, lastName: lastName)
         p2pStore.addUser(user)
     }
 }
@@ -226,5 +230,7 @@ public extension DataManager {
         set { localStore.basicChat = newValue }
     }
 
-    var basicChatPublisher: AnyPublisher<Bool, Never> { localStore.basicChatPublisher }
+    var basicChatPublisher: AnyPublisher<Bool, Never> {
+        get { localStore.basicChatPublisher }
+    }
 }

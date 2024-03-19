@@ -1,10 +1,10 @@
-//
-//  LocalStoreService.swift
+///
+//  LocalStore.swift
 //  DittoChat
 //
 //  Created by Eric Turner on 1/19/23.
-//  Copyright © 2023 DittoLive Incorporated. All rights reserved.
 //
+//  Copyright © 2023 DittoLive Incorporated. All rights reserved.
 
 import Combine
 import Foundation
@@ -14,34 +14,34 @@ class LocalStoreService: LocalDataInterface {
     private let privateRoomsSubject: CurrentValueSubject<[Room], Never>
     private let archivedPrivateRoomsSubject: CurrentValueSubject<[Room], Never>
     private let archivedPublicRoomsSubject: CurrentValueSubject<[Room], Never>
-
+        
     init() {
         let tmpDefaults = UserDefaults.standard
-
+        
         // prime privateRoomsSubject with decoded Room instances
         var rooms = tmpDefaults.decodeRoomsFromData(Array(tmpDefaults.privateRooms.values))
-        privateRoomsSubject = CurrentValueSubject<[Room], Never>(rooms)
+        self.privateRoomsSubject = CurrentValueSubject<[Room], Never>(rooms)
 
         // prime archivedPrivateRoomsSubject with Room decoded instances
         rooms = tmpDefaults.decodeRoomsFromData(Array(tmpDefaults.archivedPrivateRooms.values))
-        archivedPrivateRoomsSubject = CurrentValueSubject<[Room], Never>(rooms)
+        self.archivedPrivateRoomsSubject = CurrentValueSubject<[Room], Never>(rooms)
 
         // prime archivedPublicRoomsSubject with decoded Room instances
         rooms = tmpDefaults.decodeRoomsFromData(Array(tmpDefaults.archivedPublicRooms.values))
-        archivedPublicRoomsSubject = CurrentValueSubject<[Room], Never>(rooms)
-
-        basicChat = UserDefaults.standard.basicChat
+        self.archivedPublicRoomsSubject = CurrentValueSubject<[Room], Never>(rooms)
+        
+        self.basicChat = UserDefaults.standard.basicChat        
     }
-
+    
     var basicChat: Bool {
         get { defaults.basicChat }
         set { defaults.basicChat = newValue }
     }
-
+    
     var basicChatPublisher: AnyPublisher<Bool, Never> {
         defaults.basicChatPublisher
     }
-
+    
     var acceptLargeImages: Bool {
         get { defaults.acceptLargeImages }
         set { defaults.acceptLargeImages = newValue }
@@ -51,23 +51,21 @@ class LocalStoreService: LocalDataInterface {
         defaults.acceptLargeImagesPublisher
     }
 
-    // MARK: Current User
-
+    //MARK: Current User
     var currentUserId: String? {
         get { defaults.userId }
         set { defaults.userId = newValue }
     }
-
+    
     var currentUserIdPublisher: AnyPublisher<String?, Never> {
-        defaults.chatUserIdPublisher
+        defaults.userIdPublisher
     }
-
-    // MARK: Private Rooms
-
+    
+    //MARK: Private Rooms
     var privateRoomsPublisher: AnyPublisher<[Room], Never> {
         privateRoomsSubject.eraseToAnyPublisher()
     }
-
+    
     var archivedPrivateRoomsPublisher: AnyPublisher<[Room], Never> {
         archivedPrivateRoomsSubject.eraseToAnyPublisher()
     }
@@ -77,19 +75,19 @@ class LocalStoreService: LocalDataInterface {
         let rooms = defaults.decodeRoomsFromData(roomsData)
         privateRoomsSubject.send(rooms)
     }
-
+    
     func archivePrivateRoom(_ room: Room) {
         // remove from privateRooms
         var roomsData = removeRoom(roomId: room.id, from: &defaults.privateRooms)
         var rooms = defaults.decodeRoomsFromData(roomsData)
         privateRoomsSubject.send(rooms)
-
+        
         // add to archivedPrivateRooms
         roomsData = addRoom(room, to: &defaults.archivedPrivateRooms)
         rooms = defaults.decodeRoomsFromData(roomsData)
         archivedPrivateRoomsSubject.send(rooms)
     }
-
+    
     @discardableResult
     func unarchivePrivateRoom(roomId: String) -> Room? {
         guard let roomData = defaults.archivedPrivateRooms[roomId] else {
@@ -97,31 +95,31 @@ class LocalStoreService: LocalDataInterface {
             return nil
         }
         let room = defaults.decodeRoomsFromData([roomData]).first!
-
+        
         // remove from archivedPrivateRooms
         let roomsData = removeRoom(roomId: roomId, from: &defaults.archivedPrivateRooms)
         let rooms = defaults.decodeRoomsFromData(roomsData)
-
+        
         archivedPrivateRoomsSubject.send(rooms)
-
+        
         // add to privateRooms
         addPrivateRoom(room)
-
+        
         return room
     }
-
+    
     func deleteArchivedPrivateRoom(roomId: String) {
         let roomsData = removeRoom(roomId: roomId, from: &defaults.archivedPrivateRooms)
         let rooms = defaults.decodeRoomsFromData(roomsData)
         archivedPrivateRoomsSubject.send(rooms)
     }
 
-    // MARK: Public Rooms
-
+    
+    //MARK: Public Rooms
     var archivedPublicRoomsPublisher: AnyPublisher<[Room], Never> {
         archivedPublicRoomsSubject.eraseToAnyPublisher()
     }
-
+    
     var archivedPublicRoomIDs: [String] {
         Array(defaults.archivedPublicRooms.keys)
     }
@@ -133,15 +131,15 @@ class LocalStoreService: LocalDataInterface {
         let rooms = defaults.decodeRoomsFromData(roomsData)
         archivedPublicRoomsSubject.send(rooms)
     }
-
+    
+    
     func unarchivePublicRoom(_ room: Room) {
         let roomsData = removeRoom(roomId: room.id, from: &defaults.archivedPublicRooms)
         let rooms = defaults.decodeRoomsFromData(roomsData)
         archivedPublicRoomsSubject.send(rooms)
     }
-
-    // MARK: LocalStore Utilities
-
+    
+    //MARK: LocalStore Utilities
     func encodeRoom(_ room: Room) -> Data? {
         let encoder = JSONEncoder()
         guard let jsonData = try? encoder.encode(room) else {
@@ -150,7 +148,7 @@ class LocalStoreService: LocalDataInterface {
         }
         return jsonData
     }
-
+    
     func addRoom(_ room: Room, to roomsMap: inout [String: Data]) -> [Data] {
         guard let jsonData = encodeRoom(room) else {
             print("LocalStoreService.UserDefaults.\(#function): ERROR expected NON-NIL room")
@@ -159,35 +157,37 @@ class LocalStoreService: LocalDataInterface {
         roomsMap[room.id] = jsonData
         return Array(roomsMap.values)
     }
-
+    
     func removeRoom(roomId: String, from roomsMap: inout [String: Data]) -> [Data] {
         roomsMap.removeValue(forKey: roomId)
         return Array(roomsMap.values)
     }
 }
 
-private extension UserDefaults {
+
+fileprivate extension UserDefaults {
+    
     @objc var privateRooms: [String: Data] {
         get {
-            object(forKey: privateRoomsKey) as? [String: Data] ?? [:]
+            return object(forKey: privateRoomsKey) as? [String:Data] ?? [:]
         }
         set(value) {
             set(value, forKey: privateRoomsKey)
         }
     }
-
+    
     var archivedPrivateRooms: [String: Data] {
         get {
-            object(forKey: archivedPrivateRoomsKey) as? [String: Data] ?? [:]
+            return object(forKey: archivedPrivateRoomsKey) as? [String: Data] ?? [:]
         }
         set(value) {
             set(value, forKey: archivedPrivateRoomsKey)
         }
     }
-
+    
     var archivedPublicRooms: [String: Data] {
         get {
-            object(forKey: archivedPublicRoomsKey) as? [String: Data] ?? [:]
+            return object(forKey: archivedPublicRoomsKey) as? [String: Data] ?? [:]
         }
         set(value) {
             set(value, forKey: archivedPublicRoomsKey)
@@ -195,24 +195,26 @@ private extension UserDefaults {
     }
 }
 
-private extension UserDefaults {
+fileprivate extension UserDefaults {
+    
     @objc var userId: String? {
         get {
-            string(forKey: userIdKey)
+            return string(forKey: userIdKey)
         }
         set(value) {
             set(value, forKey: userIdKey)
         }
     }
-
-    var chatUserIdPublisher: AnyPublisher<String?, Never> {
+    
+    var userIdPublisher: AnyPublisher<String?, Never> {
         UserDefaults.standard
             .publisher(for: \.userId)
             .eraseToAnyPublisher()
     }
 }
 
-private extension UserDefaults {
+fileprivate extension UserDefaults {
+    
     /* This utility function extends UserDefaults, rather than LocalStoreService because
      LocalStoreService invokes this function in its init() method to initialize its private Combine
      currentValueSubject properties with Room values. If this function were a method of
@@ -221,7 +223,7 @@ private extension UserDefaults {
     func decodeRoomsFromData(_ roomsData: [Data]) -> [Room] {
         var rooms = [Room]()
         let decoder = JSONDecoder()
-
+        
         for jsonData in roomsData {
             guard let room = try? decoder.decode(Room.self, from: jsonData) else {
                 print("LocalStoreService.\(#function): ERROR decoding room from json data")
@@ -233,7 +235,8 @@ private extension UserDefaults {
     }
 }
 
-private extension UserDefaults {
+fileprivate extension UserDefaults {
+    
     @objc var acceptLargeImages: Bool {
         get {
             let accept = bool(forKey: acceptLargeImagesKey) as Bool?
@@ -243,7 +246,7 @@ private extension UserDefaults {
             set(value, forKey: acceptLargeImagesKey)
         }
     }
-
+    
     var acceptLargeImagesPublisher: AnyPublisher<Bool, Never> {
         UserDefaults.standard
             .publisher(for: \.acceptLargeImages)
@@ -251,7 +254,8 @@ private extension UserDefaults {
     }
 }
 
-private extension UserDefaults {
+fileprivate extension UserDefaults {
+    
     @objc var basicChat: Bool {
         get {
             object(forKey: basicChatKey) as? Bool ?? true
@@ -260,7 +264,7 @@ private extension UserDefaults {
             set(value, forKey: basicChatKey)
         }
     }
-
+    
     var basicChatPublisher: AnyPublisher<Bool, Never> {
         UserDefaults.standard
             .publisher(for: \.basicChat)

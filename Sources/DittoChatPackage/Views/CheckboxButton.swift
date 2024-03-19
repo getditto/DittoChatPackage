@@ -3,7 +3,6 @@
 //  DittoChat
 //
 //  Created by Eric Turner on 1/11/23.
-//  Copyright © 2023 DittoLive Incorporated. All rights reserved.
 //
 
 import SwiftUI
@@ -13,20 +12,20 @@ public struct CheckboxButton: View {
     @Binding var isChecked: Bool
     public var size: CGSize
     public var action: ((Bool) -> Void)?
-
+    
     public init(isChecked: Binding<Bool>,
                 size: CGSize = CGSize(width: 20, height: 20),
-                action: ((Bool) -> Void)? = nil)
-    {
-        _isChecked = isChecked
+                action: ((Bool) -> Void)? = nil
+    ) {
+        self._isChecked = isChecked
         self.size = size
         self.action = action
     }
-
+    
     public var body: some View {
         Button(action: {
             isChecked.toggle()
-            if let action { action(isChecked) }
+            if let action = action { action(isChecked) }
         }) {
             Image(systemName: checkmarkKey)
                 .imageScale(.small)
@@ -44,12 +43,11 @@ public struct CheckboxButton: View {
                 )
         }
     }
-
-    public var width: CGFloat { size.width }
-    public var height: CGFloat { size.height }
+    
+    public var width: CGFloat { get { return size.width } }
+    public var height: CGFloat { get { return size.height } }
 }
 
-#if DEBUG
 struct CheckboxButton_Previews: PreviewProvider {
     @State var isChecked = false
     static var previews: some View {
@@ -59,4 +57,3 @@ struct CheckboxButton_Previews: PreviewProvider {
         }
     }
 }
-#endif

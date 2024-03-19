@@ -3,7 +3,6 @@
 //  DittoChat
 //
 //  Created by Maximilian Alexander on 7/20/22.
-//  Copyright © 2022 DittoLive Incorporated. All rights reserved.
 //
 
 import Combine
@@ -14,8 +13,7 @@ class ProfileScreenViewModel: ObservableObject {
     @Published var saveButtonDisabled = false
     @Published var firstName: String = ""
     @Published var lastName: String = ""
-    @Published var isValid = true
-
+    
     init() {
         DataManager.shared
             .currentUserPublisher()
@@ -33,7 +31,7 @@ class ProfileScreenViewModel: ObservableObject {
 
         $firstName.combineLatest($lastName)
             .map { firstName, lastName -> Bool in
-                firstName.isEmpty || lastName.isEmpty
+                return firstName.isEmpty || lastName.isEmpty
             }
             .assign(to: &$saveButtonDisabled)
     }

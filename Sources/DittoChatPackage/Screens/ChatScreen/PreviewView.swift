@@ -1,56 +1,59 @@
-//
+///
 //  PreviewView.swift
 //  DittoChat
 //
 //  Created by Eric Turner on 1/29/23.
-//  Copyright © 2023 DittoLive Incorporated. All rights reserved.
 //
 //  Credit to Natalia Panferova
 //  https://nilcoalescing.com/blog/PreviewFilesWithQuickLookInSwiftUI/
 //
+//  Copyright © 2023 DittoLive Incorporated. All rights reserved.
 
 import QuickLook
 import SwiftUI
 
 struct PreviewView: View {
     let fileURL: URL
-
+    
     var body: some View {
-        PreviewViewController(url: fileURL)
+        PreviewController(url: fileURL)
     }
 }
 
-struct PreviewViewController: UIViewControllerRepresentable {
+struct PreviewController: UIViewControllerRepresentable {
     let url: URL
-
+    
     func makeUIViewController(context: Context) -> QLPreviewController {
         let controller = QLPreviewController()
         controller.dataSource = context.coordinator
         return controller
     }
-
-    func updateUIViewController(_: QLPreviewController, context _: Context) { /*protocol conformance*/ }
-
+    
+    func updateUIViewController(
+        _ uiViewController: QLPreviewController, context: Context) {}
+    
+    
     func makeCoordinator() -> Coordinator {
-        Coordinator(parent: self)
+        return Coordinator(parent: self)
     }
-
+    
     class Coordinator: QLPreviewControllerDataSource {
-        let parent: PreviewViewController
-
-        init(parent: PreviewViewController) {
+        
+        let parent: PreviewController
+        
+        init(parent: PreviewController) {
             self.parent = parent
         }
-
-        func numberOfPreviewItems(in _: QLPreviewController) -> Int {
-            1
+        
+        func numberOfPreviewItems(in controller: QLPreviewController) -> Int {
+            return 1
         }
-
+        
         func previewController(
-            _: QLPreviewController,
-            previewItemAt _: Int
+            _ controller: QLPreviewController,
+            previewItemAt index: Int
         ) -> QLPreviewItem {
-            parent.url as NSURL
+            return parent.url as NSURL
         }
     }
 }

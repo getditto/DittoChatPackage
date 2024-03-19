@@ -1,15 +1,15 @@
-//
-//  Room.swift
+///
+//  PrivateRoom.swift
 //  DittoChat
 //
 //  Created by Eric Turner on 1/12/23.
-//  Copyright © 2023 DittoLive Incorporated. All rights reserved.
 //
+//  Copyright © 2023 DittoLive Incorporated. All rights reserved.
 
 import DittoSwift
 import Foundation
 
-extension Room: Codable { /*Adding codable protocol*/ }
+extension Room: Codable {}
 
 public struct Room: Identifiable, Hashable, Equatable {
     public let id: String
@@ -28,18 +28,6 @@ public struct Room: Identifiable, Hashable, Equatable {
         self.collectionId = collectionId
         self.createdBy = createdBy
         self.createdOn = createdOn
-    }
-}
-
-extension Room {
-    init(document: DittoDocument) {
-        id = document[dbIdKey].stringValue
-        name = document[nameKey].stringValue
-        messagesId = document[messagesIdKey].stringValue
-        isPrivate = document[isPrivateKey].boolValue
-        collectionId = document[collectionIdKey].string
-        createdBy = document[createdByKey].stringValue
-        createdOn = DateFormatter.isoDate.date(from: document[createdOnKey].stringValue) ?? Date()
     }
 }
 
@@ -90,3 +78,17 @@ public extension Room {
         )
     }
 }
+
+extension Room: DittoDecodable {
+    init(value: [String: Any?]) {
+        self.id = value[dbIdKey] as? String ?? ""
+        self.name = value[nameKey] as? String ?? ""
+        self.messagesId = value[messagesIdKey] as? String ?? ""
+        self.isPrivate = value[isPrivateKey] as? Bool ?? false
+        self.collectionId = value[collectionIdKey] as? String
+        self.createdBy = value[createdByKey] as? String ?? ""
+        let dateString = value[createdOnKey] as? String ?? ""
+        self.createdOn = DateFormatter.isoDate.date(from: dateString) ?? Date()
+    }
+}
+

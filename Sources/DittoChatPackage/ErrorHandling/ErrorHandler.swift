@@ -1,11 +1,10 @@
-//
+///
 //  ErrorHandler.swift
-//  DittoChat
 //
-//  Created by Ralf Ebert on 07/29/21.
-//  Copyright © 2021 DittoLive Incorporated. All rights reserved.
-//
+//  Created by Ralf Ebert July 29, 2021
 //  https://www.ralfebert.com/swiftui/generic-error-handling/
+
+
 
 import SwiftUI
 

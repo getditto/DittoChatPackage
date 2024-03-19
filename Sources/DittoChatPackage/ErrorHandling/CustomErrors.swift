@@ -1,10 +1,10 @@
-//
+///
 //  CustomErrors.swift
 //  DittoChat
 //
 //  Created by Eric Turner on 3/27/23.
-//  Copyright © 2023 DittoLive Incorporated. All rights reserved.
 //
+//  Copyright © 2023 DittoLive Incorporated. All rights reserved.
 
 import Foundation
 
@@ -17,14 +17,14 @@ public enum AppError: Error {
 extension AppError: CustomStringConvertible {
     public var description: String {
         switch self {
-        case let .featureUnavailable(msg):
+        case .featureUnavailable(let msg):
             if !msg.isEmpty {
                 return msg
             }
             return "Feature not available"
         case .qrCodeFail:
             return "QR code failed to generate for unknown reasons"
-        case let .unknown(msg):
+        case .unknown(let msg):
             if !msg.isEmpty {
                 return msg
             }
@@ -32,12 +32,12 @@ extension AppError: CustomStringConvertible {
         }
     }
 }
-
 extension AppError: LocalizedError {
     public var errorDescription: String? {
-        description
+        self.description
     }
 }
+
 
 public enum AttachmentError: Error {
     case createFail
@@ -61,7 +61,7 @@ extension AttachmentError: CustomStringConvertible {
             return "Error updating attachment"
         case .deleted:
             return "Attachment deleted"
-        case .dittoDataFail:
+        case .dittoDataFail(_):
             return "Attachment data fetch from Ditto failed"
         case .iCloudLibraryImageFail:
             return "Error accessing image from Photos. This can occur when Bluetooth is the only transport and the image is not completely synced by iCloud."
@@ -69,7 +69,7 @@ extension AttachmentError: CustomStringConvertible {
             return "Unknown error occurred initializing image from data"
         case .libraryImageFail:
             return "Unknown error accessing image from Photos"
-        case let .messageDocNotFound(msgId):
+        case .messageDocNotFound(let msgId):
             return "No document found for message document with id: \(msgId)"
         case .thumbnailCreateFail:
             return "Error creating thumbnail image"
@@ -79,7 +79,7 @@ extension AttachmentError: CustomStringConvertible {
             return "Error writing attachment data to file"
         case .tmpStorageCleanupFail:
             return "Error deleting tmp storage directory"
-        case let .unknown(msg):
+        case .unknown(let msg):
             if !msg.isEmpty {
                 return msg
             }
@@ -90,14 +90,14 @@ extension AttachmentError: CustomStringConvertible {
 
 extension AttachmentError: LocalizedError {
     public var errorDescription: String? {
-        description
+        self.description
     }
 }
 
 enum AttachmentType: String, CustomStringConvertible {
     case thumbnailImage
     case largeImage
-
+    
     var description: String {
         switch self {
         case .thumbnailImage:
