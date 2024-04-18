@@ -191,7 +191,7 @@ extension DataManager {
 
         assert(currentUserId != nil, "Error: expected currentUserId to not be NIL")
 
-        let user = ChatUser(id: currentUserId!, firstName: firstName, lastName: lastName)
+        let user = ChatUser(id: currentUserId!, firstName: firstName, lastName: lastName, subscriptions: [:], mentions: [:])
         p2pStore.addUser(user)
     }
 }

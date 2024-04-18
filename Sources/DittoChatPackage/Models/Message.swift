@@ -24,6 +24,9 @@ struct Message: Identifiable, Equatable {
     var largeImageToken: DittoAttachmentToken?
     var thumbnailImageToken: DittoAttachmentToken?
 
+    var archivedMessage: String?
+    var isArchived: Bool
+
     var isImageMessage: Bool {
         thumbnailImageToken != nil || largeImageToken != nil
     }
@@ -38,6 +41,8 @@ extension Message {
         userId = document[userIdKey].stringValue
         largeImageToken = document[largeImageTokenKey].attachmentToken
         thumbnailImageToken = document[thumbnailImageTokenKey].attachmentToken
+        archivedMessage = document[archivedMessageKey].string
+        isArchived = document[isArchivedKey].bool ?? false
     }
 }
 
@@ -49,7 +54,9 @@ extension Message {
         text: String? = nil,
         userId _: String? = nil,
         largeImageToken: DittoAttachmentToken? = nil,
-        thumbnailImageToken: DittoAttachmentToken? = nil
+        thumbnailImageToken: DittoAttachmentToken? = nil,
+        archivedMessage: String? = nil,
+        isArchived: Bool = false
     ) {
         self.id = id ?? UUID().uuidString
         self.createdOn = createdOn ?? Date()
@@ -58,6 +65,8 @@ extension Message {
         userId = DataManager.shared.currentUserId ?? createdByUnknownKey
         self.largeImageToken = largeImageToken
         self.thumbnailImageToken = thumbnailImageToken
+        self.archivedMessage = archivedMessage
+        self.isArchived = isArchived
     }
 }
 
