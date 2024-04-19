@@ -11,20 +11,20 @@ import SwiftUI
 public struct RoomsListScreen: View {
     @ObservedObject var viewModel = RoomsListScreenVM()
 
-    public init() { /*Make init private access level*/ }
+    public init() { /*Make init public access level*/ }
 
     public var body: some View {
         List {
             if let defaultPublicRoom = viewModel.defaultPublicRoom {
                 Section(openPublicRoomTitleKey) {
-                    NavigationLink(destination: ChatScreen(room: defaultPublicRoom)) {
+                    NavigationLink(value: defaultPublicRoom) {
                         RoomsListRowItem(room: defaultPublicRoom)
                     }
                 }
             }
-            Section(!viewModel.publicRooms.isEmpty ? publicRoomsTitleKey : "") {
+            Section( viewModel.publicRooms.count > 0 ? publicRoomsTitleKey : "" ) {
                 ForEach(viewModel.publicRooms) { room in
-                    NavigationLink(destination: ChatScreen(room: room)) {
+                    NavigationLink(value: room) {
                         RoomsListRowItem(room: room)
                     }
                     .swipeActions(edge: .trailing, allowsFullSwipe: false) {
@@ -35,10 +35,10 @@ public struct RoomsListScreen: View {
                     }
                 }
             }
-
-            Section(!viewModel.privateRooms.isEmpty ? privateRoomsTitleKey : "") {
+            
+            Section( viewModel.privateRooms.count > 0 ? privateRoomsTitleKey : "" ) {
                 ForEach(viewModel.privateRooms) { room in
-                    NavigationLink(destination: ChatScreen(room: room)) {
+                    NavigationLink(value: room) {
                         RoomsListRowItem(room: room)
                     }
                     .swipeActions(edge: .trailing, allowsFullSwipe: false) {
@@ -51,20 +51,20 @@ public struct RoomsListScreen: View {
             }
         }
         .navigationBarTitleDisplayMode(.inline)
-//        .navigationDestination(for: Room.self) { room in
-//            ChatScreen(room: room)
-//                .withErrorHandling()
-//        }
+        .navigationDestination(for: Room.self) { room in
+            ChatScreen(room: room)
+                .withErrorHandling()
+        }
         .sheet(isPresented: $viewModel.presentProfileScreen) {
             ProfileScreen()
         }
-//        .sheet(isPresented: $viewModel.presentScannerView) {
-//            ScannerView(
-//                successAction: { code in
-//                    viewModel.joinPrivateRoom(code: code)
-//                }
-//            )
-//        }
+        .sheet(isPresented: $viewModel.presentScannerView) {
+            ScannerView(
+                successAction: { code in
+                    viewModel.joinPrivateRoom(code: code)
+                }
+            )
+        }
         .sheet(isPresented: $viewModel.presentCreateRoomScreen) {
             RoomEditScreen()
         }
@@ -89,11 +89,12 @@ public struct RoomsListScreen: View {
                     .fontWeight(.bold)
             }
             ToolbarItemGroup(placement: .navigationBarTrailing) {
-//                Button {
-//                    viewModel.scanButtonAction()
-//                } label: {
-//                    Label(scanPrivateRoomTitleKey, systemImage: qrCodeViewfinderKey)
-//                }
+                // TODO: Add switching logic to disable is private rooms cant be done
+                Button {
+                    viewModel.scanButtonAction()
+                } label: {
+                    Label(scanPrivateRoomTitleKey, systemImage: qrCodeViewfinderKey)
+                }
                 Button {
                     viewModel.createRoomButtonAction()
                 } label: {

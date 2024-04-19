@@ -20,17 +20,17 @@ class LocalStoreService: LocalDataInterface {
 
         // prime privateRoomsSubject with decoded Room instances
         var rooms = tmpDefaults.decodeRoomsFromData(Array(tmpDefaults.privateRooms.values))
-        privateRoomsSubject = CurrentValueSubject<[Room], Never>(rooms)
+        self.privateRoomsSubject = CurrentValueSubject<[Room], Never>(rooms)
 
         // prime archivedPrivateRoomsSubject with Room decoded instances
         rooms = tmpDefaults.decodeRoomsFromData(Array(tmpDefaults.archivedPrivateRooms.values))
-        archivedPrivateRoomsSubject = CurrentValueSubject<[Room], Never>(rooms)
+        self.archivedPrivateRoomsSubject = CurrentValueSubject<[Room], Never>(rooms)
 
         // prime archivedPublicRoomsSubject with decoded Room instances
         rooms = tmpDefaults.decodeRoomsFromData(Array(tmpDefaults.archivedPublicRooms.values))
-        archivedPublicRoomsSubject = CurrentValueSubject<[Room], Never>(rooms)
+        self.archivedPublicRoomsSubject = CurrentValueSubject<[Room], Never>(rooms)
 
-        basicChat = UserDefaults.standard.basicChat
+        self.basicChat = UserDefaults.standard.basicChat        
     }
 
     var basicChat: Bool {
@@ -166,10 +166,10 @@ class LocalStoreService: LocalDataInterface {
     }
 }
 
-private extension UserDefaults {
+fileprivate extension UserDefaults {
     @objc var privateRooms: [String: Data] {
         get {
-            object(forKey: privateRoomsKey) as? [String: Data] ?? [:]
+            return object(forKey: privateRoomsKey) as? [String:Data] ?? [:]
         }
         set(value) {
             set(value, forKey: privateRoomsKey)
@@ -178,7 +178,7 @@ private extension UserDefaults {
 
     var archivedPrivateRooms: [String: Data] {
         get {
-            object(forKey: archivedPrivateRoomsKey) as? [String: Data] ?? [:]
+            return object(forKey: archivedPrivateRoomsKey) as? [String: Data] ?? [:]
         }
         set(value) {
             set(value, forKey: archivedPrivateRoomsKey)
@@ -187,7 +187,7 @@ private extension UserDefaults {
 
     var archivedPublicRooms: [String: Data] {
         get {
-            object(forKey: archivedPublicRoomsKey) as? [String: Data] ?? [:]
+            return object(forKey: archivedPublicRoomsKey) as? [String: Data] ?? [:]
         }
         set(value) {
             set(value, forKey: archivedPublicRoomsKey)
@@ -195,10 +195,10 @@ private extension UserDefaults {
     }
 }
 
-private extension UserDefaults {
+fileprivate extension UserDefaults {
     @objc var userId: String? {
         get {
-            string(forKey: userIdKey)
+            return string(forKey: userIdKey)
         }
         set(value) {
             set(value, forKey: userIdKey)
@@ -212,7 +212,7 @@ private extension UserDefaults {
     }
 }
 
-private extension UserDefaults {
+fileprivate extension UserDefaults {
     /* This utility function extends UserDefaults, rather than LocalStoreService because
      LocalStoreService invokes this function in its init() method to initialize its private Combine
      currentValueSubject properties with Room values. If this function were a method of
@@ -233,7 +233,7 @@ private extension UserDefaults {
     }
 }
 
-private extension UserDefaults {
+fileprivate extension UserDefaults {
     @objc var acceptLargeImages: Bool {
         get {
             let accept = bool(forKey: acceptLargeImagesKey) as Bool?
@@ -251,7 +251,7 @@ private extension UserDefaults {
     }
 }
 
-private extension UserDefaults {
+fileprivate extension UserDefaults {
     @objc var basicChat: Bool {
         get {
             object(forKey: basicChatKey) as? Bool ?? true

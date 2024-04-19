@@ -24,18 +24,19 @@ struct ExpandingTextView: View {
             view.font = UIFont.systemFont(ofSize: UIFont.labelFontSize)
             view.backgroundColor = .clear
             view.delegate = context.coordinator
+            view.textContainerInset = UIEdgeInsets(top: 8.0, left: 8.0, bottom: 8.0, right: 0.0)
             return view
         }
 
-        func updateUIView(_ uiView: UITextView, context _: Context) {
-            uiView.text = text
+        func updateUIView(_ uiView: UITextView, context: Context) {
+            uiView.text = self.text
             DispatchQueue.main.async {
-                textDidChange(uiView)
+                self.textDidChange(uiView)
             }
         }
 
         func makeCoordinator() -> Coordinator {
-            Coordinator(text: $text, textDidChange: textDidChange)
+            return Coordinator(text: $text, textDidChange: textDidChange)
         }
 
         class Coordinator: NSObject, UITextViewDelegate {
@@ -43,13 +44,13 @@ struct ExpandingTextView: View {
             let textDidChange: (UITextView) -> Void
 
             init(text: Binding<String>, textDidChange: @escaping (UITextView) -> Void) {
-                _text = text
+                self._text = text
                 self.textDidChange = textDidChange
             }
 
             func textViewDidChange(_ textView: UITextView) {
-                text = textView.text
-                textDidChange(textView)
+                self.text = textView.text
+                self.textDidChange(textView)
             }
 
             func textViewDidBeginEditing(_ textView: UITextView) {
@@ -74,14 +75,13 @@ struct ExpandingTextView: View {
     @State private var height: CGFloat?
 
     var body: some View {
-        WrappedTextView(text: $text, textDidChange: textDidChange)
+        WrappedTextView(text: $text, textDidChange: self.textDidChange)
             .frame(height: height ?? minHeight)
     }
 
-    @MainActor
     private func textDidChange(_ textView: UITextView) {
         guard let lineHeight = textView.font?.lineHeight else { return }
-        height = max(textView.contentSize.height, lineHeight)
+        self.height = max(textView.contentSize.height, lineHeight)
     }
 }
 
@@ -89,6 +89,7 @@ struct ExpandingTextView: View {
 struct ExpandingTextView_Previews: PreviewProvider {
     static var previews: some View {
         ExpandingTextView(text: .constant("foo"))
+            .previewLayout(.sizeThatFits)
     }
 }
 #endif

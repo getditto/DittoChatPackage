@@ -28,6 +28,8 @@ let package = Package(
                 .product(name: "DittoDataBrowser", package: "DittoSwiftTools"),
                 .product(name: "DittoExportLogs", package: "DittoSwiftTools"),
                 .product(name: "DittoDiskUsage", package: "DittoSwiftTools"),
+                .product(name: "DittoExportData", package: "DittoSwiftTools"),
+                .product(name: "DittoPeersList", package: "DittoSwiftTools"),
                 .product(name: "CodeScanner", package: "CodeScanner"),
                 .product(name: "Fakery", package: "Fakery"),
                 .product(name: "OrderedCollections", package: "swift-collections"),

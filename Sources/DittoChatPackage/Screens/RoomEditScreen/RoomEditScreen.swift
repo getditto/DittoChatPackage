@@ -28,13 +28,14 @@ struct RoomEditScreen: View {
                         }
                     ))
                 }
-//                Section {
-//                    HStack {
-//                        CheckboxButton(isChecked: $viewModel.roomIsPrivate)
-//                        Text("Private Room")
-//                        Spacer()
-//                    }
-//                }
+                // TODO: add switching logic to disable private rooms
+                Section {
+                    HStack {
+                        CheckboxButton(isChecked: $viewModel.roomIsPrivate)
+                        Text("Private Room")
+                        Spacer()
+                    }
+                }
                 Section {
                     HStack {
                         Spacer()

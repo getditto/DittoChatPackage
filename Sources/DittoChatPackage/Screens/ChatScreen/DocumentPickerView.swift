@@ -26,10 +26,10 @@ struct DocumentPickerController: UIViewControllerRepresentable {
         return picker
     }
 
-    func updateUIViewController(_: UIDocumentPickerViewController, context _: UIViewControllerRepresentableContext<DocumentPickerController>) { /*protocol conformance*/ }
+    func updateUIViewController(_ uiViewController: UIDocumentPickerViewController, context: UIViewControllerRepresentableContext<DocumentPickerController>) { /*not used*/}
 
     func makeCoordinator() -> Coordinator {
-        Coordinator(parent: self)
+        return Coordinator(parent: self)
     }
 
     class Coordinator: NSObject, UIDocumentPickerDelegate {
@@ -38,7 +38,7 @@ struct DocumentPickerController: UIViewControllerRepresentable {
             self.parent = parent
         }
 
-        func documentPicker(_: UIDocumentPickerViewController, didPickDocumentsAt urls: [URL]) {
+        func documentPicker(_ controller: UIDocumentPickerViewController, didPickDocumentsAt urls: [URL]) {
             for url in urls {
                 print("DocumentPickerControllerDelegate: urls: \(url)")
 
@@ -50,13 +50,14 @@ struct DocumentPickerController: UIViewControllerRepresentable {
                 }
 
                 do {
-                    _ = try Data(contentsOf: url)
+                    let _ = try Data(contentsOf: url)
                     print("RECEIVED DATA from file at url: \(url.path)")
                     // You will have data of the selected file
-                } catch {
+                }
+                catch {
                     print(error.localizedDescription)
                 }
-
+                
                 // Make sure you release the security-scoped resource when you finish.
                 do { url.stopAccessingSecurityScopedResource() }
             }

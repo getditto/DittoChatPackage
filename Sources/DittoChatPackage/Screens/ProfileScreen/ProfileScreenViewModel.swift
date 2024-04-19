@@ -33,7 +33,7 @@ class ProfileScreenViewModel: ObservableObject {
 
         $firstName.combineLatest($lastName)
             .map { firstName, lastName -> Bool in
-                firstName.isEmpty || lastName.isEmpty
+                return firstName.isEmpty || lastName.isEmpty
             }
             .assign(to: &$saveButtonDisabled)
     }
