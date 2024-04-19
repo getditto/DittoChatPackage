@@ -89,11 +89,12 @@ public struct RoomsListScreen: View {
                     .fontWeight(.bold)
             }
             ToolbarItemGroup(placement: .navigationBarTrailing) {
-                // TODO: Add switching logic to disable is private rooms cant be done
-                Button {
-                    viewModel.scanButtonAction()
-                } label: {
-                    Label(scanPrivateRoomTitleKey, systemImage: qrCodeViewfinderKey)
+                if DittoInstance.dittoShared == nil {
+                    Button {
+                        viewModel.scanButtonAction()
+                    } label: {
+                        Label(scanPrivateRoomTitleKey, systemImage: qrCodeViewfinderKey)
+                    }
                 }
                 Button {
                     viewModel.createRoomButtonAction()

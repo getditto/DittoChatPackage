@@ -28,12 +28,13 @@ struct RoomEditScreen: View {
                         }
                     ))
                 }
-                // TODO: add switching logic to disable private rooms
-                Section {
-                    HStack {
-                        CheckboxButton(isChecked: $viewModel.roomIsPrivate)
-                        Text("Private Room")
-                        Spacer()
+                if DittoInstance.dittoShared == nil {
+                    Section {
+                        HStack {
+                            CheckboxButton(isChecked: $viewModel.roomIsPrivate)
+                            Text("Private Room")
+                            Spacer()
+                        }
                     }
                 }
                 Section {

@@ -33,7 +33,6 @@ let nameKey = "name"
 let privateRoomsKey = "privateRooms"
 let publicKey = "public"
 let publicMessagesIdKey = "1440174b9330e430b46da939f0b04a34a40e10ac8073671156da174fef1ffaef"
-// TODO: wire this up right with switching logic
 let publicPackageMessagesIdKey = "messages"
 let publicRoomsCollectionId = "rooms"
 let roomIdKey = "roomId"

@@ -530,11 +530,13 @@ extension DittoService {
 
     func createRoom(name: String, isPrivate: Bool) -> DittoDocumentID? {
         let roomId = UUID().uuidString
-        // TODO: Add logic to switch to package behavior.
-        // let messagesId = messagesKey // Switching to static collection for access control
-        // let collectionId = isPrivate ? "Room-" + UUID().uuidString : publicRoomsCollectionId
-        let messagesId = UUID().uuidString
         let collectionId = isPrivate ? UUID().uuidString : publicRoomsCollectionId
+
+        let messagesId: String = if DittoInstance.dittoShared != nil {
+            UUID().uuidString
+        } else {
+            messagesKey
+        }
 
         let room = Room(
             id: roomId,
@@ -591,16 +593,29 @@ extension DittoService {
             return
         }
 
-        // Create default Public room with pre-configured id, messagesId
-        try! ditto.store.collection(publicRoomsCollectionId)
-            .upsert([
-                dbIdKey: publicKey,
-                nameKey: publicRoomTitleKey,
-                collectionIdKey: publicRoomsCollectionId,
-                messagesIdKey: publicMessagesIdKey,//PUBLIC_MESSAGES_ID,
-                createdOnKey: DateFormatter.isoDate.string(from: Date()),
-                isPrivateKey: false
-            ] as [String: Any?] )
+        if DittoInstance.dittoShared != nil {
+            // Create default Public room with pre-configured id, messagesId
+            try! ditto.store.collection(publicRoomsCollectionId)
+                .upsert([
+                    dbIdKey: publicKey,
+                    nameKey: publicRoomTitleKey,
+                    collectionIdKey: publicRoomsCollectionId,
+                    messagesIdKey: publicPackageMessagesIdKey,
+                    createdOnKey: DateFormatter.isoDate.string(from: Date()),
+                    isPrivateKey: false
+                ] as [String: Any?] )
+        } else {
+            // Create default Public room with pre-configured id, messagesId
+            try! ditto.store.collection(publicRoomsCollectionId)
+                .upsert([
+                    dbIdKey: publicKey,
+                    nameKey: publicRoomTitleKey,
+                    collectionIdKey: publicRoomsCollectionId,
+                    messagesIdKey: publicMessagesIdKey,//PUBLIC_MESSAGES_ID,
+                    createdOnKey: DateFormatter.isoDate.string(from: Date()),
+                    isPrivateKey: false
+                ] as [String: Any?] )
+        }
     }
 }
 
