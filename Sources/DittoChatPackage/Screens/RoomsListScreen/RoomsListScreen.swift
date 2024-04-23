@@ -17,14 +17,14 @@ public struct RoomsListScreen: View {
         List {
             if let defaultPublicRoom = viewModel.defaultPublicRoom {
                 Section(openPublicRoomTitleKey) {
-                    NavigationLink(value: defaultPublicRoom) {
+                    NavigationLink(destination: ChatScreen(room: defaultPublicRoom)) {
                         RoomsListRowItem(room: defaultPublicRoom)
                     }
                 }
             }
             Section( viewModel.publicRooms.count > 0 ? publicRoomsTitleKey : "" ) {
                 ForEach(viewModel.publicRooms) { room in
-                    NavigationLink(value: room) {
+                    NavigationLink(destination: ChatScreen(room: room)) {
                         RoomsListRowItem(room: room)
                     }
                     .swipeActions(edge: .trailing, allowsFullSwipe: false) {
@@ -38,7 +38,7 @@ public struct RoomsListScreen: View {
             
             Section( viewModel.privateRooms.count > 0 ? privateRoomsTitleKey : "" ) {
                 ForEach(viewModel.privateRooms) { room in
-                    NavigationLink(value: room) {
+                    NavigationLink(destination: ChatScreen(room: room)) {
                         RoomsListRowItem(room: room)
                     }
                     .swipeActions(edge: .trailing, allowsFullSwipe: false) {
@@ -51,10 +51,6 @@ public struct RoomsListScreen: View {
             }
         }
         .navigationBarTitleDisplayMode(.inline)
-        .navigationDestination(for: Room.self) { room in
-            ChatScreen(room: room)
-                .withErrorHandling()
-        }
         .sheet(isPresented: $viewModel.presentProfileScreen) {
             ProfileScreen()
         }
