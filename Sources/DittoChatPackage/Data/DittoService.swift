@@ -12,7 +12,7 @@ import DittoSwift
 import SwiftUI
 
 
-class DittoInstance: ObservableObject {
+public class DittoInstance: ObservableObject {
     @Published var loggingOption: DittoLogger.LoggingOptions
     private static let defaultLoggingOption: DittoLogger.LoggingOptions = .debug
     private var cancellables = Set<AnyCancellable>()
@@ -21,42 +21,13 @@ class DittoInstance: ObservableObject {
     public static var dittoShared: Ditto?
     let ditto: Ditto
 
-    init() {
+    public init() {
         // Blow up if they did not do no provide a ditto instance.
-        if let dittoShared = DittoInstance.dittoShared {
-            ditto = dittoShared
-            loggingOption = DittoLogger.LoggingOptions(rawValue: DittoLogger.minimumLogLevel.rawValue) ?? .error
-            return
+        guard let dittoShared = DittoInstance.dittoShared else {
+            fatalError("No ditto instance provided")
         }
-
-        ditto = Ditto(identity: DittoIdentity.offlinePlayground(appID: Env.DITTO_APP_ID))
-
-        try! ditto.setOfflineOnlyLicenseToken(Env.DITTO_OFFLINE_TOKEN)
-
-        // make sure our log level is set _before_ starting ditto.
-        self.loggingOption = Self.storedLoggingOption()
-        resetLogging()
-
-        $loggingOption
-            .dropFirst()
-            .sink { [weak self] option in
-                self?.saveLoggingOption(option)
-                self?.resetLogging()
-            }
-            .store(in: &cancellables)            
-
-        // v4 AddWins
-        do {
-            try ditto.disableSyncWithV3()
-        } catch let error {
-            print("ERROR: disableSyncWithV3() failed with error \"\(error)\"")
-        }
-
-        // Prevent Xcode previews from syncing: non preview simulators and real devices can sync
-        let isPreview: Bool = ProcessInfo.processInfo.environment["XCODE_RUNNING_FOR_PREVIEWS"] == "1"
-        if !isPreview {
-            try! ditto.startSync()
-        }
+        ditto = dittoShared
+        loggingOption = DittoLogger.LoggingOptions(rawValue: DittoLogger.minimumLogLevel.rawValue) ?? .error
     }
 }
 extension DittoInstance {
