@@ -564,29 +564,16 @@ extension DittoService {
             return
         }
 
-        if DittoInstance.dittoShared != nil {
-            // Create default Public room with pre-configured id, messagesId
-            try! ditto.store.collection(publicRoomsCollectionId)
-                .upsert([
-                    dbIdKey: publicKey,
-                    nameKey: publicRoomTitleKey,
-                    collectionIdKey: publicRoomsCollectionId,
-                    messagesIdKey: publicPackageMessagesIdKey,
-                    createdOnKey: DateFormatter.isoDate.string(from: Date()),
-                    isPrivateKey: false
-                ] as [String: Any?] )
-        } else {
-            // Create default Public room with pre-configured id, messagesId
-            try! ditto.store.collection(publicRoomsCollectionId)
-                .upsert([
-                    dbIdKey: publicKey,
-                    nameKey: publicRoomTitleKey,
-                    collectionIdKey: publicRoomsCollectionId,
-                    messagesIdKey: publicMessagesIdKey,//PUBLIC_MESSAGES_ID,
-                    createdOnKey: DateFormatter.isoDate.string(from: Date()),
-                    isPrivateKey: false
-                ] as [String: Any?] )
-        }
+        // Create default Public room with pre-configured id, messagesId
+        try! ditto.store.collection(publicRoomsCollectionId)
+            .upsert([
+                dbIdKey: publicKey,
+                nameKey: publicRoomTitleKey,
+                collectionIdKey: publicRoomsCollectionId,
+                messagesIdKey: publicMessagesIdKey,//PUBLIC_MESSAGES_ID,
+                createdOnKey: DateFormatter.isoDate.string(from: Date()),
+                isPrivateKey: false
+            ] as [String: Any?] )
     }
 }
 
