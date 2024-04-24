@@ -17,7 +17,13 @@ struct RoomsListRowItem: View {
 
     var body: some View {
         HStack {
-            Text(viewModel.room.name)
+            if viewModel.subscribedTo() {
+                Text(viewModel.room.name)
+                    .bold()
+                    .italic()
+            } else {
+                Text(viewModel.room.name)
+            }
             Spacer()
             if viewModel.subscribedTo(), viewModel.unreadMessagesCount() != 0 {
                 Text(viewModel.unreadMessagesCount().description)

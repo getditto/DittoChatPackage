@@ -29,39 +29,61 @@ public struct ChatScreen: View {
     public var body: some View {
         VStack {
             ScrollViewReader { proxy in
-                ScrollView {
-                    LazyVStack(spacing: 0) {
-                        ForEach(viewModel.messagesWithUsers) { usrMsg in
-                            MessageBubbleView(
-                                messageWithUser: usrMsg,
-                                messagesId: viewModel.room.messagesId,
-                                messageOpCallback: viewModel.messageOperationCallback,
-                                isEditing: $viewModel.isEditing
-                            )
-                            .id(usrMsg.message.id)
-                            .transition(.slide)
+                ZStack {
+                    ScrollView {
+                        LazyVStack(spacing: 0) {
+                            ForEach(viewModel.messagesWithUsers) { usrMsg in
+                                MessageBubbleView(
+                                    messageWithUser: usrMsg,
+                                    messagesId: viewModel.room.messagesId,
+                                    messageOpCallback: viewModel.messageOperationCallback,
+                                    isEditing: $viewModel.isEditing
+                                )
+                                .id(usrMsg.message.id)
+                                .transition(.slide)
+                            }
                         }
                     }
-                }
-                .defaultScrollAnchor(.bottom)
-                .scrollDismissesKeyboard(.interactively)
-                .onAppear {
-                    DispatchQueue.main.async {
-                        scrollToBottom(proxy: proxy)
+                    //.defaultScrollAnchor(.bottom)
+                    .scrollDismissesKeyboard(.interactively)
+                    .onAppear {
+                        DispatchQueue.main.async {
+                            scrollToBottom(proxy: proxy)
+                        }
                     }
-                }
-                .onChange(of: viewModel.messagesWithUsers.count) { value in
-                    DispatchQueue.main.async {
+                    .onChange(of: viewModel.messagesWithUsers.count) { value in
+                        DispatchQueue.main.async {
+                            withAnimation {
+                                scrollToBottom(proxy: proxy)
+                            }
+                        }
+                    }
+                    .onChange(of: viewModel.keyboardStatus) { status in
+                        guard !viewModel.presentEditingView else { return }
+                        if status == .willShow || status == .willHide { return }
                         withAnimation {
                             scrollToBottom(proxy: proxy)
                         }
                     }
-                }
-                .onChange(of: viewModel.keyboardStatus) { status in
-                    guard !viewModel.presentEditingView else { return }
-                    if status == .willShow || status == .willHide { return }
-                    withAnimation {
-                        scrollToBottom(proxy: proxy)
+                    if let lastUnreadMessage = viewModel.lastUnreadMessage() {
+                        VStack(alignment: .leading) {
+                            Button(action: {
+                                DispatchQueue.main.async {
+                                    withAnimation {
+                                        proxy.scrollTo(lastUnreadMessage, anchor: .top)
+                                    }
+                                    viewModel.clearUnreadsAndMentions()
+                                }
+                            }, label: {
+                                Image(systemName: "arrow.up.message")
+                                Text("new messages")
+                            })
+                            .padding(.top)
+                            .padding(.horizontal)
+                            .buttonBorderShape(.capsule)
+                            .buttonStyle(.borderedProminent)
+                            Spacer()
+                        }
                     }
                 }
             }
