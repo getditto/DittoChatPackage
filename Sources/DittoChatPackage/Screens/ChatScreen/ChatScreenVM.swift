@@ -203,7 +203,7 @@ class ChatScreenVM: ObservableObject {
         guard let currentUser else { return }
         var subs = currentUser.subscriptions
         var mentions = currentUser.mentions
-        subs.updateValue(nil, forKey: room.id)
+        subs.updateValue(.now, forKey: room.id)
         mentions.updateValue([], forKey: room.id)
 
         DataManager.shared.updateUser(withId: currentUser.id, firstName: nil, lastName: nil, subscriptions: subs, mentions: mentions)
