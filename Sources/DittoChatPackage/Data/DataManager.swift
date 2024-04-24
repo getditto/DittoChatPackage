@@ -72,10 +72,10 @@ public class DataManager {
     private let p2pStore: ReplicatingDataInterface
 
     private init() {
-        localStore = LocalStoreService()
-        p2pStore = DittoService(privateStore: localStore)
-        publicRoomsPublisher = p2pStore.publicRoomsPublisher.eraseToAnyPublisher()
-        privateRoomsPublisher = localStore.privateRoomsPublisher
+        self.localStore = LocalStoreService()
+        self.p2pStore = DittoService(privateStore: localStore)
+        self.publicRoomsPublisher = p2pStore.publicRoomsPublisher.eraseToAnyPublisher()
+        self.privateRoomsPublisher = localStore.privateRoomsPublisher
     }
 }
 
@@ -183,7 +183,6 @@ extension DataManager {
     }
 
     public func saveCurrentUser(firstName: String, lastName: String) {
-        // TODO: create mechanism to allow for an app to pass in the User or at least check if first and last name match. or maybe pass in an ID?
         if currentUserId == nil {
             let userId = UUID().uuidString
             currentUserId = userId
@@ -226,5 +225,7 @@ public extension DataManager {
         set { localStore.basicChat = newValue }
     }
 
-    var basicChatPublisher: AnyPublisher<Bool, Never> { localStore.basicChatPublisher }
+    var basicChatPublisher: AnyPublisher<Bool, Never> {
+        get { localStore.basicChatPublisher }
+    }
 }

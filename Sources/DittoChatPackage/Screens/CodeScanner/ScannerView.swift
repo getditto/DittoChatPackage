@@ -33,11 +33,11 @@ struct ScannerView: View {
     func handleScan(result: Result<ScanResult, ScanError>) {
         isShowingScanner = false
         switch result {
-        case let .success(result):
-            scanSuccess = true
+        case .success(let result):
+            self.scanSuccess = true
             successAction(result.string)
-        case let .failure(error):
-            scanFailed = true
+        case .failure(let error):
+            self.scanFailed = true
             failAction(error.errorMessage)
         }
     }

@@ -14,14 +14,14 @@ class MessageBubbleVM: ObservableObject {
     @Published private(set) var thumbnailImage: Image?
     @Published var thumbnailProgress: Double = 0
     @Published var fetchProgress: Double = 0
-    @Published private(set) var fileURL: URL?
+    @Published private(set) var fileURL: URL? = nil
     @Published private(set) var message: Message
     @Published var presentDeleteAlert = false
     private let messagesId: String
     private var tmpStorage: TemporaryFile?
 
     init(_ msg: Message, messagesId: String) {
-        message = msg
+        self.message = msg
         self.messagesId = messagesId
 
         DataManager.shared.messagePublisher(for: message.id, in: messagesId)
@@ -114,24 +114,24 @@ struct ImageAttachmentFetcher {
     func fetch(with token: DittoAttachmentToken?,
                from collectionId: String,
                onProgress: @escaping ProgressHandler,
-               onComplete: @escaping CompletionHandler)
-    {
-        guard let token else { return }
-
+               onComplete: @escaping CompletionHandler
+    ) {
+        guard let token = token else { return }
+        
         // Fetch the thumbnail data from Ditto, calling the progress handler to
         // report the operation's ongoing progress.
         let ditto = DittoInstance.shared.ditto
-        _ = ditto.store[collectionId].fetchAttachment(token: token) { event in
+        let _ = ditto.store[collectionId].fetchAttachment(token: token) { event in
             switch event {
-            case let .progress(downloadedBytes, totalBytes):
+            case .progress(let downloadedBytes, let totalBytes):
                 let percent = Double(downloadedBytes) / Double(totalBytes)
                 onProgress(percent)
 
-            case let .completed(attachment):
+            case .completed(let attachment):
                 do {
                     let data = try attachment.getData()
                     if let uiImage = UIImage(data: data) {
-                        onComplete(.success((image: uiImage, metadata: attachment.metadata)))
+                        onComplete(.success( (image: uiImage, metadata: attachment.metadata) ))
                     }
                 } catch {
                     print("\(#function) ERROR: \(error.localizedDescription)")

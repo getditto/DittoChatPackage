@@ -26,12 +26,12 @@ struct MessageBubbleView: View {
         messageOpCallback: ((MessageOperation, Message) -> Void)? = nil,
         isEditing: Binding<Bool>
     ) {
-        _viewModel = StateObject(
+        self._viewModel = StateObject(
             wrappedValue: MessageBubbleVM(messageWithUser.message, messagesId: messagesId)
         )
-        messageUser = messageWithUser
-        _isEditing = isEditing
-        needsImageSync = messageWithUser.message.thumbnailImageToken != nil
+        self.messageUser = messageWithUser
+        self._isEditing = isEditing
+        self.needsImageSync = messageWithUser.message.thumbnailImageToken != nil
         self.messageOpCallback = messageOpCallback
     }
 
@@ -55,7 +55,9 @@ struct MessageBubbleView: View {
     // and always available to local user to preview at full rez
     private var largeImageAvailable: Bool {
         if message.thumbnailImageToken != nil {
-            if message.userId == DataManager.shared.currentUserId || DataManager.shared.acceptLargeImages {
+            if message.userId == DataManager.shared.currentUserId
+                || DataManager.shared.acceptLargeImages
+            {
                 return true
             }
         }
@@ -112,8 +114,8 @@ struct MessageBubbleView: View {
     }
 
     var body: some View {
-        VStack(alignment: side == .right ? .trailing : .leading, spacing: 2) {
-            Text(isSelfUser ? "" : user.fullName)
+        VStack (alignment: side == .right ? .trailing : .leading, spacing: 2) {
+            Text( isSelfUser ? "" : user.fullName )
                 .font(.system(size: UIFont.smallSystemFontSize))
                 .opacity(0.6)
 
@@ -159,7 +161,7 @@ struct MessageBubbleView: View {
             }
         }
     }
-
+    
     @ViewBuilder
     func textContentView() -> some View {
         if !message.text.isEmpty {
@@ -168,7 +170,7 @@ struct MessageBubbleView: View {
             EmptyView()
         }
     }
-
+    
     @ViewBuilder
     func attachmentContentView() -> some View {
         if let image = viewModel.thumbnailImage {
@@ -217,7 +219,7 @@ struct MessageBubbleView: View {
                 }
             }
         }
-
+        
         // Only allow delete on local user messages when not editing
         if canDelete() {
             Button {
@@ -232,9 +234,10 @@ struct MessageBubbleView: View {
                 Text(deleteTitleKey)
             }
         }
+        
         EmptyView()
     }
-
+    
     @ViewBuilder
     func deleteAlertContent() -> some View {
         VStack {
@@ -244,13 +247,14 @@ struct MessageBubbleView: View {
                     message
                 )
             }
-            Button(cancelTitleKey, role: .cancel) { /*No action on this button*/ }
+            Button(cancelTitleKey, role: .cancel) { }
         }
     }
 
     private func canDisplayLargeImage() -> Bool {
         guard !isEditing else { return false }
         guard isImageMessage else { return false }
+        guard let _ = message.largeImageToken else { return false }
         return isSelfUser || largeImageAvailable
     }
 
@@ -258,7 +262,7 @@ struct MessageBubbleView: View {
         guard !isEditing else { return false }
         return isSelfUser && !isImageMessage
     }
-
+        
     private func canDelete() -> Bool {
         guard !isEditing else { return false }
         return isSelfUser
@@ -273,18 +277,19 @@ struct MessageBubbleView: View {
         preview: Bool,
         isEditing: Binding<Bool> = .constant(false)
     ) {
-        _viewModel = StateObject(
+        self._viewModel = StateObject(
             wrappedValue: MessageBubbleVM(
                 Message(roomId: "abc", text: "Hello World!"),
                 messagesId: messagesId
             )
         )
-        _isEditing = isEditing
-        messageUser = messageWithUser
-        forPreview = preview
-        messageOpCallback = nil
+        self._isEditing = isEditing
+        self.messageUser = messageWithUser
+        self.forPreview = preview
+        self.messageOpCallback = nil
     }
 }
+
 
 struct MessageBubbleShape: Shape {
     enum Side {
@@ -295,37 +300,38 @@ struct MessageBubbleShape: Shape {
     let side: Side
 
     func path(in rect: CGRect) -> Path {
-        (side == .left) ? getLeftBubblePath(in: rect) : getRightBubblePath(in: rect)
+        return (side == .left) ? getLeftBubblePath(in: rect) : getRightBubblePath(in: rect)
     }
 
     private func getLeftBubblePath(in rect: CGRect) -> Path {
         let width = rect.width
         let height = rect.height
-        let path = Path { path in
-            path.move(to: CGPoint(x: 25, y: height))
-            path.addLine(to: CGPoint(x: width - 20, y: height))
-            path.addCurve(to: CGPoint(x: width, y: height - 20),
-                          control1: CGPoint(x: width - 8, y: height),
-                          control2: CGPoint(x: width, y: height - 8))
-            path.addLine(to: CGPoint(x: width, y: 20))
-            path.addCurve(to: CGPoint(x: width - 20, y: 0),
-                          control1: CGPoint(x: width, y: 8),
-                          control2: CGPoint(x: width - 8, y: 0))
-            path.addLine(to: CGPoint(x: 21, y: 0))
-            path.addCurve(to: CGPoint(x: 4, y: 20),
-                          control1: CGPoint(x: 12, y: 0),
-                          control2: CGPoint(x: 4, y: 8))
-            path.addLine(to: CGPoint(x: 4, y: height - 11))
-            path.addCurve(to: CGPoint(x: 0, y: height),
-                          control1: CGPoint(x: 4, y: height - 1),
-                          control2: CGPoint(x: 0, y: height))
-            path.addLine(to: CGPoint(x: -0.05, y: height - 0.01))
-            path.addCurve(to: CGPoint(x: 11.0, y: height - 4.0),
-                          control1: CGPoint(x: 4.0, y: height + 0.5),
-                          control2: CGPoint(x: 8, y: height - 1))
-            path.addCurve(to: CGPoint(x: 25, y: height),
-                          control1: CGPoint(x: 16, y: height),
-                          control2: CGPoint(x: 20, y: height))
+        let path = Path { p in
+            p.move(to: CGPoint(x: 25, y: height))
+            p.addLine(to: CGPoint(x: width - 20, y: height))
+            p.addCurve(to: CGPoint(x: width, y: height - 20),
+                       control1: CGPoint(x: width - 8, y: height),
+                       control2: CGPoint(x: width, y: height - 8))
+            p.addLine(to: CGPoint(x: width, y: 20))
+            p.addCurve(to: CGPoint(x: width - 20, y: 0),
+                       control1: CGPoint(x: width, y: 8),
+                       control2: CGPoint(x: width - 8, y: 0))
+            p.addLine(to: CGPoint(x: 21, y: 0))
+            p.addCurve(to: CGPoint(x: 4, y: 20),
+                       control1: CGPoint(x: 12, y: 0),
+                       control2: CGPoint(x: 4, y: 8))
+            p.addLine(to: CGPoint(x: 4, y: height - 11))
+            p.addCurve(to: CGPoint(x: 0, y: height),
+                       control1: CGPoint(x: 4, y: height - 1),
+                       control2: CGPoint(x: 0, y: height))
+            p.addLine(to: CGPoint(x: -0.05, y: height - 0.01))
+            p.addCurve(to: CGPoint(x: 11.0, y: height - 4.0),
+                       control1: CGPoint(x: 4.0, y: height + 0.5),
+                       control2: CGPoint(x: 8, y: height - 1))
+            p.addCurve(to: CGPoint(x: 25, y: height),
+                       control1: CGPoint(x: 16, y: height),
+                       control2: CGPoint(x: 20, y: height))
+
         }
         return path
     }
@@ -333,35 +339,37 @@ struct MessageBubbleShape: Shape {
     private func getRightBubblePath(in rect: CGRect) -> Path {
         let width = rect.width
         let height = rect.height
-        let path = Path { path in
-            path.move(to: CGPoint(x: 25, y: height))
-            path.addLine(to: CGPoint(x: 20, y: height))
-            path.addCurve(to: CGPoint(x: 0, y: height - 20),
-                          control1: CGPoint(x: 8, y: height),
-                          control2: CGPoint(x: 0, y: height - 8))
-            path.addLine(to: CGPoint(x: 0, y: 20))
-            path.addCurve(to: CGPoint(x: 20, y: 0),
-                          control1: CGPoint(x: 0, y: 8),
-                          control2: CGPoint(x: 8, y: 0))
-            path.addLine(to: CGPoint(x: width - 21, y: 0))
-            path.addCurve(to: CGPoint(x: width - 4, y: 20),
-                          control1: CGPoint(x: width - 12, y: 0),
-                          control2: CGPoint(x: width - 4, y: 8))
-            path.addLine(to: CGPoint(x: width - 4, y: height - 11))
-            path.addCurve(to: CGPoint(x: width, y: height),
-                          control1: CGPoint(x: width - 4, y: height - 1),
-                          control2: CGPoint(x: width, y: height))
-            path.addLine(to: CGPoint(x: width + 0.05, y: height - 0.01))
-            path.addCurve(to: CGPoint(x: width - 11, y: height - 4),
-                          control1: CGPoint(x: width - 4, y: height + 0.5),
-                          control2: CGPoint(x: width - 8, y: height - 1))
-            path.addCurve(to: CGPoint(x: width - 25, y: height),
-                          control1: CGPoint(x: width - 16, y: height),
-                          control2: CGPoint(x: width - 20, y: height))
+        let path = Path { p in
+            p.move(to: CGPoint(x: 25, y: height))
+            p.addLine(to: CGPoint(x:  20, y: height))
+            p.addCurve(to: CGPoint(x: 0, y: height - 20),
+                       control1: CGPoint(x: 8, y: height),
+                       control2: CGPoint(x: 0, y: height - 8))
+            p.addLine(to: CGPoint(x: 0, y: 20))
+            p.addCurve(to: CGPoint(x: 20, y: 0),
+                       control1: CGPoint(x: 0, y: 8),
+                       control2: CGPoint(x: 8, y: 0))
+            p.addLine(to: CGPoint(x: width - 21, y: 0))
+            p.addCurve(to: CGPoint(x: width - 4, y: 20),
+                       control1: CGPoint(x: width - 12, y: 0),
+                       control2: CGPoint(x: width - 4, y: 8))
+            p.addLine(to: CGPoint(x: width - 4, y: height - 11))
+            p.addCurve(to: CGPoint(x: width, y: height),
+                       control1: CGPoint(x: width - 4, y: height - 1),
+                       control2: CGPoint(x: width, y: height))
+            p.addLine(to: CGPoint(x: width + 0.05, y: height - 0.01))
+            p.addCurve(to: CGPoint(x: width - 11, y: height - 4),
+                       control1: CGPoint(x: width - 4, y: height + 0.5),
+                       control2: CGPoint(x: width - 8, y: height - 1))
+            p.addCurve(to: CGPoint(x: width - 25, y: height),
+                       control1: CGPoint(x: width - 16, y: height),
+                       control2: CGPoint(x: width - 20, y: height))
+
         }
         return path
     }
 }
+
 
 #if DEBUG
     import Fakery
@@ -421,4 +429,5 @@ struct MessageBubbleShape: Shape {
             }
         }
     }
+}
 #endif

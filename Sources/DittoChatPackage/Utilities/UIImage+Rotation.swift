@@ -11,15 +11,15 @@ import SwiftUI
 // WWDC 2021 - Meet async/await in Swift
 extension UIImage {
     func attachmentThumbnail() async -> UIImage? {
-        await byPreparingThumbnail(ofSize: attachmentThumbnailSize)
+        return await self.byPreparingThumbnail(ofSize: attachmentThumbnailSize)
     }
 
     var attachmentThumbnailSize: CGSize {
         // arbitrary portrait thumbnail dimensions; invert if landscape
         let edge1 = 282.0; let edge2 = 376.0
         let size = size.width > size.height
-            ? CGSize(width: edge2, height: edge1)
-            : CGSize(width: edge1, height: edge2)
+        ? CGSize(width: edge2, height: edge1)
+        : CGSize(width: edge1, height: edge2)
         return size
     }
 }
@@ -28,7 +28,7 @@ extension UIImage {
 // https://stackoverflow.com/questions/1296707/get-size-of-a-uiimage-bytes-length-not-height-and-width
 extension UIImage {
     var sizeInBytes: Int {
-        guard let cgImage else {
+        guard let cgImage = self.cgImage else {
             print("\(#function) ERROR: CIImage-based UIImage not supported - RETURN ZERO")
             return 0
         }

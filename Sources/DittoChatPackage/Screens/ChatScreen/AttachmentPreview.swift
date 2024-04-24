@@ -17,8 +17,8 @@ struct AttachmentPreview: View {
     @StateObject var viewModel: MessageBubbleVM
     @StateObject var errorHandler: ErrorHandler
     init(vm: MessageBubbleVM, errorHandler: ErrorHandler) {
-        _viewModel = StateObject(wrappedValue: vm)
-        _errorHandler = StateObject(wrappedValue: errorHandler)
+        self._viewModel = StateObject(wrappedValue: vm)
+        self._errorHandler = StateObject(wrappedValue: errorHandler)
     }
 
     var body: some View {
@@ -56,10 +56,11 @@ struct AttachmentPreviewController: UIViewControllerRepresentable {
         return navCon
     }
 
-    func updateUIViewController(_: UIViewController, context _: Context) { /*protocol conformance*/ }
+    func updateUIViewController(
+        _ uiViewController: UIViewController, context: Context) { /*not using*/ }
 
     func makeCoordinator() -> Coordinator {
-        Coordinator(parent: self)
+        return Coordinator(parent: self)
     }
 
     class Coordinator: QLPreviewControllerDataSource {
@@ -69,16 +70,16 @@ struct AttachmentPreviewController: UIViewControllerRepresentable {
             self.parent = parent
         }
 
-        func numberOfPreviewItems(in _: QLPreviewController) -> Int {
-            1
+        func numberOfPreviewItems(in controller: QLPreviewController) -> Int {
+            return 1
         }
 
         func previewController(
-            _: QLPreviewController,
-            previewItemAt _: Int
+            _ controller: QLPreviewController,
+            previewItemAt index: Int
         ) -> QLPreviewItem {
 //            return parent.url as NSURL
-            parent.url as QLPreviewItem
+            return parent.url as QLPreviewItem
         }
     }
 }

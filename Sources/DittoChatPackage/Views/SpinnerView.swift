@@ -34,7 +34,6 @@ struct SpinnerView: View {
                             primary,
                             primary,
                             secondary,
-
                         ]),
                         center: .center,
                         startAngle: .degrees(0),

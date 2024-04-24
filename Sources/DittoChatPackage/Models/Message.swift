@@ -34,15 +34,15 @@ struct Message: Identifiable, Equatable {
 
 extension Message {
     init(document: DittoDocument) {
-        id = document[dbIdKey].stringValue
-        createdOn = DateFormatter.isoDate.date(from: document[createdOnKey].stringValue) ?? Date()
-        roomId = document[roomIdKey].stringValue
-        text = document[textKey].stringValue
-        userId = document[userIdKey].stringValue
-        largeImageToken = document[largeImageTokenKey].attachmentToken
-        thumbnailImageToken = document[thumbnailImageTokenKey].attachmentToken
-        archivedMessage = document[archivedMessageKey].string
-        isArchived = document[isArchivedKey].bool ?? false
+        self.id = document[dbIdKey].stringValue
+        self.createdOn = DateFormatter.isoDate.date(from: document[createdOnKey].stringValue) ?? Date()
+        self.roomId = document[roomIdKey].stringValue
+        self.text = document[textKey].stringValue
+        self.userId = document[userIdKey].stringValue
+        self.largeImageToken = document[largeImageTokenKey].attachmentToken
+        self.thumbnailImageToken = document[thumbnailImageTokenKey].attachmentToken
+        self.archivedMessage = document[archivedMessageKey].string
+        self.isArchived = document[isArchivedKey].bool ?? false
     }
 }
 
@@ -52,7 +52,7 @@ extension Message {
         createdOn: Date? = nil,
         roomId: String,
         text: String? = nil,
-        userId _: String? = nil,
+        userId: String? = nil,
         largeImageToken: DittoAttachmentToken? = nil,
         thumbnailImageToken: DittoAttachmentToken? = nil,
         archivedMessage: String? = nil,
@@ -62,7 +62,7 @@ extension Message {
         self.createdOn = createdOn ?? Date()
         self.roomId = roomId
         self.text = text ?? ""
-        userId = DataManager.shared.currentUserId ?? createdByUnknownKey
+        self.userId = DataManager.shared.currentUserId ?? createdByUnknownKey
         self.largeImageToken = largeImageToken
         self.thumbnailImageToken = thumbnailImageToken
         self.archivedMessage = archivedMessage

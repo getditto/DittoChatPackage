@@ -73,7 +73,7 @@ struct RoomDetailsView: View {
     }
 
     private func collectionIdString(_ str: String?) -> String {
-        guard let str else {
+        guard let str = str else {
             return room.isPrivate ? notAvailableLabelKey : publicRoomsCollectionId
         }
         return str.isEmpty ? notAvailableLabelKey : str
