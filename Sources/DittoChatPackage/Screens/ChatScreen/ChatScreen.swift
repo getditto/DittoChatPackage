@@ -6,6 +6,7 @@
 //  Copyright © 2023 DittoLive Incorporated. All rights reserved.
 //
 
+import SwiftUI
 import PhotosUI
 import SwiftUI
 
@@ -14,7 +15,7 @@ public struct ChatScreen: View {
     @EnvironmentObject var errorHandler: ErrorHandler
 
     public init(room: Room) {
-        _viewModel = StateObject(wrappedValue: ChatScreenVM(room: room))
+        self._viewModel = StateObject(wrappedValue: ChatScreenVM(room: room))
     }
 
     var navBarTitle: String {
@@ -48,7 +49,7 @@ public struct ChatScreen: View {
                         scrollToBottom(proxy: proxy)
                     }
                 }
-                .onChange(of: viewModel.messagesWithUsers.count) { _ in
+                .onChange(of: viewModel.messagesWithUsers.count) { value in
                     DispatchQueue.main.async {
                         withAnimation {
                             scrollToBottom(proxy: proxy)
@@ -63,7 +64,8 @@ public struct ChatScreen: View {
                     }
                 }
             }
-            HStack(alignment: .top) {
+
+            HStack(alignment: .center, spacing: 0) {
                 photosPickerButtonView
                     .padding(.top, 4)
 
@@ -71,6 +73,7 @@ public struct ChatScreen: View {
                     text: $viewModel.inputText,
                     onSendButtonTappedCallback: viewModel.sendMessage
                 )
+                .padding(.leading, 0)
             }
         }
         .listStyle(.inset)
@@ -153,13 +156,16 @@ public struct ChatScreen: View {
     var photosPickerButtonView: some View {
         PhotosPicker(selection: $viewModel.selectedItem,
                      matching: .images,
-                     photoLibrary: .shared())
-        {
+                     photoLibrary: .shared()
+        ) {
             Image(systemName: cameraFillKey)
                 .symbolRenderingMode(.multicolor)
                 .font(.system(size: 28))
                 .foregroundColor(.accentColor)
         }
+        .padding(.leading, 12)
+        .padding(.trailing, 4)
+        .frame(width: 56, height: 44)
         .buttonStyle(.borderless)
         .onChange(of: viewModel.selectedItem) { newValue in
             Task {
@@ -172,11 +178,11 @@ public struct ChatScreen: View {
                         do {
                             try await viewModel.sendImageMessage()
                         } catch {
-                            errorHandler.handle(error: error)
+                            self.errorHandler.handle(error: error)
                         }
                     }
                 } catch {
-                    errorHandler.handle(error: AttachmentError.iCloudLibraryImageFail)
+                    self.errorHandler.handle(error: AttachmentError.iCloudLibraryImageFail)
                 }
             }
         }

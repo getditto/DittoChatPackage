@@ -17,7 +17,7 @@ class RoomEditScreenViewModel: ObservableObject {
 
     init() {
         $name
-            .map(\.isEmpty)
+            .map { $0.isEmpty }
             .assign(to: &$saveButtonDisabled)
     }
 

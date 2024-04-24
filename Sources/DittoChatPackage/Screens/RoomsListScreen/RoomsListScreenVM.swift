@@ -19,7 +19,7 @@ class RoomsListScreenVM: ObservableObject {
     @Published var defaultPublicRoom: Room?
 
     init() {
-        presentProfileScreen = DataManager.shared.currentUserId == nil
+        self.presentProfileScreen = DataManager.shared.currentUserId == nil
 
         DataManager.shared
             .publicRoomsPublisher
