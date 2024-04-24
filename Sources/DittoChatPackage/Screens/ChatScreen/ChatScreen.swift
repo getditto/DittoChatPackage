@@ -43,6 +43,7 @@ public struct ChatScreen: View {
                         }
                     }
                 }
+                .defaultScrollAnchor(.bottom)
                 .scrollDismissesKeyboard(.interactively)
                 .onAppear {
                     DispatchQueue.main.async {

@@ -20,6 +20,13 @@ public struct RoomsListScreen: View {
                     NavigationLink(destination: ChatScreen(room: defaultPublicRoom)) {
                         RoomsListRowItem(room: defaultPublicRoom)
                     }
+                    .swipeActions(edge: .leading, allowsFullSwipe: true) {
+                        Button(action: {
+                            viewModel.toggleSubscriptionFor(room: defaultPublicRoom)
+                        }, label: {
+                            Text("Sub")
+                        })
+                    }
                 }
             }
             Section( viewModel.publicRooms.count > 0 ? publicRoomsTitleKey : "" ) {
@@ -32,6 +39,13 @@ public struct RoomsListScreen: View {
                             viewModel.archiveRoom(room)
                         }
                         .tint(.red)
+                    }
+                    .swipeActions(edge: .leading, allowsFullSwipe: true) {
+                        Button(action: {
+                            viewModel.toggleSubscriptionFor(room: room)
+                        }, label: {
+                            Text("Sub")
+                        })
                     }
                 }
             }
@@ -46,6 +60,13 @@ public struct RoomsListScreen: View {
                             viewModel.archiveRoom(room)
                         }
                         .tint(.red)
+                    }
+                    .swipeActions(edge: .leading, allowsFullSwipe: true) {
+                        Button(action: {
+                            viewModel.toggleSubscriptionFor(room: room)
+                        }, label: {
+                            Text("Sub")
+                        })
                     }
                 }
             }
@@ -85,12 +106,10 @@ public struct RoomsListScreen: View {
                     .fontWeight(.bold)
             }
             ToolbarItemGroup(placement: .navigationBarTrailing) {
-                if DittoInstance.dittoShared == nil {
-                    Button {
-                        viewModel.scanButtonAction()
-                    } label: {
-                        Label(scanPrivateRoomTitleKey, systemImage: qrCodeViewfinderKey)
-                    }
+                Button {
+                    viewModel.scanButtonAction()
+                } label: {
+                    Label(scanPrivateRoomTitleKey, systemImage: qrCodeViewfinderKey)
                 }
                 Button {
                     viewModel.createRoomButtonAction()

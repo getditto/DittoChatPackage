@@ -28,13 +28,11 @@ struct RoomEditScreen: View {
                         }
                     ))
                 }
-                if DittoInstance.dittoShared == nil {
-                    Section {
-                        HStack {
-                            CheckboxButton(isChecked: $viewModel.roomIsPrivate)
-                            Text("Private Room")
-                            Spacer()
-                        }
+                Section {
+                    HStack {
+                        CheckboxButton(isChecked: $viewModel.roomIsPrivate)
+                        Text("Private Room")
+                        Spacer()
                     }
                 }
                 Section {

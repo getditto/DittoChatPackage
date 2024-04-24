@@ -59,6 +59,11 @@ protocol ReplicatingDataInterface {
     ) -> DittoSwift.DittoCollection.FetchAttachmentPublisher
 
     func addUser(_ usr: ChatUser)
+    func updateUser(withId id: String,
+                    firstName: String?,
+                    lastName: String?,
+                    subscriptions: [String: Date?]?,
+                    mentions: [String: [String]]?)
     func currentUserPublisher() -> AnyPublisher<ChatUser?, Never>
     func allUsersPublisher() -> AnyPublisher<[ChatUser], Never>
 }
@@ -180,6 +185,10 @@ extension DataManager {
 
     func addUser(_ usr: ChatUser) {
         p2pStore.addUser(usr)
+    }
+
+    func updateUser(withId id: String, firstName: String?, lastName: String?, subscriptions: [String: Date?]?, mentions: [String: [String]]?) {
+        p2pStore.updateUser(withId: id, firstName: firstName, lastName: lastName, subscriptions: subscriptions, mentions: mentions)
     }
 
     public func saveCurrentUser(firstName: String, lastName: String) {

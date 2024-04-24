@@ -372,59 +372,58 @@ struct MessageBubbleShape: Shape {
 
 
 #if DEBUG
-    import Fakery
-    struct MessageBubbleView_Previews: PreviewProvider {
-        static let faker = Faker()
+import Fakery
+struct MessageBubbleView_Previews: PreviewProvider {
+    static let faker = Faker()
 
-        static var messagesWithUsers: [MessageWithUser] = [
-            MessageWithUser(
-                message: Message(
-                    id: UUID().uuidString,
-                    createdOn: Date(),
-                    roomId: publicKey,
-                    text: Self.faker.lorem.sentence(),
-                    userId: "max"
-                ),
-                user: ChatUser(id: "max", firstName: "Maximilian", lastName: "Alexander", subscriptions: [:], mentions: [:])
+    static var messagesWithUsers: [MessageWithUser] = [
+        MessageWithUser(
+            message: Message(
+                id: UUID().uuidString,
+                createdOn: Date(),
+                roomId: publicKey,
+                text: Self.faker.lorem.sentence(),
+                userId: "max"
             ),
-            MessageWithUser(
-                message: Message(
-                    id: UUID().uuidString,
-                    createdOn: Date(),
-                    roomId: publicKey,
-                    text: Self.faker.lorem.paragraph(sentencesAmount: 12),
-                    userId: "me"
-                ),
-                user: ChatUser(id: "me", firstName: "Me", lastName: "NotYou", subscriptions: [:], mentions: [:])
+            user: ChatUser(id: "max", firstName: "Maximilian", lastName: "Alexander", subscriptions: [:], mentions: [:])
+        ),
+        MessageWithUser(
+            message: Message(
+                id: UUID().uuidString,
+                createdOn: Date(),
+                roomId: publicKey,
+                text: Self.faker.lorem.paragraph(sentencesAmount: 12),
+                userId: "me"
             ),
-            MessageWithUser(
-                message: Message(
-                    id: UUID().uuidString,
-                    createdOn: Date(),
-                    roomId: publicKey,
-                    text: Self.faker.lorem.sentence(),
-                    userId: "max"
-                ),
-                user: ChatUser(id: "max", firstName: "Maximilian", lastName: "Alexander", subscriptions: [:], mentions: [:])
+            user: ChatUser(id: "me", firstName: "Me", lastName: "NotYou", subscriptions: [:], mentions: [:])
+        ),
+        MessageWithUser(
+            message: Message(
+                id: UUID().uuidString,
+                createdOn: Date(),
+                roomId: publicKey,
+                text: Self.faker.lorem.sentence(),
+                userId: "max"
             ),
-            MessageWithUser(
-                message: Message(
-                    id: UUID().uuidString,
-                    createdOn: Date(),
-                    roomId: publicKey,
-                    text: Self.faker.lorem.sentence(),
-                    userId: "me"
-                ),
-                user: ChatUser(id: "me", firstName: "Me", lastName: "NotYou", subscriptions: [:], mentions: [:])
+            user: ChatUser(id: "max", firstName: "Maximilian", lastName: "Alexander", subscriptions: [:], mentions: [:])
+        ),
+        MessageWithUser(
+            message: Message(
+                id: UUID().uuidString,
+                createdOn: Date(),
+                roomId: publicKey,
+                text: Self.faker.lorem.sentence(),
+                userId: "me"
             ),
-        ]
+            user: ChatUser(id: "me", firstName: "Me", lastName: "NotYou", subscriptions: [:], mentions: [:])
+        ),
+    ]
 
-        static var previews: some View {
-            ScrollView {
-                LazyVStack(spacing: 0) {
-                    ForEach(messagesWithUsers) { message in
-                        MessageBubbleView(messageWithUser: message, preview: true)
-                    }
+    static var previews: some View {
+        ScrollView {
+            LazyVStack(spacing: 0) {
+                ForEach(messagesWithUsers) { message in
+                    MessageBubbleView(messageWithUser: message, preview: true)
                 }
             }
         }

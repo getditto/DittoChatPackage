@@ -80,6 +80,8 @@ extension Message {
             userIdKey: userId,
             largeImageTokenKey: largeImageToken,
             thumbnailImageTokenKey: thumbnailImageToken,
+            archivedMessageKey: archivedMessage,
+            isArchivedKey: isArchived,
         ]
     }
 }
