@@ -385,7 +385,7 @@ struct MessageBubbleView_Previews: PreviewProvider {
                 text: Self.faker.lorem.sentence(),
                 userId: "max"
             ),
-            user: ChatUser(id: "max", firstName: "Maximilian", lastName: "Alexander")
+            user: ChatUser(id: "max", firstName: "Maximilian", lastName: "Alexander", subscriptions: [:], mentions: [:])
         ),
         MessageWithUser(
             message: Message(
@@ -395,11 +395,7 @@ struct MessageBubbleView_Previews: PreviewProvider {
                 text: Self.faker.lorem.paragraph(sentencesAmount: 12),
                 userId: "me"
             ),
-            user: ChatUser(
-                id: "me",
-                firstName: "Me",
-                lastName: "NotYou"
-            )
+            user: ChatUser(id: "me", firstName: "Me", lastName: "NotYou", subscriptions: [:], mentions: [:])
         ),
         MessageWithUser(
             message: Message(
@@ -409,7 +405,7 @@ struct MessageBubbleView_Previews: PreviewProvider {
                 text: Self.faker.lorem.sentence(),
                 userId: "max"
             ),
-            user: ChatUser(id: "max", firstName: "Maximilian", lastName: "Alexander")
+            user: ChatUser(id: "max", firstName: "Maximilian", lastName: "Alexander", subscriptions: [:], mentions: [:])
         ),
         MessageWithUser(
             message: Message(
@@ -419,15 +415,15 @@ struct MessageBubbleView_Previews: PreviewProvider {
                 text: Self.faker.lorem.sentence(),
                 userId: "me"
             ),
-            user: ChatUser(id: "me", firstName: "Me", lastName: "NotYou")
-        )
+            user: ChatUser(id: "me", firstName: "Me", lastName: "NotYou", subscriptions: [:], mentions: [:])
+        ),
     ]
 
     static var previews: some View {
         ScrollView {
             LazyVStack(spacing: 0) {
-                ForEach(messagesWithUsers) { m in
-                    MessageBubbleView(messageWithUser: m, preview: true)
+                ForEach(messagesWithUsers) { message in
+                    MessageBubbleView(messageWithUser: message, preview: true)
                 }
             }
         }

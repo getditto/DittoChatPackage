@@ -25,6 +25,8 @@ class ChatScreenVM: ObservableObject {
     @Published var presentAttachmentView = false
     var attachmentMessage: Message?
 
+    @Published var currentUser: ChatUser?
+
     @Published var presentEditingView = false
     @Published var isEditing = false
     @Published var keyboardStatus: KeyboardChangeEvent = .unchanged
@@ -71,6 +73,9 @@ class ChatScreenVM: ObservableObject {
             Publishers.keyboardStatus
                 .assign(to: &self.$keyboardStatus)
         }
+
+        DataManager.shared.currentUserPublisher()
+            .assign(to: &$currentUser)
     }
 
     func sendMessage() {
@@ -177,5 +182,30 @@ class ChatScreenVM: ObservableObject {
             return "\(room.id)\n\(collectionId)\n\(room.messagesId)\n\(room.name)\n\(room.isPrivate)\n\(room.createdBy)\n\(room.createdOn)"
         }
         return nil
+    }
+
+    func lastUnreadMessage() -> String? {
+        if let lastReadKeyValue = currentUser?.subscriptions[room.id], let lastReadDate = lastReadKeyValue {
+            let firstunreadMEssage = messagesWithUsers.first { messageWithUser in
+                messageWithUser.message.createdOn > lastReadDate
+            }
+
+            if let firstunreadMEssage {
+                return firstunreadMEssage.id
+            }
+
+            return nil
+        }
+        return nil
+    }
+
+    func clearUnreadsAndMentions() {
+        guard let currentUser else { return }
+        var subs = currentUser.subscriptions
+        var mentions = currentUser.mentions
+        subs.updateValue(.now, forKey: room.id)
+        mentions.updateValue([], forKey: room.id)
+
+        DataManager.shared.updateUser(withId: currentUser.id, firstName: nil, lastName: nil, subscriptions: subs, mentions: mentions)
     }
 }

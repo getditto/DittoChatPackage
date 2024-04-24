@@ -69,7 +69,7 @@ struct RoomDetailsView: View {
         if let user = viewModel.users.first(where: { $0.id == userId }) {
             return user
         }
-        return ChatUser(id: unknownUserIdKey, firstName: noFirstNameKey, lastName: noLastNameKey)
+        return ChatUser.unknownUser()
     }
 
     private func collectionIdString(_ str: String?) -> String {

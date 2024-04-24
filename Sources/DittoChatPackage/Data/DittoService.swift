@@ -241,6 +241,25 @@ extension DittoService {
             .upsert(usr.docDictionary())
     }
 
+    func updateUser(withId id: String,
+                    firstName: String?,
+                    lastName: String?,
+                    subscriptions: [String: Date?]?,
+                    mentions: [String: [String]]?) {
+        ditto.store.collection(usersKey)
+            .findByID(id)
+            .update({ dittoMutableDocument in
+                guard let dittoMutableDocument else { return }
+
+                if let firstName { dittoMutableDocument[firstNameKey].set(firstName) }
+                if let lastName { dittoMutableDocument[lastNameKey].set(lastName) }
+                if let subscriptions {
+                    dittoMutableDocument[subscriptionsKey].set(subscriptions.mapValues { date in date?.ISO8601Format() })
+                }
+                if let mentions { dittoMutableDocument[mentionsKey].set(mentions) }
+            })
+    }
+
     func allUsersPublisher() -> AnyPublisher<[ChatUser], Never> {
         return ditto.store.collection(usersKey).findAll().liveQueryPublisher()
             .map { docs, _ in

@@ -15,6 +15,7 @@ class ProfileScreenViewModel: ObservableObject {
     @Published var firstName: String = ""
     @Published var lastName: String = ""
     @Published var isValid = true
+    @Published var user: ChatUser?
 
     init() {
         DataManager.shared

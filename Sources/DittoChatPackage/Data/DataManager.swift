@@ -59,6 +59,11 @@ protocol ReplicatingDataInterface {
     ) -> DittoSwift.DittoCollection.FetchAttachmentPublisher
 
     func addUser(_ usr: ChatUser)
+    func updateUser(withId id: String,
+                    firstName: String?,
+                    lastName: String?,
+                    subscriptions: [String: Date?]?,
+                    mentions: [String: [String]]?)
     func currentUserPublisher() -> AnyPublisher<ChatUser?, Never>
     func allUsersPublisher() -> AnyPublisher<[ChatUser], Never>
 }
@@ -182,6 +187,10 @@ extension DataManager {
         p2pStore.addUser(usr)
     }
 
+    func updateUser(withId id: String, firstName: String?, lastName: String?, subscriptions: [String: Date?]?, mentions: [String: [String]]?) {
+        p2pStore.updateUser(withId: id, firstName: firstName, lastName: lastName, subscriptions: subscriptions, mentions: mentions)
+    }
+
     public func saveCurrentUser(firstName: String, lastName: String) {
         if currentUserId == nil {
             let userId = UUID().uuidString
@@ -190,7 +199,7 @@ extension DataManager {
 
         assert(currentUserId != nil, "Error: expected currentUserId to not be NIL")
 
-        let user = ChatUser(id: currentUserId!, firstName: firstName, lastName: lastName)
+        let user = ChatUser(id: currentUserId!, firstName: firstName, lastName: lastName, subscriptions: [:], mentions: [:])
         p2pStore.addUser(user)
     }
 }
