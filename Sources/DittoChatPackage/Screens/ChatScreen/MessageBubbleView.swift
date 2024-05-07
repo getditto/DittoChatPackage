@@ -88,14 +88,14 @@ struct MessageBubbleView: View {
             return Color(.tertiarySystemFill)
         }
         #endif
-        return .accentColor
+        return .secondary
     }
 
     private var textColor: Color {
         if side == .left {
             return Color(.label)
         }
-        return Color.white
+        return Color.primary
     }
 
     private var rowInsets: EdgeInsets {
