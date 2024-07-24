@@ -20,6 +20,7 @@ public struct RoomsListScreen: View {
                     NavigationLink(destination: ChatScreen(room: defaultPublicRoom)) {
                         RoomsListRowItem(room: defaultPublicRoom)
                     }
+                    #if !os(tvOS)
                     .swipeActions(edge: .leading, allowsFullSwipe: true) {
                         Button(action: {
                             viewModel.toggleSubscriptionFor(room: defaultPublicRoom)
@@ -27,6 +28,7 @@ public struct RoomsListScreen: View {
                             Text("Sub")
                         })
                     }
+                    #endif
                 }
             }
             Section( viewModel.publicRooms.count > 0 ? publicRoomsTitleKey : "" ) {
