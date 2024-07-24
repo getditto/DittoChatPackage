@@ -1,6 +1,24 @@
 {
   "pins" : [
     {
+      "identity" : "dittoswiftpackage",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/getditto/DittoSwiftPackage",
+      "state" : {
+        "revision" : "3d1c79f48c884f3f59f6e9703fee2fe13ec539e5",
+        "version" : "4.8.0-rc.1"
+      }
+    },
+    {
+      "identity" : "dittoswifttools",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/getditto/DittoSwiftTools",
+      "state" : {
+        "branch" : "EE/tvOS_support",
+        "revision" : "d912621a50ee13dd9457ec8a8d0b8ac4bd504afd"
+      }
+    },
+    {
       "identity" : "fakery",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/vadymmarkov/Fakery",
