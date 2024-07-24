@@ -6,6 +6,7 @@
 //  Copyright © 2023 DittoLive Incorporated. All rights reserved.
 //
 
+import SwiftUI
 import PhotosUI
 import SwiftUI
 
@@ -14,7 +15,7 @@ public struct ChatScreen: View {
     @EnvironmentObject var errorHandler: ErrorHandler
 
     public init(room: Room) {
-        _viewModel = StateObject(wrappedValue: ChatScreenVM(room: room))
+        self._viewModel = StateObject(wrappedValue: ChatScreenVM(room: room))
     }
 
     var navBarTitle: String {
@@ -28,42 +29,66 @@ public struct ChatScreen: View {
     public var body: some View {
         VStack {
             ScrollViewReader { proxy in
-                ScrollView {
-                    LazyVStack(spacing: 0) {
-                        ForEach(viewModel.messagesWithUsers) { usrMsg in
-                            MessageBubbleView(
-                                messageWithUser: usrMsg,
-                                messagesId: viewModel.room.messagesId,
-                                messageOpCallback: viewModel.messageOperationCallback,
-                                isEditing: $viewModel.isEditing
-                            )
-                            .id(usrMsg.message.id)
-                            .transition(.slide)
+                ZStack {
+                    ScrollView {
+                        LazyVStack(spacing: 0) {
+                            ForEach(viewModel.messagesWithUsers) { usrMsg in
+                                MessageBubbleView(
+                                    messageWithUser: usrMsg,
+                                    messagesId: viewModel.room.messagesId,
+                                    messageOpCallback: viewModel.messageOperationCallback,
+                                    isEditing: $viewModel.isEditing
+                                )
+                                .id(usrMsg.message.id)
+                                .transition(.slide)
+                            }
                         }
                     }
-                }
-                .scrollDismissesKeyboard(.interactively)
-                .onAppear {
-                    DispatchQueue.main.async {
-                        scrollToBottom(proxy: proxy)
+                    //.defaultScrollAnchor(.bottom)
+                    .scrollDismissesKeyboard(.interactively)
+                    .onAppear {
+                        DispatchQueue.main.async {
+                            scrollToBottom(proxy: proxy)
+                        }
                     }
-                }
-                .onChange(of: viewModel.messagesWithUsers.count) { _ in
-                    DispatchQueue.main.async {
+                    .onChange(of: viewModel.messagesWithUsers.count) { value in
+                        DispatchQueue.main.async {
+                            withAnimation {
+                                scrollToBottom(proxy: proxy)
+                            }
+                        }
+                    }
+                    .onChange(of: viewModel.keyboardStatus) { status in
+                        guard !viewModel.presentEditingView else { return }
+                        if status == .willShow || status == .willHide { return }
                         withAnimation {
                             scrollToBottom(proxy: proxy)
                         }
                     }
-                }
-                .onChange(of: viewModel.keyboardStatus) { status in
-                    guard !viewModel.presentEditingView else { return }
-                    if status == .willShow || status == .willHide { return }
-                    withAnimation {
-                        scrollToBottom(proxy: proxy)
+                    if let lastUnreadMessage = viewModel.lastUnreadMessage() {
+                        VStack(alignment: .leading) {
+                            Button(action: {
+                                DispatchQueue.main.async {
+                                    withAnimation {
+                                        proxy.scrollTo(lastUnreadMessage, anchor: .top)
+                                    }
+                                    viewModel.clearUnreadsAndMentions()
+                                }
+                            }, label: {
+                                Image(systemName: "arrow.up.message")
+                                Text("new messages")
+                            })
+                            .padding(.top)
+                            .padding(.horizontal)
+                            .buttonBorderShape(.capsule)
+                            .buttonStyle(.borderedProminent)
+                            Spacer()
+                        }
                     }
                 }
             }
-            HStack(alignment: .top) {
+
+            HStack(alignment: .center, spacing: 0) {
                 #if !os(tvOS)
                 photosPickerButtonView
                     .padding(.top, 4)
@@ -73,6 +98,7 @@ public struct ChatScreen: View {
                     text: $viewModel.inputText,
                     onSendButtonTappedCallback: viewModel.sendMessage
                 )
+                .padding(.leading, 0)
             }
         }
         #if !os(tvOS)
@@ -157,13 +183,16 @@ public struct ChatScreen: View {
     var photosPickerButtonView: some View {
         PhotosPicker(selection: $viewModel.selectedItem,
                      matching: .images,
-                     photoLibrary: .shared())
-        {
+                     photoLibrary: .shared()
+        ) {
             Image(systemName: cameraFillKey)
                 .symbolRenderingMode(.multicolor)
                 .font(.system(size: 28))
                 .foregroundColor(.accentColor)
         }
+        .padding(.leading, 12)
+        .padding(.trailing, 4)
+        .frame(width: 56, height: 44)
         .buttonStyle(.borderless)
         .onChange(of: viewModel.selectedItem) { newValue in
             Task {
@@ -176,11 +205,11 @@ public struct ChatScreen: View {
                         do {
                             try await viewModel.sendImageMessage()
                         } catch {
-                            errorHandler.handle(error: error)
+                            self.errorHandler.handle(error: error)
                         }
                     }
                 } catch {
-                    errorHandler.handle(error: AttachmentError.iCloudLibraryImageFail)
+                    self.errorHandler.handle(error: AttachmentError.iCloudLibraryImageFail)
                 }
             }
         }

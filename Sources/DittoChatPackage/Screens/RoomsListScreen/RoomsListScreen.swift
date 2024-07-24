@@ -11,7 +11,7 @@ import SwiftUI
 public struct RoomsListScreen: View {
     @ObservedObject var viewModel = RoomsListScreenVM()
 
-    public init() { /*Make init private access level*/ }
+    public init() { /*Make init public access level*/ }
 
     public var body: some View {
         List {
@@ -20,9 +20,16 @@ public struct RoomsListScreen: View {
                     NavigationLink(destination: ChatScreen(room: defaultPublicRoom)) {
                         RoomsListRowItem(room: defaultPublicRoom)
                     }
+                    .swipeActions(edge: .leading, allowsFullSwipe: true) {
+                        Button(action: {
+                            viewModel.toggleSubscriptionFor(room: defaultPublicRoom)
+                        }, label: {
+                            Text("Sub")
+                        })
+                    }
                 }
             }
-            Section(!viewModel.publicRooms.isEmpty ? publicRoomsTitleKey : "") {
+            Section( viewModel.publicRooms.count > 0 ? publicRoomsTitleKey : "" ) {
                 ForEach(viewModel.publicRooms) { room in
                     NavigationLink(destination: ChatScreen(room: room)) {
                         RoomsListRowItem(room: room)
@@ -34,11 +41,18 @@ public struct RoomsListScreen: View {
                         }
                         .tint(.red)
                     }
+                    .swipeActions(edge: .leading, allowsFullSwipe: true) {
+                        Button(action: {
+                            viewModel.toggleSubscriptionFor(room: room)
+                        }, label: {
+                            Text("Sub")
+                        })
+                    }
                     #endif
                 }
             }
-
-            Section(!viewModel.privateRooms.isEmpty ? privateRoomsTitleKey : "") {
+            
+            Section( viewModel.privateRooms.count > 0 ? privateRoomsTitleKey : "" ) {
                 ForEach(viewModel.privateRooms) { room in
                     NavigationLink(destination: ChatScreen(room: room)) {
                         RoomsListRowItem(room: room)
@@ -49,6 +63,13 @@ public struct RoomsListScreen: View {
                             viewModel.archiveRoom(room)
                         }
                         .tint(.red)
+                    }
+                    .swipeActions(edge: .leading, allowsFullSwipe: true) {
+                        Button(action: {
+                            viewModel.toggleSubscriptionFor(room: room)
+                        }, label: {
+                            Text("Sub")
+                        })
                     }
                     #endif
                 }
@@ -97,11 +118,11 @@ public struct RoomsListScreen: View {
                     .fontWeight(.bold)
             }
             ToolbarItemGroup(placement: .navigationBarTrailing) {
-//                Button {
-//                    viewModel.scanButtonAction()
-//                } label: {
-//                    Label(scanPrivateRoomTitleKey, systemImage: qrCodeViewfinderKey)
-//                }
+                Button {
+                    viewModel.scanButtonAction()
+                } label: {
+                    Label(scanPrivateRoomTitleKey, systemImage: qrCodeViewfinderKey)
+                }
                 Button {
                     viewModel.createRoomButtonAction()
                 } label: {

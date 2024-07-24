@@ -59,6 +59,11 @@ protocol ReplicatingDataInterface {
     ) -> DittoSwift.DittoCollection.FetchAttachmentPublisher
 
     func addUser(_ usr: ChatUser)
+    func updateUser(withId id: String,
+                    firstName: String?,
+                    lastName: String?,
+                    subscriptions: [String: Date?]?,
+                    mentions: [String: [String]]?)
     func currentUserPublisher() -> AnyPublisher<ChatUser?, Never>
     func allUsersPublisher() -> AnyPublisher<[ChatUser], Never>
 }
@@ -72,10 +77,10 @@ public class DataManager {
     private let p2pStore: ReplicatingDataInterface
 
     private init() {
-        localStore = LocalStoreService()
-        p2pStore = DittoService(privateStore: localStore)
-        publicRoomsPublisher = p2pStore.publicRoomsPublisher.eraseToAnyPublisher()
-        privateRoomsPublisher = localStore.privateRoomsPublisher
+        self.localStore = LocalStoreService()
+        self.p2pStore = DittoService(privateStore: localStore)
+        self.publicRoomsPublisher = p2pStore.publicRoomsPublisher.eraseToAnyPublisher()
+        self.privateRoomsPublisher = localStore.privateRoomsPublisher
     }
 }
 
@@ -182,8 +187,11 @@ extension DataManager {
         p2pStore.addUser(usr)
     }
 
+    func updateUser(withId id: String, firstName: String?, lastName: String?, subscriptions: [String: Date?]?, mentions: [String: [String]]?) {
+        p2pStore.updateUser(withId: id, firstName: firstName, lastName: lastName, subscriptions: subscriptions, mentions: mentions)
+    }
+
     public func saveCurrentUser(firstName: String, lastName: String) {
-        // TODO: create mechanism to allow for an app to pass in the User or at least check if first and last name match. or maybe pass in an ID?
         if currentUserId == nil {
             let userId = UUID().uuidString
             currentUserId = userId
@@ -191,7 +199,7 @@ extension DataManager {
 
         assert(currentUserId != nil, "Error: expected currentUserId to not be NIL")
 
-        let user = ChatUser(id: currentUserId!, firstName: firstName, lastName: lastName)
+        let user = ChatUser(id: currentUserId!, firstName: firstName, lastName: lastName, subscriptions: [:], mentions: [:])
         p2pStore.addUser(user)
     }
 }
@@ -226,5 +234,7 @@ public extension DataManager {
         set { localStore.basicChat = newValue }
     }
 
-    var basicChatPublisher: AnyPublisher<Bool, Never> { localStore.basicChatPublisher }
+    var basicChatPublisher: AnyPublisher<Bool, Never> {
+        get { localStore.basicChatPublisher }
+    }
 }

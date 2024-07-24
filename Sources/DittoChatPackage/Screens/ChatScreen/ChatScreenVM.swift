@@ -27,6 +27,8 @@ class ChatScreenVM: ObservableObject {
     @Published var presentAttachmentView = false
     var attachmentMessage: Message?
 
+    @Published var currentUser: ChatUser?
+
     @Published var presentEditingView = false
     @Published var isEditing = false
     @Published var keyboardStatus: KeyboardChangeEvent = .unchanged
@@ -43,8 +45,8 @@ class ChatScreenVM: ObservableObject {
 
     init(room: Room) {
         // In Basic chat mode, display profile screen if user is nil (first launch)
-        if room.id == publicKey, DataManager.shared.basicChat {
-            presentProfileScreen = DataManager.shared.currentUserId == nil
+        if room.id == publicKey && DataManager.shared.basicChat {
+            self.presentProfileScreen = DataManager.shared.currentUserId == nil
         }
         self.room = room
 
@@ -64,7 +66,7 @@ class ChatScreenVM: ObservableObject {
 
         DataManager.shared.roomPublisher(for: room)
             .map { room -> String in
-                if let room { self.room = room }
+                if let room = room { self.room = room }
                 return room?.name ?? ""
             }
             .assign(to: &$roomName)
@@ -75,6 +77,9 @@ class ChatScreenVM: ObservableObject {
                 .assign(to: &self.$keyboardStatus)
         }
         #endif
+
+        DataManager.shared.currentUserPublisher()
+            .assign(to: &$currentUser)
     }
 
     func sendMessage() {
@@ -90,7 +95,7 @@ class ChatScreenVM: ObservableObject {
         guard let image = selectedImage else {
             throw AttachmentError.libraryImageFail
         }
-
+        
         do {
             try await DataManager.shared.createImageMessage(for: room, image: image, text: inputText)
 
@@ -180,8 +185,33 @@ class ChatScreenVM: ObservableObject {
     // private room
     func shareQRCode() -> String? {
         if let collectionId = room.collectionId {
-            return "\(room.id)\n\(collectionId)\n\(room.messagesId)"
+            return "\(room.id)\n\(collectionId)\n\(room.messagesId)\n\(room.name)\n\(room.isPrivate)\n\(room.createdBy)\n\(room.createdOn)"
         }
         return nil
+    }
+
+    func lastUnreadMessage() -> String? {
+        if let lastReadKeyValue = currentUser?.subscriptions[room.id], let lastReadDate = lastReadKeyValue {
+            let firstunreadMEssage = messagesWithUsers.first { messageWithUser in
+                messageWithUser.message.createdOn > lastReadDate
+            }
+
+            if let firstunreadMEssage {
+                return firstunreadMEssage.id
+            }
+
+            return nil
+        }
+        return nil
+    }
+
+    func clearUnreadsAndMentions() {
+        guard let currentUser else { return }
+        var subs = currentUser.subscriptions
+        var mentions = currentUser.mentions
+        subs.updateValue(.now, forKey: room.id)
+        mentions.updateValue([], forKey: room.id)
+
+        DataManager.shared.updateUser(withId: currentUser.id, firstName: nil, lastName: nil, subscriptions: subs, mentions: mentions)
     }
 }

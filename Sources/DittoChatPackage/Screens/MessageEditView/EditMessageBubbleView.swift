@@ -41,15 +41,15 @@ struct EditMessageBubbleView: View {
     }
 
     private var backgroundColor: Color {
-        .accentColor
+        return .accentColor
     }
 
     private var textColor: Color {
-        Color.white
+        return Color.white
     }
 
     private var rowInsets: EdgeInsets {
-        EdgeInsets(
+        return EdgeInsets(
             top: -4,
             leading: 80,
             bottom: 8,

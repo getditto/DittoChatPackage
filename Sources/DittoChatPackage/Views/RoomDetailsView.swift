@@ -69,11 +69,11 @@ struct RoomDetailsView: View {
         if let user = viewModel.users.first(where: { $0.id == userId }) {
             return user
         }
-        return ChatUser(id: unknownUserIdKey, firstName: noFirstNameKey, lastName: noLastNameKey)
+        return ChatUser.unknownUser()
     }
 
     private func collectionIdString(_ str: String?) -> String {
-        guard let str else {
+        guard let str = str else {
             return room.isPrivate ? notAvailableLabelKey : publicRoomsCollectionId
         }
         return str.isEmpty ? notAvailableLabelKey : str

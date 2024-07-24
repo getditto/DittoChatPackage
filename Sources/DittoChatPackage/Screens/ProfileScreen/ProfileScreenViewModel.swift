@@ -15,6 +15,7 @@ class ProfileScreenViewModel: ObservableObject {
     @Published var firstName: String = ""
     @Published var lastName: String = ""
     @Published var isValid = true
+    @Published var user: ChatUser?
 
     init() {
         DataManager.shared
@@ -33,7 +34,7 @@ class ProfileScreenViewModel: ObservableObject {
 
         $firstName.combineLatest($lastName)
             .map { firstName, lastName -> Bool in
-                firstName.isEmpty || lastName.isEmpty
+                return firstName.isEmpty || lastName.isEmpty
             }
             .assign(to: &$saveButtonDisabled)
     }

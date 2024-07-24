@@ -17,9 +17,10 @@ class RoomsListScreenVM: ObservableObject {
     @Published var publicRooms: [Room] = []
     @Published var privateRooms: [Room] = []
     @Published var defaultPublicRoom: Room?
+    @Published var currentUser: ChatUser?
 
     init() {
-        presentProfileScreen = DataManager.shared.currentUserId == nil
+        self.presentProfileScreen = DataManager.shared.currentUserId == nil
 
         DataManager.shared
             .publicRoomsPublisher
@@ -37,6 +38,9 @@ class RoomsListScreenVM: ObservableObject {
                 privRooms.sorted(by: { $0.createdOn > $1.createdOn })
             }
             .assign(to: &$privateRooms)
+
+        DataManager.shared.currentUserPublisher()
+            .assign(to: &$currentUser)
     }
 
     func profileButtonAction() {
@@ -57,5 +61,21 @@ class RoomsListScreenVM: ObservableObject {
 
     func archiveRoom(_ room: Room) {
         DataManager.shared.archiveRoom(room)
+    }
+
+    func toggleSubscriptionFor(room: Room) {
+        guard let currentUser else { return }
+        guard let dateValue = currentUser.subscriptions[room.id], let date = dateValue else {
+            var subscriptions = currentUser.subscriptions
+            subscriptions.updateValue(.now, forKey: room.id)
+
+            DataManager.shared.updateUser(withId: currentUser.id, firstName: nil, lastName: nil, subscriptions: subscriptions, mentions: nil)
+            return
+        }
+
+        var newSubscriptions = currentUser.subscriptions
+        newSubscriptions.updateValue(nil, forKey: room.id)
+
+        DataManager.shared.updateUser(withId: currentUser.id, firstName: nil, lastName: nil, subscriptions: newSubscriptions, mentions: nil)
     }
 }

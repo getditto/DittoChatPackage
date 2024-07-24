@@ -22,11 +22,11 @@ class MessageEditVM: ObservableObject {
         saveEditCallback: @escaping (Message) -> Void,
         cancelEditCallback: @escaping () -> Void
     ) {
-        editUsrMsg = msgsUsers.editUsrMsg
-        editText = editUsrMsg.message.text
-        messagesWithUsers = msgsUsers.chats
-        saveCallback = saveEditCallback
-        cancelCallback = cancelEditCallback
+        self.editUsrMsg = msgsUsers.editUsrMsg
+        self.editText = editUsrMsg.message.text
+        self.messagesWithUsers = msgsUsers.chats
+        self.saveCallback = saveEditCallback
+        self.cancelCallback = cancelEditCallback
 
         #if !os(tvOS)
         DispatchQueue.main.async {
@@ -61,7 +61,7 @@ struct MessageEditView: View {
         saveEditCallback: @escaping (Message) -> Void,
         cancelEditCallback: @escaping () -> Void
     ) {
-        _viewModel = StateObject(
+        self._viewModel = StateObject(
             wrappedValue: MessageEditVM(
                 msgsUsers,
                 saveEditCallback: saveEditCallback,
@@ -90,7 +90,7 @@ struct MessageEditView: View {
                         }
                     }
                 }
-                .onChange(of: viewModel.editText) { _ in
+                .onChange(of: viewModel.editText) { value in
                     withAnimation {
                         scrollToBottom(proxy: proxy)
                     }

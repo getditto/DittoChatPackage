@@ -24,7 +24,7 @@ extension DateFormatter {
     }
 
     static var isoDateFull: ISO8601DateFormatter {
-        let format = isoDate
+        let format = self.isoDate
         format.formatOptions = [.withFullDate]
         return format
     }
@@ -37,7 +37,7 @@ extension String {
         let context = CIContext()
         let filter = CIFilter.qrCodeGenerator()
 
-        filter.message = Data(utf8)
+        filter.message = Data(self.utf8)
 
         if let outputImage = filter.outputImage {
             if let cgimg = context.createCGImage(outputImage, from: outputImage.extent) {
@@ -60,7 +60,7 @@ extension String {
 
 extension String {
     func trim() -> String {
-        trimmingCharacters(in: .whitespacesAndNewlines)
+        self.trimmingCharacters(in: .whitespacesAndNewlines)
     }
 }
 
@@ -83,9 +83,9 @@ extension View {
 
 extension Bundle {
     var appName: String {
-        if let displayName: String = infoDictionary?["CFBundleDisplayName"] as? String {
+        if let displayName: String = self.infoDictionary?["CFBundleDisplayName"] as? String {
             return displayName
-        } else if let name: String = infoDictionary?["CFBundleName"] as? String {
+        } else if let name: String = self.infoDictionary?["CFBundleName"] as? String {
             return name
         }
         return "Ditto Chat"
@@ -120,10 +120,9 @@ extension CGFloat {
  https://www.fivestars.blog/articles/swiftui-share-layout-information/
  */
 struct SizePreferenceKey: PreferenceKey {
-    static var defaultValue: CGSize = .zero
-    static func reduce(value _: inout CGSize, nextValue _: () -> CGSize) { /*Implement*/ }
+  static var defaultValue: CGSize = .zero
+  static func reduce(value: inout CGSize, nextValue: () -> CGSize) {}
 }
-
 extension View {
     func readSize(onChange: @escaping (CGSize) -> Void) -> some View {
         background(

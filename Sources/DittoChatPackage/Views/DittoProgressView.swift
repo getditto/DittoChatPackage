@@ -18,9 +18,9 @@ struct DittoProgressView: View {
     private let lineWidth: CGFloat
 
     init(_ progress: Binding<Double>, side: CGFloat = 240) {
-        _progress = progress
+        self._progress = progress
         self.side = side
-        lineWidth = 0.12 * side
+        self.lineWidth = 0.12 * side
     }
 
     var body: some View {
@@ -65,16 +65,16 @@ struct PercentageLabel: View {
     private let percentSignFactor: CGFloat
 
     init(_ progress: Binding<Double>, side: CGFloat) {
-        _progress = progress
+        self._progress = progress
         self.side = side
-        percentageFactor = side * 0.3
-        percentSignFactor = side * 0.2
+        self.percentageFactor = side * 0.3
+        self.percentSignFactor = side * 0.2
     }
 
     var body: some View {
         Group {
             Text("\(progress * 100, specifier: "%.0f")").font(.system(size: percentageFactor * scale, weight: .bold, design: .rounded))
-                + Text("%").font(.system(size: percentSignFactor * scale, weight: .bold, design: .rounded))
+            + Text("%").font(.system(size: percentSignFactor * scale, weight: .bold, design: .rounded))
         }
         .lineLimit(1)
     }
@@ -85,7 +85,7 @@ struct DittoProgressView_Previews: PreviewProvider {
     static var previews: some View {
         VStack {
             DittoProgressView(
-                .constant(1), // (0.42),
+                .constant (1),// (0.42),
                 side: 100
             )
         }

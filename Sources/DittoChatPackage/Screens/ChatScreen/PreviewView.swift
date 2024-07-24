@@ -32,10 +32,11 @@ struct PreviewViewController: UIViewControllerRepresentable {
         return controller
     }
 
-    func updateUIViewController(_: QLPreviewController, context _: Context) { /*protocol conformance*/ }
+    func updateUIViewController(
+        _ uiViewController: QLPreviewController, context: Context) {}
 
     func makeCoordinator() -> Coordinator {
-        Coordinator(parent: self)
+        return Coordinator(parent: self)
     }
 
     class Coordinator: QLPreviewControllerDataSource {
@@ -45,15 +46,15 @@ struct PreviewViewController: UIViewControllerRepresentable {
             self.parent = parent
         }
 
-        func numberOfPreviewItems(in _: QLPreviewController) -> Int {
-            1
+        func numberOfPreviewItems(in controller: QLPreviewController) -> Int {
+            return 1
         }
 
         func previewController(
-            _: QLPreviewController,
-            previewItemAt _: Int
+            _ controller: QLPreviewController,
+            previewItemAt index: Int
         ) -> QLPreviewItem {
-            parent.url as NSURL
+            return parent.url as NSURL
         }
     }
 }

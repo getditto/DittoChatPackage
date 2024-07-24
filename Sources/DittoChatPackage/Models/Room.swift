@@ -33,13 +33,13 @@ public struct Room: Identifiable, Hashable, Equatable {
 
 extension Room {
     init(document: DittoDocument) {
-        id = document[dbIdKey].stringValue
-        name = document[nameKey].stringValue
-        messagesId = document[messagesIdKey].stringValue
-        isPrivate = document[isPrivateKey].boolValue
-        collectionId = document[collectionIdKey].string
-        createdBy = document[createdByKey].stringValue
-        createdOn = DateFormatter.isoDate.date(from: document[createdOnKey].stringValue) ?? Date()
+        self.id = document[dbIdKey].stringValue
+        self.name = document[nameKey].stringValue
+        self.messagesId = document[messagesIdKey].stringValue
+        self.isPrivate = document[isPrivateKey].boolValue
+        self.collectionId = document[collectionIdKey].string
+        self.createdBy = document[createdByKey].stringValue
+        self.createdOn = DateFormatter.isoDate.date(from: document[createdOnKey].stringValue) ?? Date()
     }
 }
 

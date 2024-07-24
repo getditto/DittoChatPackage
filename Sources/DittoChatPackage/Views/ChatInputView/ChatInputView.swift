@@ -10,7 +10,7 @@ import SwiftUI
 
 struct ChatInputView: View {
     @Binding var text: String
-    var onSendButtonTappedCallback: (() -> Void)?
+    var onSendButtonTappedCallback: (() -> Void)? = nil
 
     var body: some View {
         HStack(alignment: .bottom) {
@@ -27,19 +27,20 @@ struct ChatInputView: View {
                     onSendButtonTappedCallback?()
                 } label: {
                     Image(systemName: arrowUpKey)
-                        .padding(.all, 4)
+                        .padding(.all, 5)
                         .foregroundColor(Color.white)
                         .background(.blue)
                         .clipShape(Circle())
                 }
-                .padding(.bottom, 6)
+                .padding(4)
+
                 Spacer(minLength: 8)
             }
             .overlay(
                 RoundedRectangle(cornerRadius: 20)
                     .stroke(.secondary, lineWidth: 1)
             )
-            .padding(.bottom, 12)
+
             Spacer(minLength: 12)
         }
     }
