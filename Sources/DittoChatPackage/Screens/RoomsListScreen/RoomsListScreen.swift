@@ -54,23 +54,25 @@ public struct RoomsListScreen: View {
                 }
             }
         }
-        #if !os(tvOS)
+#if !os(tvOS)
         .navigationBarTitleDisplayMode(.inline)
-//        .navigationDestination(for: Room.self) { room in
-//            ChatScreen(room: room)
-//                .withErrorHandling()
-//        }
-        #endif
+        .navigationDestination(for: Room.self) { room in
+            ChatScreen(room: room)
+                .withErrorHandling()
+        }
+#endif
         .sheet(isPresented: $viewModel.presentProfileScreen) {
             ProfileScreen()
         }
-//        .sheet(isPresented: $viewModel.presentScannerView) {
-//            ScannerView(
-//                successAction: { code in
-//                    viewModel.joinPrivateRoom(code: code)
-//                }
-//            )
-//        }
+#if os(iOS)
+        .sheet(isPresented: $viewModel.presentScannerView) {
+            ScannerView(
+                successAction: { code in
+                    viewModel.joinPrivateRoom(code: code)
+                }
+            )
+        }
+#endif
         .sheet(isPresented: $viewModel.presentCreateRoomScreen) {
             RoomEditScreen()
         }
