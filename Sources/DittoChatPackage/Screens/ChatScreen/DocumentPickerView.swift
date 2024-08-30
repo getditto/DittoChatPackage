@@ -9,6 +9,7 @@
 import SwiftUI
 import UniformTypeIdentifiers
 
+#if !os(tvOS)
 struct DocumentPickerView: View {
     var body: some View {
         DocumentPickerController()
@@ -75,4 +76,6 @@ struct DocumentPicker_Previews: PreviewProvider {
         DocumentPickerController()
     }
 }
+#endif
+
 #endif

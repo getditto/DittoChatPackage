@@ -23,7 +23,9 @@ struct EditMessageBubbleView: View {
                         .padding(textInsets)
 
                     Text(DateFormatter.shortTime.string(from: viewModel.editMessage.createdOn))
+                        #if !os(tvOS)
                         .font(.system(size: UIFont.smallSystemFontSize))
+                        #endif
                         .padding(textInsets)
                 }
                 .background(backgroundColor)

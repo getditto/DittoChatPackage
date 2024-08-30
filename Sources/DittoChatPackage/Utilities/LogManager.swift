@@ -3,7 +3,9 @@
 //
 
 import Foundation
+#if canImport(MessageUI)
 import MessageUI
+#endif
 import UIKit
 
 fileprivate struct Config {

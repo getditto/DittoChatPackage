@@ -10,9 +10,12 @@
 //
 
 import Combine
+#if canImport(QuickLook)
 import QuickLook
+#endif
 import SwiftUI
 
+#if !os(tvOS)
 struct AttachmentPreview: View {
     @StateObject var viewModel: MessageBubbleVM
     @StateObject var errorHandler: ErrorHandler
@@ -83,3 +86,4 @@ struct AttachmentPreviewController: UIViewControllerRepresentable {
         }
     }
 }
+#endif

@@ -5,8 +5,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/twostraws/CodeScanner",
       "state" : {
-        "revision" : "944a6a1ca030dbd890e647a678e718fc2115d35c",
-        "version" : "2.4.1"
+        "revision" : "34da57fb63b47add20de8a85da58191523ccce57",
+        "version" : "2.5.0"
       }
     },
     {
@@ -14,17 +14,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/getditto/DittoSwiftPackage",
       "state" : {
-        "revision" : "808b636b11ddd129b956cc8d9c71534880a8a1f1",
-        "version" : "4.7.0"
-      }
-    },
-    {
-      "identity" : "dittoswifttools",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/getditto/DittoSwiftTools",
-      "state" : {
-        "revision" : "e78ed387c8467e60c7909b9af2ad5af5eabe076b",
-        "version" : "4.7.4"
+        "revision" : "fb4ee210d85380084f9bdd26cd5bb987db971da2",
+        "version" : "4.8.0"
       }
     },
     {

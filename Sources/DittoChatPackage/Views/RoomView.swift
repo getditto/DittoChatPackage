@@ -17,7 +17,9 @@ struct RoomView: View {
 
         RoomDetailsView(room: room, viewModel: viewModel)
             .navigationBarTitle(room.name)
+            #if !os(tvOS)
             .navigationBarTitleDisplayMode(.inline)
+            #endif
 
         Spacer()
     }

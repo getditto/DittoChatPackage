@@ -9,6 +9,7 @@
 import CodeScanner
 import SwiftUI
 
+#if os(iOS)
 struct ScannerView: View {
     @Environment(\.dismiss) var dismiss
     @State private var isShowingScanner = false
@@ -71,3 +72,4 @@ struct ScannerView_Previews: PreviewProvider {
         ScannerView()
     }
 }
+#endif

@@ -13,12 +13,16 @@ struct ChatInputView: View {
     var onSendButtonTappedCallback: (() -> Void)? = nil
 
     var body: some View {
-        HStack(alignment: .center) {
-
-            HStack(alignment: .center) {
-                
+        HStack(alignment: .bottom) {
+            Spacer(minLength: 12)
+            HStack(alignment: .bottom) {
+#if os(tvOS)
+                TextField("", text: $text)
+                    .padding(EdgeInsets(top: 0, leading: 8, bottom: 0, trailing: 8))
+#else
                 ExpandingTextView(text: $text)
-                
+                    .padding(EdgeInsets(top: 0, leading: 8, bottom: 0, trailing: 8))
+#endif
                 Button {
                     onSendButtonTappedCallback?()
                 } label: {

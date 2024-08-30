@@ -20,8 +20,10 @@ struct ExpandingTextView: View {
 
         func makeUIView(context: Context) -> UITextView {
             let view = UITextView()
+            #if !os(tvOS)
             view.isEditable = true
             view.font = UIFont.systemFont(ofSize: UIFont.labelFontSize)
+            #endif
             view.backgroundColor = .clear
             view.delegate = context.coordinator
             view.textContainerInset = UIEdgeInsets(top: 8.0, left: 8.0, bottom: 8.0, right: 0.0)
@@ -71,7 +73,11 @@ struct ExpandingTextView: View {
 
     @Binding var text: String
 
+    #if !os(tvOS)
     let minHeight: CGFloat = UIFont.systemFont(ofSize: UIFont.labelFontSize).lineHeight
+    #else
+    let minHeight: CGFloat = 12.0
+    #endif
     @State private var height: CGFloat?
 
     var body: some View {

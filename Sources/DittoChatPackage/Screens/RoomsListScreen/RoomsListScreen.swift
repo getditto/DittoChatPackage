@@ -20,6 +20,7 @@ public struct RoomsListScreen: View {
                     NavigationLink(destination: ChatScreen(room: defaultPublicRoom)) {
                         RoomsListRowItem(room: defaultPublicRoom)
                     }
+                    #if !os(tvOS)
                     .swipeActions(edge: .leading, allowsFullSwipe: true) {
                         Button(action: {
                             viewModel.toggleSubscriptionFor(room: defaultPublicRoom)
@@ -27,6 +28,7 @@ public struct RoomsListScreen: View {
                             Text("Sub")
                         })
                     }
+                    #endif
                 }
             }
             Section( viewModel.publicRooms.count > 0 ? publicRoomsTitleKey : "" ) {
@@ -34,6 +36,7 @@ public struct RoomsListScreen: View {
                     NavigationLink(destination: ChatScreen(room: room)) {
                         RoomsListRowItem(room: room)
                     }
+                    #if !os(tvOS)
                     .swipeActions(edge: .trailing, allowsFullSwipe: false) {
                         Button(settingsHideTitleKey) {
                             viewModel.archiveRoom(room)
@@ -47,6 +50,7 @@ public struct RoomsListScreen: View {
                             Text("Sub")
                         })
                     }
+                    #endif
                 }
             }
             
@@ -55,6 +59,7 @@ public struct RoomsListScreen: View {
                     NavigationLink(destination: ChatScreen(room: room)) {
                         RoomsListRowItem(room: room)
                     }
+                    #if !os(tvOS)
                     .swipeActions(edge: .trailing, allowsFullSwipe: false) {
                         Button(settingsLeaveTitleKey) {
                             viewModel.archiveRoom(room)
@@ -68,13 +73,21 @@ public struct RoomsListScreen: View {
                             Text("Sub")
                         })
                     }
+                    #endif
                 }
             }
         }
+#if !os(tvOS)
         .navigationBarTitleDisplayMode(.inline)
+        .navigationDestination(for: Room.self) { room in
+            ChatScreen(room: room)
+                .withErrorHandling()
+        }
+#endif
         .sheet(isPresented: $viewModel.presentProfileScreen) {
             ProfileScreen()
         }
+#if os(iOS)
         .sheet(isPresented: $viewModel.presentScannerView) {
             ScannerView(
                 successAction: { code in
@@ -82,6 +95,7 @@ public struct RoomsListScreen: View {
                 }
             )
         }
+#endif
         .sheet(isPresented: $viewModel.presentCreateRoomScreen) {
             RoomEditScreen()
         }

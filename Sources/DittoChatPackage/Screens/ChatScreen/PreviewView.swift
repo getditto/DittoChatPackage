@@ -9,9 +9,12 @@
 //  https://nilcoalescing.com/blog/PreviewFilesWithQuickLookInSwiftUI/
 //
 
+#if canImport(QuickLook)
 import QuickLook
+#endif
 import SwiftUI
 
+#if !os(tvOS)
 struct PreviewView: View {
     let fileURL: URL
 
@@ -55,3 +58,4 @@ struct PreviewViewController: UIViewControllerRepresentable {
         }
     }
 }
+#endif
