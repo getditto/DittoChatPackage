@@ -263,13 +263,9 @@ extension DittoService {
             return
         }
 
-        try! ditto.store.collection(room.messagesId)
-            .upsert([
-                createdOnKey: DateFormatter.isoDate.string(from: Date()),
-                roomIdKey: room.id,
-                textKey: text,
-                userIdKey: userId
-            ] as [String: Any?] )
+        let message = Message(roomId: room.id, message: text, userName: userId, userId: userId).docDictionary()
+
+        try! ditto.store.collection(room.messagesId).upsert(message)
     }
 
     func saveEditedTextMessage(_ message: Message, in room: Room) {
@@ -318,15 +314,14 @@ extension DittoService {
 
         // create new message doc with thumbnail attachment
         let docId = UUID().uuidString
-        do {
-            try ditto.store[room.messagesId].upsert([
-                dbIdKey: docId,
-                createdOnKey: nowDate,
-                roomIdKey: room.id,
-                userIdKey: userId,
-                thumbnailImageTokenKey: thumbAttachment,
-            ])
 
+        var message = Message(roomId: room.id, userName: userId, userId: userId).docDictionary()
+        message.updateValue(thumbAttachment, forKey: thumbnailImageTokenKey)
+        message.updateValue(docId, forKey: dbIdKey)
+
+
+        do {
+            try ditto.store[room.messagesId].upsert(message)
             try await cleanupTmpStorage(tmpStorage.deleteDirectory)
         } catch {
             throw error
@@ -534,9 +529,8 @@ extension DittoService {
     }
 
     private func createDefaultPublicRoom() {
-        // Only create default Public room if user does not yet exist, i.e. first launch
-        if privateStore.currentUserId != nil {
-//        if allPublicRooms.count > 0 {
+        // TODO: Replace with a first launch value instead that is specific for this use case
+        if allPublicRooms.count > 2 {
             return
         }
 
@@ -547,6 +541,17 @@ extension DittoService {
                 nameKey: publicRoomTitleKey,
                 collectionIdKey: publicRoomsCollectionId,
                 messagesIdKey: publicMessagesIdKey,//PUBLIC_MESSAGES_ID,
+                createdOnKey: DateFormatter.isoDate.string(from: Date()),
+                isPrivateKey: false
+            ] as [String: Any?] )
+
+        // Create default Public room with pre-configured id, messagesId
+        try! ditto.store.collection(publicRoomsCollectionId)
+            .upsert([
+                dbIdKey: publicTAKKey,
+                nameKey: publicTAKRoomTitleKey,
+                collectionIdKey: publicRoomsCollectionId,
+                messagesIdKey: publicTAKMessagesIdKey,
                 createdOnKey: DateFormatter.isoDate.string(from: Date()),
                 isPrivateKey: false
             ] as [String: Any?] )

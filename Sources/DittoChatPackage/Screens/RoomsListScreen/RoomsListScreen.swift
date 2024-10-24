@@ -31,6 +31,22 @@ public struct RoomsListScreen: View {
                     #endif
                 }
             }
+            if let defaultTAKPublicRoom = viewModel.defaultTAKPublicRoom {
+                Section(takPublicRoomTitleKey) {
+                    NavigationLink(destination: ChatScreen(room: defaultTAKPublicRoom)) {
+                        RoomsListRowItem(room: defaultTAKPublicRoom)
+                    }
+                    #if !os(tvOS)
+                    .swipeActions(edge: .leading, allowsFullSwipe: true) {
+                        Button(action: {
+                            viewModel.toggleSubscriptionFor(room: defaultTAKPublicRoom)
+                        }, label: {
+                            Text("Sub")
+                        })
+                    }
+                    #endif
+                }
+            }
             Section( viewModel.publicRooms.count > 0 ? publicRoomsTitleKey : "" ) {
                 ForEach(viewModel.publicRooms) { room in
                     NavigationLink(destination: ChatScreen(room: room)) {

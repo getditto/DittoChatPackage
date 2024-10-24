@@ -17,6 +17,7 @@ class RoomsListScreenVM: ObservableObject {
     @Published var publicRooms: [Room] = []
     @Published var privateRooms: [Room] = []
     @Published var defaultPublicRoom: Room?
+    @Published var defaultTAKPublicRoom: Room?
     @Published var currentUser: ChatUser?
 
     init() {
@@ -27,8 +28,9 @@ class RoomsListScreenVM: ObservableObject {
             .receive(on: DispatchQueue.main)
             .map { [weak self] rooms in
                 self?.defaultPublicRoom = rooms.first(where: { $0.id == publicKey })
+                self?.defaultTAKPublicRoom = rooms.first(where: { $0.id == publicTAKKey })
                 // remove default public room; it's presented by itself in 1st list section
-                return rooms.filter { $0.id != publicKey }
+                return rooms.filter { $0.id != publicKey || $0.id != publicTAKKey }
             }
             .assign(to: &$publicRooms)
 

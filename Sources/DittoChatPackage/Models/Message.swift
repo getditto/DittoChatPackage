@@ -27,6 +27,21 @@ struct Message: Identifiable, Equatable {
     var archivedMessage: String?
     var isArchived: Bool
 
+    //TAK specific values
+    var authorCs: String
+    var authorId: String
+    var authorLoc: String
+    var authorType: String
+    var msg: String
+    var parent: String
+    var pks: String
+    var room: String
+    var schver: Int
+    var takUid: String
+    var timeMs: Date
+
+    var hasBeenConverted: Bool?
+
     var isImageMessage: Bool {
         thumbnailImageToken != nil || largeImageToken != nil
     }
@@ -43,6 +58,65 @@ extension Message {
         self.thumbnailImageToken = document[thumbnailImageTokenKey].attachmentToken
         self.archivedMessage = document[archivedMessageKey].string
         self.isArchived = document[isArchivedKey].bool ?? false
+
+        // TAK related values
+        self.authorCs = document[authorCsKey].stringValue
+        self.authorId = document[authorIdKey].stringValue
+        self.authorLoc = document[authorLocKey].stringValue
+        self.authorType = document[authorTypeKey].stringValue
+        self.msg = document[msgKey].stringValue
+        self.parent = document[parentKey].stringValue
+        self.pks = document[pksKey].stringValue
+        self.room = document[roomKey].stringValue
+        self.roomId = document[roomIdKey].stringValue
+        self.schver = document[schverKey].intValue
+        self.takUid = document[takUidKey].stringValue
+        self.timeMs = Date(timeIntervalSince1970: document[timeMsKey].doubleValue / 1000)
+        self.hasBeenConverted = document[hasBeenConvertedKey].bool
+
+        if let hasBeenConverted, hasBeenConverted == true {
+            return
+        }
+
+        self.convertToDittoChat()
+    }
+
+    func convertToDittoChat() {
+        let message = Message(
+            id: self.id,
+            createdOn: self.timeMs,
+            roomId: self.roomId,
+            text: self.msg,
+            userId: self.authorCs,
+            largeImageToken: self.largeImageToken,
+            thumbnailImageToken: self.thumbnailImageToken,
+            archivedMessage: self.archivedMessage,
+            isArchived: self.isArchived,
+            authorCs: self.authorCs,
+            authorId: self.authorId,
+            authorLoc: self.authorLoc,
+            authorType: self.authorType,
+            msg: self.msg,
+            parent: self.parent,
+            pks: self.pks,
+            room: self.room,
+            schver: self.schver,
+            takUid: self.takUid,
+            timeMs: self.timeMs,
+            hasBeenConverted: true
+        ).docDictionary()
+
+        // Update the currently existing TAK chat message with a Ditto Chat compatable one
+        Task {
+            try? await DittoInstance.shared.ditto.store.execute(
+                query: """
+                    INSERT INTO chat
+                    DOCUMENTS (:message)
+                    ON ID CONFLICT DO UPDATE
+                    """,
+                arguments: ["message": message]
+            )
+        }
     }
 }
 
@@ -56,7 +130,18 @@ extension Message {
         largeImageToken: DittoAttachmentToken? = nil,
         thumbnailImageToken: DittoAttachmentToken? = nil,
         archivedMessage: String? = nil,
-        isArchived: Bool = false
+        isArchived: Bool = false,
+        authorCs: String? = nil,
+        authorId: String? = nil,
+        authorLoc: String? = nil,
+        authorType: String? = nil,
+        msg: String? = nil,
+        parent: String? = nil,
+        pks: String? = nil,
+        room: String? = nil,
+        schver: Int? = nil,
+        takUid: String? = nil,
+        timeMs: Date? = nil
     ) {
         self.id = id ?? UUID().uuidString
         self.createdOn = createdOn ?? Date()
@@ -67,6 +152,60 @@ extension Message {
         self.thumbnailImageToken = thumbnailImageToken
         self.archivedMessage = archivedMessage
         self.isArchived = isArchived
+
+        self.authorCs = authorCs ?? ""
+        self.authorId = authorId ?? ""
+        self.authorLoc = authorLoc ?? ""
+        self.authorType = authorType ?? ""
+        self.msg = msg ?? ""
+        self.parent = parent ?? ""
+        self.pks = pks ?? ""
+        self.room = room ?? ""
+        self.schver = schver ?? .zero
+        self.takUid = takUid ?? ""
+        self.timeMs = timeMs ?? Date()
+
+    }
+
+    // Used for creating new chat types for upload
+    init(
+        id: String? = nil,
+        createdOn: Date? = nil,
+        roomId: String,
+        message: String = "",
+        userName: String,
+        userId: String,
+        largeImageToken: DittoAttachmentToken? = nil,
+        thumbnailImageToken: DittoAttachmentToken? = nil,
+        archivedMessage: String? = nil,
+        isArchived: Bool = false,
+        parent: String = "RootContactGroup",
+        pks: String = "",
+        room: String = "Ditto",
+        schver: Int = 1,
+        hasBeenConverted: Bool = true
+    ) {
+        self.id = id ?? UUID().uuidString
+        self.createdOn = createdOn ?? Date()
+        self.roomId = roomId
+        self.text = message
+        self.userId = userId
+        self.largeImageToken = largeImageToken
+        self.thumbnailImageToken = thumbnailImageToken
+        self.archivedMessage = archivedMessage
+        self.isArchived = isArchived
+
+        self.authorCs = userName
+        self.authorId = userId
+        self.authorLoc = ""
+        self.authorType = ""
+        self.msg = message
+        self.parent = parent
+        self.pks = pks
+        self.room = room
+        self.schver = schver
+        self.takUid = userId
+        self.timeMs = createdOn ?? Date()
     }
 }
 
@@ -82,6 +221,18 @@ extension Message {
             thumbnailImageTokenKey: thumbnailImageToken,
             archivedMessageKey: archivedMessage,
             isArchivedKey: isArchived,
+            authorCsKey: authorCs,
+            authorIdKey: authorId,
+            authorLocKey: authorLoc,
+            authorTypeKey: authorType,
+            msgKey: msg,
+            parentKey: parent,
+            pksKey: pks,
+            roomKey: room,
+            schverKey: schver,
+            takUidKey: takUid,
+            timeMsKey: (timeMs.timeIntervalSince1970 * 1000),
+            hasBeenConvertedKey: hasBeenConverted,
         ]
     }
 }
