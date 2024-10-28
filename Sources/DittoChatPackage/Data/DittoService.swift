@@ -255,16 +255,10 @@ extension DittoService {
     }
 
     func createMessage(for room: Room, text: String) {
-        guard let userId = privateStore.currentUserId else {
-            return
-        }
-
-        guard let room = self.room(for: room) else {
-            return
-        }
+        guard let userId = privateStore.currentUserId else { return }
+        guard let room = self.room(for: room) else { return }
 
         let message = Message(roomId: room.id, message: text, userName: userId, userId: userId).docDictionary()
-
         try! ditto.store.collection(room.messagesId).upsert(message)
     }
 

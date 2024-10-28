@@ -71,7 +71,7 @@ extension Message {
         self.roomId = document[roomIdKey].stringValue
         self.schver = document[schverKey].intValue
         self.takUid = document[takUidKey].stringValue
-        self.timeMs = Date(timeIntervalSince1970: document[timeMsKey].doubleValue / 1000)
+        self.timeMs = Date(timeIntervalSince1970InMilliSeconds: document[timeMsKey].intValue)
         self.hasBeenConverted = document[hasBeenConvertedKey].bool
 
         if let hasBeenConverted, hasBeenConverted == true {
@@ -170,7 +170,7 @@ extension Message {
     // Used for creating new chat types for upload
     init(
         id: String? = nil,
-        createdOn: Date? = nil,
+        createdOn: Date = .now,
         roomId: String,
         message: String = "",
         userName: String,
@@ -180,13 +180,12 @@ extension Message {
         archivedMessage: String? = nil,
         isArchived: Bool = false,
         parent: String = "RootContactGroup",
-        pks: String = "",
-        room: String = "Ditto",
+        room: String = "ditto",
         schver: Int = 1,
         hasBeenConverted: Bool = true
     ) {
         self.id = id ?? UUID().uuidString
-        self.createdOn = createdOn ?? Date()
+        self.createdOn = createdOn
         self.roomId = roomId
         self.text = message
         self.userId = userId
@@ -197,15 +196,16 @@ extension Message {
 
         self.authorCs = userName
         self.authorId = userId
-        self.authorLoc = ""
-        self.authorType = ""
+        self.authorLoc = "0.0,0.0,NaN,HAE,NaN,NaN"
+        self.authorType = "a-f-G-U-C"
         self.msg = message
         self.parent = parent
-        self.pks = pks
+        let peerKey = DittoInstance.shared.ditto.presence.graph.localPeer.peerKeyString
+        self.pks = peerKey
         self.room = room
         self.schver = schver
-        self.takUid = userId
-        self.timeMs = createdOn ?? Date()
+        self.takUid = UUID().uuidString
+        self.timeMs = createdOn
     }
 }
 
@@ -231,8 +231,18 @@ extension Message {
             roomKey: room,
             schverKey: schver,
             takUidKey: takUid,
-            timeMsKey: (timeMs.timeIntervalSince1970 * 1000),
+            timeMsKey: timeMs.timeIntervalSince1970InMilliSeconds,
             hasBeenConvertedKey: hasBeenConverted,
         ]
+    }
+}
+
+extension Date {
+    init(timeIntervalSince1970InMilliSeconds: Int) {
+        self = Date(timeIntervalSince1970: Double(timeIntervalSince1970InMilliSeconds) / 1000)
+    }
+
+    var timeIntervalSince1970InMilliSeconds: Int {
+        Int(self.timeIntervalSince1970 * 1000)
     }
 }
