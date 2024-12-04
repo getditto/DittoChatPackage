@@ -68,9 +68,9 @@ protocol ReplicatingDataInterface {
     func allUsersPublisher() -> AnyPublisher<[ChatUser], Never>
 }
 
-public class DataManager {
-    public static let shared = DataManager()
-    @Published public private(set) var publicRoomsPublisher: AnyPublisher<[Room], Never>
+class DataManager {
+    static let shared = DataManager()
+    @Published private(set) var publicRoomsPublisher: AnyPublisher<[Room], Never>
     @Published private(set) var privateRoomsPublisher: AnyPublisher<[Room], Never>
 
     private var localStore: LocalDataInterface
@@ -91,11 +91,11 @@ extension DataManager {
         p2pStore.room(for: room)
     }
 
-    public func findPublicRoomById(id: String) -> Room? {
+    func findPublicRoomById(id: String) -> Room? {
         p2pStore.findPublicRoomById(id: id)
     }
 
-    public func createRoom(name: String, isPrivate: Bool) -> DittoDocumentID? {
+    func createRoom(name: String, isPrivate: Bool) -> DittoDocumentID? {
         return p2pStore.createRoom(name: name, isPrivate: isPrivate)
     }
 
@@ -115,7 +115,7 @@ extension DataManager {
         p2pStore.unarchiveRoom(room)
     }
 
-    public func deleteRoom(_ room: Room) {
+    func deleteRoom(_ room: Room) {
         p2pStore.deleteRoom(room)
     }
 
@@ -166,7 +166,7 @@ extension DataManager {
 extension DataManager {
     // MARK: Current User
 
-    public var currentUserId: String? {
+    var currentUserId: String? {
         get { localStore.currentUserId }
         set { localStore.currentUserId = newValue }
     }
@@ -179,7 +179,7 @@ extension DataManager {
         p2pStore.currentUserPublisher()
     }
 
-    public func allUsersPublisher() -> AnyPublisher<[ChatUser], Never> {
+    func allUsersPublisher() -> AnyPublisher<[ChatUser], Never> {
         p2pStore.allUsersPublisher()
     }
 
@@ -191,7 +191,7 @@ extension DataManager {
         p2pStore.updateUser(withId: id, firstName: firstName, lastName: lastName, subscriptions: subscriptions, mentions: mentions)
     }
 
-    public func saveCurrentUser(firstName: String, lastName: String) {
+    func saveCurrentUser(firstName: String, lastName: String) {
         if currentUserId == nil {
             let userId = UUID().uuidString
             currentUserId = userId
@@ -228,7 +228,7 @@ extension DataManager {
     }
 }
 
-public extension DataManager {
+extension DataManager {
     var basicChat: Bool {
         get { localStore.basicChat }
         set { localStore.basicChat = newValue }

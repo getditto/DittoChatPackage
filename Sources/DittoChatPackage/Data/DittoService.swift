@@ -11,14 +11,14 @@ import DittoSwift
 import SwiftUI
 
 
-public class DittoInstance: ObservableObject {
+class DittoInstance: ObservableObject {
     private var cancellables = Set<AnyCancellable>()
     
     static var shared = DittoInstance()
-    public static var dittoShared: Ditto?
+    static var dittoShared: Ditto?
     let ditto: Ditto
 
-    public init() {
+    init() {
         // Blow up if they did not do no provide a ditto instance.
         guard let dittoShared = DittoInstance.dittoShared else {
             fatalError("No ditto instance provided")
