@@ -9,8 +9,11 @@ let package = Package(
     products: [
         // Products define the executables and libraries a package produces, and make them visible to other packages.
         .library(
-            name: "DittoChatPackage",
-            targets: ["DittoChatPackage"]),
+            name: "DittoChatCore",
+            targets: ["DittoChatCore"]),
+        .library(
+            name: "DittoChatUI",
+            targets: ["DittoChatUI"]),
     ],
     dependencies: [
         .package(url: "https://github.com/getditto/DittoSwiftPackage", from: "4.8.0"),
@@ -20,7 +23,7 @@ let package = Package(
     ],
     targets: [
         .target(
-            name: "DittoChatPackage",
+            name: "DittoChatCore",
             dependencies: [
                 .product(name: "DittoSwift", package: "DittoSwiftPackage"),
                 .product(name: "CodeScanner", package: "CodeScanner"),
@@ -28,8 +31,12 @@ let package = Package(
                 .product(name: "OrderedCollections", package: "swift-collections"),
             ]
         ),
+        .target(
+            name: "DittoChatUI",
+            dependencies: ["DittoChatCore"]
+               ),
         .testTarget(
             name: "DittoChatPackageTests",
-            dependencies: ["DittoChatPackage"]),
+            dependencies: ["DittoChatCore"]),
     ]
 )

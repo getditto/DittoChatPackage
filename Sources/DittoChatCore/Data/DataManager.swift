@@ -39,7 +39,7 @@ protocol ReplicatingDataInterface {
 
     func room(for room: Room) -> Room?
     func findPublicRoomById(id: String) -> Room?
-    func createRoom(name: String, isPrivate: Bool) -> DittoDocumentID?
+    func createRoom(id: String?, name: String, isPrivate: Bool) -> DittoDocumentID?
     func joinPrivateRoom(qrCode: String)
     func roomPublisher(for room: Room) -> AnyPublisher<Room?, Never>
 
@@ -68,7 +68,7 @@ protocol ReplicatingDataInterface {
     func allUsersPublisher() -> AnyPublisher<[ChatUser], Never>
 }
 
-class DataManager {
+open class DataManager {
     static let shared = DataManager()
     @Published private(set) var publicRoomsPublisher: AnyPublisher<[Room], Never>
     @Published private(set) var privateRoomsPublisher: AnyPublisher<[Room], Never>
@@ -91,12 +91,12 @@ extension DataManager {
         p2pStore.room(for: room)
     }
 
-    func findPublicRoomById(id: String) -> Room? {
+    public func findPublicRoomById(id: String) -> Room? {
         p2pStore.findPublicRoomById(id: id)
     }
 
-    func createRoom(name: String, isPrivate: Bool) -> DittoDocumentID? {
-        return p2pStore.createRoom(name: name, isPrivate: isPrivate)
+    public func createRoom(id: String? = UUID().uuidString, name: String, isPrivate: Bool) -> DittoDocumentID? {
+        return p2pStore.createRoom(id: id, name: name, isPrivate: isPrivate)
     }
 
     func joinPrivateRoom(qrCode: String) {
@@ -125,6 +125,14 @@ extension DataManager {
 
     func archivedPrivateRoomsPublisher() -> AnyPublisher<[Room], Never> {
         localStore.archivedPrivateRoomsPublisher
+    }
+
+    func readMessagesForRoom(room: Room) {
+        // TODO: Implement
+    }
+
+    func readMessagesForUser(user: ChatUser) {
+        // TODO: Implement
     }
 }
 
@@ -189,6 +197,10 @@ extension DataManager {
 
     func updateUser(withId id: String, firstName: String?, lastName: String?, subscriptions: [String: Date?]?, mentions: [String: [String]]?) {
         p2pStore.updateUser(withId: id, firstName: firstName, lastName: lastName, subscriptions: subscriptions, mentions: mentions)
+    }
+
+    func updateRoom(_ room: Room) {
+        // TODO: Implement
     }
 
     func saveCurrentUser(firstName: String, lastName: String) {
