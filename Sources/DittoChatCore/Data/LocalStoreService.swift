@@ -30,7 +30,7 @@ class LocalStoreService: LocalDataInterface {
         rooms = tmpDefaults.decodeRoomsFromData(Array(tmpDefaults.archivedPublicRooms.values))
         self.archivedPublicRoomsSubject = CurrentValueSubject<[Room], Never>(rooms)
 
-        self.basicChat = UserDefaults.standard.basicChat        
+        self.basicChat = UserDefaults.standard.basicChat
     }
 
     var basicChat: Bool {

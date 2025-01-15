@@ -12,7 +12,6 @@ import SwiftUI
 struct SettingsScreen: View {
     @Environment(\.colorScheme) private var colorScheme
     @StateObject var vm = SettingsScreenVM()
-    @ObservedObject var dittoInstance = DittoInstance.shared
     @State var acceptLargeImages: Bool = DataManager.shared.acceptLargeImages
     @State var advancedFeaturesEnabled: Bool = !DataManager.shared.basicChat
 

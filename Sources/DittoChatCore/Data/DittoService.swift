@@ -10,29 +10,6 @@ import Combine
 import DittoSwift
 import SwiftUI
 
-
-class DittoInstance: ObservableObject {
-    private var cancellables = Set<AnyCancellable>()
-    
-    static var shared = DittoInstance()
-    static var dittoShared: Ditto?
-    let ditto: Ditto
-
-    init() {
-        // Blow up if they did not do no provide a ditto instance.
-        guard let dittoShared = DittoInstance.dittoShared else {
-            fatalError("No ditto instance provided")
-        }
-        ditto = dittoShared
-    }
-}
-extension DittoInstance {
-    enum UserDefaultsKeys: String {
-        case loggingOption = "live.ditto.CountDataFetch.userDefaults.loggingOption"
-    }
-}
-
-
 class DittoService: ReplicatingDataInterface {
     @Published var publicRoomsPublisher = CurrentValueSubject<[Room], Never>([])
     @Published fileprivate private(set) var allPublicRooms: [Room] = []
@@ -45,12 +22,13 @@ class DittoService: ReplicatingDataInterface {
     private var privateRoomMessagesSubscriptions = [String: DittoSubscription]()
     private var publicRoomMessagesSubscriptions = [String: DittoSubscription]()
 
-    private let ditto = DittoInstance.shared.ditto
+    private let ditto: Ditto
     private var privateStore: LocalDataInterface
 
     private var joinRoomQuery: DittoSwift.DittoLiveQuery?
 
-    init(privateStore: LocalDataInterface) {
+    init(privateStore: LocalDataInterface, ditto: Ditto) {
+        self.ditto = ditto
         self.privateStore = privateStore
         self.usersSubscription = ditto.store[usersKey].findAll().subscribe()
 
@@ -90,6 +68,21 @@ class DittoService: ReplicatingDataInterface {
                 }
             }
             .store(in: &cancellables)
+    }
+
+    func logout() {
+        usersSubscription.cancel()
+        publicRoomMessagesSubscriptions.forEach { (key: String, value: DittoSubscription) in
+            value.cancel()
+        }
+
+        privateRoomSubscriptions.forEach { (key: String, value: DittoSubscription) in
+            value.cancel()
+        }
+
+        publicRoomMessagesSubscriptions.forEach { (key: String, value: DittoSubscription) in
+            value.cancel()
+        }
     }
 }
 
@@ -471,7 +464,7 @@ extension DittoService {
 
     func createRoom(id: String?, name: String, isPrivate: Bool) -> DittoDocumentID? {
         let collectionId = isPrivate ? UUID().uuidString : publicRoomsCollectionId
-        let messagesId: String = UUID().uuidString
+        let messagesId: String = publicMessagesCollectionId
 
         let room = Room(
             id: id ?? UUID().uuidString,

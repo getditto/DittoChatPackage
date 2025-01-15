@@ -29,6 +29,8 @@ public protocol DittoSwiftChat {
     // Delete
     func delete(roomById: String) throws
     func delete(room: Room)
+
+    func logout()
 }
 
 public struct RoomConfig {
@@ -64,29 +66,33 @@ public struct UserConfig {
 }
 
 public class DittoChat: DittoSwiftChat {
-    public init() {}
+    private var dataManager: DataManager!
+
+    public init() {
+        self.dataManager = DataManager.shared
+    }
     
     // MARK: Carry over from previous public things
     public var currentUserId: String? {
-        get { DataManager.shared.currentUserId }
-        set { DataManager.shared.currentUserId = newValue }
+        get { dataManager.currentUserId }
+        set { dataManager.currentUserId = newValue }
     }
 
     public var basicChat: Bool {
-        get { DataManager.shared.basicChat }
-        set { DataManager.shared.basicChat = newValue }
+        get { dataManager.basicChat }
+        set { dataManager.basicChat = newValue }
     }
 
     public var basicChatPublisher: AnyPublisher<Bool, Never> {
-        get { DataManager.shared.basicChatPublisher }
+        get { dataManager.basicChatPublisher }
     }
 
     public var publicRoomsPublisher: AnyPublisher<[Room], Never> {
-        get {DataManager.shared.publicRoomsPublisher}
+        get {dataManager.publicRoomsPublisher}
     }
 
     public func readRoomById(id: String) throws -> Room {
-        guard let room = DataManager.shared.findPublicRoomById(id: id) else {
+        guard let room = dataManager.findPublicRoomById(id: id) else {
             throw AppError.unknown("room not found")
         }
 
@@ -94,17 +100,17 @@ public class DittoChat: DittoSwiftChat {
     }
 
     public func allUsersPublisher() -> AnyPublisher<[ChatUser], Never> {
-        DataManager.shared.allUsersPublisher()
+        dataManager.allUsersPublisher()
     }
 
     // MARK: Public interface
     public func setup(withDitto ditto: DittoSwift.Ditto) {
-        DittoInstance.dittoShared = ditto
+        dataManager.setUp(ditto: ditto)
     }
 
     // MARK: Create
     public func createRoom(withConfig config: RoomConfig) throws -> String {
-        guard let id = DataManager.shared.createRoom(id: config.id, name: config.name, isPrivate: config.isPrivate) else {
+        guard let id = dataManager.createRoom(id: config.id, name: config.name, isPrivate: config.isPrivate) else {
             throw AppError.unknown("room not found")
         }
 
@@ -114,35 +120,42 @@ public class DittoChat: DittoSwiftChat {
     public func createMessage(withConfig config: MessageConfig) throws {
         let room = try readRoomById(id: config.roomId)
 
-        DataManager.shared.createMessage(for: room, text: config.message)
+        dataManager.createMessage(for: room, text: config.message)
     }
 
     public func setCurrentUser(withConfig config: UserConfig) {
-        DataManager.shared.saveCurrentUser(firstName: config.firstName, lastName: config.lastName)
+        dataManager.saveCurrentUser(firstName: config.firstName, lastName: config.lastName)
     }
 
     // MARK: Read
     public func read(messagesForRoom room: Room) throws {
-        DataManager.shared.readMessagesForRoom(room: room)
+        dataManager.readMessagesForRoom(room: room)
     }
 
     public func read(messagesForUser user: ChatUser) throws {
-        DataManager.shared.readMessagesForUser(user: user)
+        dataManager.readMessagesForUser(user: user)
     }
 
     // MARK: Update
     public func updateRoom(room: Room) throws {
-        DataManager.shared.updateRoom(room)
+        dataManager.updateRoom(room)
     }
 
     // MARK: Delete
     public func delete(roomById id: String) throws {
         let room = try readRoomById(id: id)
 
-        DataManager.shared.deleteRoom(room)
+        dataManager.deleteRoom(room)
     }
 
     public func delete(room: Room) {
-        DataManager.shared.deleteRoom(room)
+        dataManager.deleteRoom(room)
+    }
+
+    /// Clears references to Ditto and running subscritopns as well as observers.
+    /// Note: Make sure that you call stop sync before calling this logout function.
+    public func logout() {
+        dataManager.logout()
+        dataManager = nil
     }
 }

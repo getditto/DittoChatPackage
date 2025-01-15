@@ -66,21 +66,37 @@ protocol ReplicatingDataInterface {
                     mentions: [String: [String]]?)
     func currentUserPublisher() -> AnyPublisher<ChatUser?, Never>
     func allUsersPublisher() -> AnyPublisher<[ChatUser], Never>
+
+    func logout()
 }
 
 open class DataManager {
     static let shared = DataManager()
-    @Published private(set) var publicRoomsPublisher: AnyPublisher<[Room], Never>
-    @Published private(set) var privateRoomsPublisher: AnyPublisher<[Room], Never>
+    var ditto: Ditto!
+    @Published private(set) var publicRoomsPublisher: AnyPublisher<[Room], Never>!
+    @Published private(set) var privateRoomsPublisher: AnyPublisher<[Room], Never>!
 
-    private var localStore: LocalDataInterface
-    private let p2pStore: ReplicatingDataInterface
+    private var localStore: LocalDataInterface!
+    private var p2pStore: ReplicatingDataInterface!
 
-    private init() {
-        self.localStore = LocalStoreService()
-        self.p2pStore = DittoService(privateStore: localStore)
+    private init() {}
+
+    func setUp(ditto: Ditto) {
+        self.ditto = ditto
+        let localStore: LocalStoreService = LocalStoreService()
+        self.localStore = localStore
+        self.p2pStore = DittoService(privateStore: localStore, ditto: ditto)
         self.publicRoomsPublisher = p2pStore.publicRoomsPublisher.eraseToAnyPublisher()
         self.privateRoomsPublisher = localStore.privateRoomsPublisher
+    }
+
+    func logout() {
+        p2pStore.logout()
+        localStore = nil
+        p2pStore = nil
+        ditto = nil
+        publicRoomsPublisher = nil
+        privateRoomsPublisher = nil
     }
 }
 
@@ -218,7 +234,7 @@ extension DataManager {
 
 extension DataManager {
     var sdkVersion: String {
-        DittoInstance.shared.ditto.sdkVersion
+        ditto?.sdkVersion ?? ""
     }
 
     var appInfo: String {
