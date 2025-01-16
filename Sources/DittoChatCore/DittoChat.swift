@@ -11,7 +11,7 @@ import SwiftUI
 import Combine
 
 public protocol DittoSwiftChat {
-    func setup(withDitto: Ditto)
+    func setup(withDitto: Ditto, usersCollection: String)
 
     // Create
     func createRoom(withConfig: RoomConfig) throws -> String
@@ -56,12 +56,10 @@ public struct MessageConfig {
 }
 
 public struct UserConfig {
-    public let firstName: String
-    public let lastName: String
+    public let id: String
 
-    public init(firstName: String, lastName: String) {
-        self.firstName = firstName
-        self.lastName = lastName
+    public init (id: String) {
+        self.id = id
     }
 }
 
@@ -104,8 +102,8 @@ public class DittoChat: DittoSwiftChat {
     }
 
     // MARK: Public interface
-    public func setup(withDitto ditto: DittoSwift.Ditto) {
-        dataManager.setUp(ditto: ditto)
+    public func setup(withDitto ditto: DittoSwift.Ditto, usersCollection: String) {
+        dataManager.setUp(ditto: ditto, usersCollection: usersCollection)
     }
 
     // MARK: Create
@@ -124,7 +122,7 @@ public class DittoChat: DittoSwiftChat {
     }
 
     public func setCurrentUser(withConfig config: UserConfig) {
-        dataManager.saveCurrentUser(firstName: config.firstName, lastName: config.lastName)
+        dataManager.setCurrentUser(id: config.id)
     }
 
     // MARK: Read

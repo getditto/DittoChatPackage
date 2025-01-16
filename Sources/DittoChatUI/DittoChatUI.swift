@@ -13,7 +13,7 @@ import DittoChatCore
 
 public protocol DittoChatViews {
     var dittoChat: DittoChat! { get }
-    func setup(withDitto ditto: Ditto)
+    func setup(withDitto ditto: Ditto, usersCollection: String)
     func roomView(id: String) throws -> ChatScreen
     func roomsView() -> RoomsListScreen
     func logout()
@@ -27,8 +27,8 @@ public class DittoChatUI: DittoChatViews {
         dittoChat = DittoChat()
     }
 
-    public func setup(withDitto ditto: Ditto) {
-        dittoChat.setup(withDitto: ditto)
+    public func setup(withDitto ditto: Ditto, usersCollection: String) {
+        dittoChat.setup(withDitto: ditto, usersCollection: usersCollection)
     }
 
     public func roomView(id: String) throws -> ChatScreen {

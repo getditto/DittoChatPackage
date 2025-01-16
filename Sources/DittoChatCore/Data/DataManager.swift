@@ -59,6 +59,7 @@ protocol ReplicatingDataInterface {
     ) -> DittoSwift.DittoCollection.FetchAttachmentPublisher
 
     func addUser(_ usr: ChatUser)
+    func findUserById(_ id: String, inCollection collection: String) async throws -> ChatUser
     func updateUser(withId id: String,
                     firstName: String?,
                     lastName: String?,
@@ -81,11 +82,11 @@ open class DataManager {
 
     private init() {}
 
-    func setUp(ditto: Ditto) {
+    func setUp(ditto: Ditto, usersCollection: String) {
         self.ditto = ditto
         let localStore: LocalStoreService = LocalStoreService()
         self.localStore = localStore
-        self.p2pStore = DittoService(privateStore: localStore, ditto: ditto)
+        self.p2pStore = DittoService(privateStore: localStore, ditto: ditto, usersCollection: usersCollection)
         self.publicRoomsPublisher = p2pStore.publicRoomsPublisher.eraseToAnyPublisher()
         self.privateRoomsPublisher = localStore.privateRoomsPublisher
     }
@@ -229,6 +230,10 @@ extension DataManager {
 
         let user = ChatUser(id: currentUserId!, firstName: firstName, lastName: lastName, subscriptions: [:], mentions: [:])
         p2pStore.addUser(user)
+    }
+
+    func setCurrentUser(id: String) {
+        currentUserId = id
     }
 }
 

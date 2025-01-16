@@ -22,15 +22,17 @@ class DittoService: ReplicatingDataInterface {
     private var privateRoomMessagesSubscriptions = [String: DittoSubscription]()
     private var publicRoomMessagesSubscriptions = [String: DittoSubscription]()
 
-    private let ditto: Ditto
+    private var ditto: Ditto!
+    private let usersKey: String
     private var privateStore: LocalDataInterface
 
     private var joinRoomQuery: DittoSwift.DittoLiveQuery?
 
-    init(privateStore: LocalDataInterface, ditto: Ditto) {
+    init(privateStore: LocalDataInterface, ditto: Ditto, usersCollection: String) {
         self.ditto = ditto
         self.privateStore = privateStore
-        self.usersSubscription = ditto.store[usersKey].findAll().subscribe()
+        self.usersKey = usersCollection
+        self.usersSubscription = ditto.store[usersCollection].findAll().subscribe()
 
         createDefaultPublicRoom()
 
@@ -72,6 +74,11 @@ class DittoService: ReplicatingDataInterface {
 
     func logout() {
         usersSubscription.cancel()
+
+        cancellables.forEach { anyCancellable in
+            anyCancellable.cancel()
+        }
+
         publicRoomMessagesSubscriptions.forEach { (key: String, value: DittoSubscription) in
             value.cancel()
         }
@@ -83,6 +90,7 @@ class DittoService: ReplicatingDataInterface {
         publicRoomMessagesSubscriptions.forEach { (key: String, value: DittoSubscription) in
             value.cancel()
         }
+        ditto = nil
     }
 }
 
@@ -176,11 +184,11 @@ extension DittoService {
 
     func currentUserPublisher() -> AnyPublisher<ChatUser?, Never> {
         privateStore.currentUserIdPublisher
-            .map { userId -> AnyPublisher<ChatUser?, Never> in
-                guard let userId = userId else {
+            .map { [weak self] userId -> AnyPublisher<ChatUser?, Never> in
+                guard let self, let userId = userId else {
                     return Just<ChatUser?>(nil).eraseToAnyPublisher()
                 }
-                return self.ditto.store.collection(usersKey)
+                return self.ditto.store.collection(self.usersKey)
                     .findByID(userId)
                     .singleDocumentLiveQueryPublisher()
                     .compactMap { doc, _ in return doc }
@@ -189,6 +197,16 @@ extension DittoService {
             }
             .switchToLatest()
             .eraseToAnyPublisher()
+    }
+
+    func findUserById(_ id: String, inCollection collection: String) async throws -> ChatUser {
+        let result = try await ditto.store.execute(query: "SELECT * FROM \(collection) WHERE _id = :_id", arguments: ["_id": id])
+
+        guard let value = result.items.first?.value else {
+            throw AppError.unknown("failed to get chat user from id")
+        }
+
+        return ChatUser(value: value)
     }
 
     func addUser(_ usr: ChatUser) {
