@@ -89,10 +89,9 @@ public struct ChatScreen: View {
             }
 
             HStack(alignment: .center, spacing: 0) {
-                #if !os(tvOS)
+#if !os(tvOS)
                 photosPickerButtonView
-                    .padding(.top, 4)
-                #endif
+#endif
 
                 ChatInputView(
                     text: $viewModel.inputText,
@@ -101,7 +100,7 @@ public struct ChatScreen: View {
                 .padding(.leading, 0)
             }
         }
-        #if !os(tvOS)
+#if !os(tvOS)
         .listStyle(.inset)
         .navigationTitle(navBarTitle)
         .navigationBarTitleDisplayMode(.inline)
@@ -119,7 +118,7 @@ public struct ChatScreen: View {
                 errorHandler: errorHandler
             )
         }
-        #endif
+#endif
         .sheet(isPresented: $viewModel.presentShareRoomScreen) {
             if let codeStr = viewModel.shareQRCode() {
                 QRCodeView(
