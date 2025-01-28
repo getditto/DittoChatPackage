@@ -10,29 +10,6 @@ import Combine
 import DittoSwift
 import SwiftUI
 
-
-public class DittoInstance: ObservableObject {
-    private var cancellables = Set<AnyCancellable>()
-    
-    static var shared = DittoInstance()
-    public static var dittoShared: Ditto?
-    let ditto: Ditto
-
-    public init() {
-        // Blow up if they did not do no provide a ditto instance.
-        guard let dittoShared = DittoInstance.dittoShared else {
-            fatalError("No ditto instance provided")
-        }
-        ditto = dittoShared
-    }
-}
-extension DittoInstance {
-    enum UserDefaultsKeys: String {
-        case loggingOption = "live.ditto.CountDataFetch.userDefaults.loggingOption"
-    }
-}
-
-
 class DittoService: ReplicatingDataInterface {
     @Published var publicRoomsPublisher = CurrentValueSubject<[Room], Never>([])
     @Published fileprivate private(set) var allPublicRooms: [Room] = []
@@ -45,14 +22,17 @@ class DittoService: ReplicatingDataInterface {
     private var privateRoomMessagesSubscriptions = [String: DittoSubscription]()
     private var publicRoomMessagesSubscriptions = [String: DittoSubscription]()
 
-    private let ditto = DittoInstance.shared.ditto
+    private var ditto: Ditto!
+    private let usersKey: String
     private var privateStore: LocalDataInterface
 
     private var joinRoomQuery: DittoSwift.DittoLiveQuery?
 
-    init(privateStore: LocalDataInterface) {
+    init(privateStore: LocalDataInterface, ditto: Ditto, usersCollection: String) {
+        self.ditto = ditto
         self.privateStore = privateStore
-        self.usersSubscription = ditto.store[usersKey].findAll().subscribe()
+        self.usersKey = usersCollection
+        self.usersSubscription = ditto.store[usersCollection].findAll().subscribe()
 
         createDefaultPublicRoom()
 
@@ -90,6 +70,27 @@ class DittoService: ReplicatingDataInterface {
                 }
             }
             .store(in: &cancellables)
+    }
+
+    func logout() {
+        usersSubscription.cancel()
+
+        cancellables.forEach { anyCancellable in
+            anyCancellable.cancel()
+        }
+
+        publicRoomMessagesSubscriptions.forEach { (key: String, value: DittoSubscription) in
+            value.cancel()
+        }
+
+        privateRoomSubscriptions.forEach { (key: String, value: DittoSubscription) in
+            value.cancel()
+        }
+
+        publicRoomMessagesSubscriptions.forEach { (key: String, value: DittoSubscription) in
+            value.cancel()
+        }
+        ditto = nil
     }
 }
 
@@ -183,11 +184,11 @@ extension DittoService {
 
     func currentUserPublisher() -> AnyPublisher<ChatUser?, Never> {
         privateStore.currentUserIdPublisher
-            .map { userId -> AnyPublisher<ChatUser?, Never> in
-                guard let userId = userId else {
+            .map { [weak self] userId -> AnyPublisher<ChatUser?, Never> in
+                guard let self, let userId = userId else {
                     return Just<ChatUser?>(nil).eraseToAnyPublisher()
                 }
-                return self.ditto.store.collection(usersKey)
+                return self.ditto.store.collection(self.usersKey)
                     .findByID(userId)
                     .singleDocumentLiveQueryPublisher()
                     .compactMap { doc, _ in return doc }
@@ -196,6 +197,16 @@ extension DittoService {
             }
             .switchToLatest()
             .eraseToAnyPublisher()
+    }
+
+    func findUserById(_ id: String, inCollection collection: String) async throws -> ChatUser {
+        let result = try await ditto.store.execute(query: "SELECT * FROM \(collection) WHERE _id = :_id", arguments: ["_id": id])
+
+        guard let value = result.items.first?.value else {
+            throw AppError.unknown("failed to get chat user from id")
+        }
+
+        return ChatUser(value: value)
     }
 
     func addUser(_ usr: ChatUser) {
@@ -469,13 +480,12 @@ extension DittoService {
         return room
     }
 
-    func createRoom(name: String, isPrivate: Bool) -> DittoDocumentID? {
-        let roomId = UUID().uuidString
+    func createRoom(id: String?, name: String, isPrivate: Bool) -> DittoDocumentID? {
         let collectionId = isPrivate ? UUID().uuidString : publicRoomsCollectionId
-        let messagesId: String = UUID().uuidString
+        let messagesId: String = publicMessagesCollectionId
 
         let room = Room(
-            id: roomId,
+            id: id ?? UUID().uuidString,
             name: name,
             messagesId: messagesId,
             isPrivate: isPrivate,

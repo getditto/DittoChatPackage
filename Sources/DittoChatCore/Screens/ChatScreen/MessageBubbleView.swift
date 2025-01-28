@@ -87,17 +87,17 @@ struct MessageBubbleView: View {
     private var backgroundColor: Color {
         #if !os(tvOS)
         if side == .left {
-            return Color(.tertiarySystemFill)
+            return Color(.systemFill)
         }
         #endif
-        return .secondary
+        return Color.accentColor
     }
 
     private var textColor: Color {
         if side == .left {
             return Color(.label)
         }
-        return Color.primary
+        return Color.white
     }
 
     private var rowInsets: EdgeInsets {
@@ -112,45 +112,66 @@ struct MessageBubbleView: View {
     }
 
     private var textInsets: EdgeInsets {
-        EdgeInsets(top: 6, leading: 16, bottom: 4, trailing: 16)
+        EdgeInsets(top: 8, leading: 16, bottom: 8, trailing: 16)
     }
 
     var body: some View {
         VStack(alignment: side == .right ? .trailing : .leading, spacing: 2) {
             Text(isSelfUser ? "" : user.fullName)
-                #if !os(tvOS)
-                .font(.system(size: UIFont.smallSystemFontSize))
-                #endif
+                .font(.caption2)
                 .opacity(0.6)
+                .padding(.leading, 15)
 
             HStack {
-                if side == .right {
-                    Spacer()
-                }
+                switch side {
+                case .left:
+                    VStack(alignment: .leading, spacing: 2) {
+                        VStack(alignment: .leading, spacing: 2) {
+                            if hasThumbnail {
+                                attachmentContentView()
+                            }
 
-                VStack(alignment: side == .right ? .trailing : .leading, spacing: 2) {
-                    if hasThumbnail {
-                        attachmentContentView()
+                            textContentView()
+                                .padding(textInsets)
+                        }
+                        .background(backgroundColor)
+                        .foregroundColor(textColor)
+                        .clipShape(MessageBubbleShape(side: side))
+                        .contextMenu {
+                            contextMenuContent()
+                        }
+
+                        Text(DateFormatter.shortTime.string(from: message.createdOn))
+                            .font(.caption2)
+                            .opacity(0.6)
+                            .padding(.leading, 15)
                     }
 
-                    textContentView()
-                        .padding(textInsets)
-
-                    Text(DateFormatter.shortTime.string(from: message.createdOn))
-                        #if !os(tvOS)
-                        .font(.system(size: UIFont.smallSystemFontSize))
-                        #endif
-                        .padding(textInsets)
-                }
-                .background(backgroundColor)
-                .foregroundColor(textColor)
-                .clipShape(MessageBubbleShape(side: side))
-                .contextMenu {
-                    contextMenuContent()
-                }
-
-                if side == .left {
                     Spacer()
+                case .right:
+                    Spacer()
+
+                    VStack(alignment: .trailing, spacing: 2) {
+                        VStack(alignment: .trailing, spacing: 2) {
+                            if hasThumbnail {
+                                attachmentContentView()
+                            }
+
+                            textContentView()
+                                .padding(textInsets)
+                        }
+                        .background(backgroundColor)
+                        .foregroundColor(textColor)
+                        .clipShape(MessageBubbleShape(side: side))
+                        .contextMenu {
+                            contextMenuContent()
+                        }
+
+                        Text(DateFormatter.shortTime.string(from: message.createdOn))
+                            .font(.caption2)
+                            .opacity(0.6)
+                            .padding(.leading, 15)
+                    }
                 }
             }
             .alert(deleteMessageTitleKey, isPresented: $viewModel.presentDeleteAlert) {

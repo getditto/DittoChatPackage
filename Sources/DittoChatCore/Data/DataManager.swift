@@ -39,7 +39,7 @@ protocol ReplicatingDataInterface {
 
     func room(for room: Room) -> Room?
     func findPublicRoomById(id: String) -> Room?
-    func createRoom(name: String, isPrivate: Bool) -> DittoDocumentID?
+    func createRoom(id: String?, name: String, isPrivate: Bool) -> DittoDocumentID?
     func joinPrivateRoom(qrCode: String)
     func roomPublisher(for room: Room) -> AnyPublisher<Room?, Never>
 
@@ -59,6 +59,7 @@ protocol ReplicatingDataInterface {
     ) -> DittoSwift.DittoCollection.FetchAttachmentPublisher
 
     func addUser(_ usr: ChatUser)
+    func findUserById(_ id: String, inCollection collection: String) async throws -> ChatUser
     func updateUser(withId id: String,
                     firstName: String?,
                     lastName: String?,
@@ -66,21 +67,37 @@ protocol ReplicatingDataInterface {
                     mentions: [String: [String]]?)
     func currentUserPublisher() -> AnyPublisher<ChatUser?, Never>
     func allUsersPublisher() -> AnyPublisher<[ChatUser], Never>
+
+    func logout()
 }
 
-public class DataManager {
-    public static let shared = DataManager()
-    @Published public private(set) var publicRoomsPublisher: AnyPublisher<[Room], Never>
-    @Published private(set) var privateRoomsPublisher: AnyPublisher<[Room], Never>
+open class DataManager {
+    static let shared = DataManager()
+    var ditto: Ditto!
+    @Published private(set) var publicRoomsPublisher: AnyPublisher<[Room], Never>!
+    @Published private(set) var privateRoomsPublisher: AnyPublisher<[Room], Never>!
 
-    private var localStore: LocalDataInterface
-    private let p2pStore: ReplicatingDataInterface
+    private var localStore: LocalDataInterface!
+    private var p2pStore: ReplicatingDataInterface!
 
-    private init() {
-        self.localStore = LocalStoreService()
-        self.p2pStore = DittoService(privateStore: localStore)
+    private init() {}
+
+    func setUp(ditto: Ditto, usersCollection: String) {
+        self.ditto = ditto
+        let localStore: LocalStoreService = LocalStoreService()
+        self.localStore = localStore
+        self.p2pStore = DittoService(privateStore: localStore, ditto: ditto, usersCollection: usersCollection)
         self.publicRoomsPublisher = p2pStore.publicRoomsPublisher.eraseToAnyPublisher()
         self.privateRoomsPublisher = localStore.privateRoomsPublisher
+    }
+
+    func logout() {
+        p2pStore.logout()
+        localStore = nil
+        p2pStore = nil
+        ditto = nil
+        publicRoomsPublisher = nil
+        privateRoomsPublisher = nil
     }
 }
 
@@ -95,8 +112,8 @@ extension DataManager {
         p2pStore.findPublicRoomById(id: id)
     }
 
-    public func createRoom(name: String, isPrivate: Bool) -> DittoDocumentID? {
-        return p2pStore.createRoom(name: name, isPrivate: isPrivate)
+    public func createRoom(id: String? = UUID().uuidString, name: String, isPrivate: Bool) -> DittoDocumentID? {
+        return p2pStore.createRoom(id: id, name: name, isPrivate: isPrivate)
     }
 
     func joinPrivateRoom(qrCode: String) {
@@ -115,7 +132,7 @@ extension DataManager {
         p2pStore.unarchiveRoom(room)
     }
 
-    public func deleteRoom(_ room: Room) {
+    func deleteRoom(_ room: Room) {
         p2pStore.deleteRoom(room)
     }
 
@@ -125,6 +142,14 @@ extension DataManager {
 
     func archivedPrivateRoomsPublisher() -> AnyPublisher<[Room], Never> {
         localStore.archivedPrivateRoomsPublisher
+    }
+
+    func readMessagesForRoom(room: Room) {
+        // TODO: Implement
+    }
+
+    func readMessagesForUser(user: ChatUser) {
+        // TODO: Implement
     }
 }
 
@@ -166,7 +191,7 @@ extension DataManager {
 extension DataManager {
     // MARK: Current User
 
-    public var currentUserId: String? {
+    var currentUserId: String? {
         get { localStore.currentUserId }
         set { localStore.currentUserId = newValue }
     }
@@ -179,7 +204,7 @@ extension DataManager {
         p2pStore.currentUserPublisher()
     }
 
-    public func allUsersPublisher() -> AnyPublisher<[ChatUser], Never> {
+    func allUsersPublisher() -> AnyPublisher<[ChatUser], Never> {
         p2pStore.allUsersPublisher()
     }
 
@@ -191,7 +216,11 @@ extension DataManager {
         p2pStore.updateUser(withId: id, firstName: firstName, lastName: lastName, subscriptions: subscriptions, mentions: mentions)
     }
 
-    public func saveCurrentUser(firstName: String, lastName: String) {
+    func updateRoom(_ room: Room) {
+        // TODO: Implement
+    }
+
+    func saveCurrentUser(firstName: String, lastName: String) {
         if currentUserId == nil {
             let userId = UUID().uuidString
             currentUserId = userId
@@ -202,11 +231,15 @@ extension DataManager {
         let user = ChatUser(id: currentUserId!, firstName: firstName, lastName: lastName, subscriptions: [:], mentions: [:])
         p2pStore.addUser(user)
     }
+
+    func setCurrentUser(id: String) {
+        currentUserId = id
+    }
 }
 
 extension DataManager {
     var sdkVersion: String {
-        DittoInstance.shared.ditto.sdkVersion
+        ditto?.sdkVersion ?? ""
     }
 
     var appInfo: String {
@@ -228,7 +261,7 @@ extension DataManager {
     }
 }
 
-public extension DataManager {
+extension DataManager {
     var basicChat: Bool {
         get { localStore.basicChat }
         set { localStore.basicChat = newValue }
