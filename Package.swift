@@ -17,7 +17,6 @@ let package = Package(
     ],
     dependencies: [
         .package(url: "https://github.com/getditto/DittoSwiftPackage", from: "4.8.0"),
-        .package(url: "https://github.com/twostraws/CodeScanner", from: "2.0.0"),
         .package(url: "https://github.com/vadymmarkov/Fakery", from: "5.0.0"),
         .package(url: "https://github.com/apple/swift-collections", from: "1.0.0"),
     ],
@@ -26,7 +25,6 @@ let package = Package(
             name: "DittoChatCore",
             dependencies: [
                 .product(name: "DittoSwift", package: "DittoSwiftPackage"),
-                .product(name: "CodeScanner", package: "CodeScanner"),
                 .product(name: "Fakery", package: "Fakery"),
                 .product(name: "OrderedCollections", package: "swift-collections"),
             ]
