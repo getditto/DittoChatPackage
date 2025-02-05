@@ -120,8 +120,8 @@ struct ImageAttachmentFetcher {
         
         // Fetch the thumbnail data from Ditto, calling the progress handler to
         // report the operation's ongoing progress.
-        let ditto = DataManager.shared.ditto
-        let _ = ditto?.store[collectionId].fetchAttachment(token: token) { event in
+        let ditto = DataManager.shared.p2pStore.ditto
+        let _ = ditto.store[collectionId].fetchAttachment(token: token) { event in
             switch event {
             case .progress(let downloadedBytes, let totalBytes):
                 let percent = Double(downloadedBytes) / Double(totalBytes)

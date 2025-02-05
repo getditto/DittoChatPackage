@@ -35,7 +35,10 @@ protocol LocalDataInterface {
 }
 
 protocol ReplicatingDataInterface {
+    var ditto: Ditto { get }
     var publicRoomsPublisher: CurrentValueSubject<[Room], Never> { get }
+    var peerKeyString: String { get }
+    var sdkVersion: String { get }
 
     func room(for room: Room) -> Room?
     func findPublicRoomById(id: String) -> Room?
@@ -57,6 +60,7 @@ protocol ReplicatingDataInterface {
         for token: DittoAttachmentToken,
         in collectionId: String
     ) -> DittoSwift.DittoCollection.FetchAttachmentPublisher
+    func createUpdateMessage(document: [String: Any?])
 
     func addUser(_ usr: ChatUser)
     func findUserById(_ id: String, inCollection collection: String) async throws -> ChatUser
@@ -73,19 +77,17 @@ protocol ReplicatingDataInterface {
 
 open class DataManager {
     static let shared = DataManager()
-    var ditto: Ditto!
     @Published private(set) var publicRoomsPublisher: AnyPublisher<[Room], Never>!
     @Published private(set) var privateRoomsPublisher: AnyPublisher<[Room], Never>!
     var takChatEnabled: Bool = false
     var retentionPolicy: ChatRetentionPolicy = .init(days: 30)
 
     private var localStore: LocalDataInterface!
-    private var p2pStore: ReplicatingDataInterface!
+    var p2pStore: ReplicatingDataInterface!
 
     private init() {}
 
     func setUp(ditto: Ditto, usersCollection: String) {
-        self.ditto = ditto
         let localStore: LocalStoreService = LocalStoreService()
         self.localStore = localStore
         self.p2pStore = DittoService(privateStore: localStore, ditto: ditto, usersCollection: usersCollection, takEnabled: takChatEnabled, chatRetentionPolicy: retentionPolicy)
@@ -97,7 +99,6 @@ open class DataManager {
         p2pStore.logout()
         localStore = nil
         p2pStore = nil
-        ditto = nil
         publicRoomsPublisher = nil
         privateRoomsPublisher = nil
     }
@@ -188,6 +189,10 @@ extension DataManager {
     ) -> DittoSwift.DittoCollection.FetchAttachmentPublisher {
         p2pStore.attachmentPublisher(for: token, in: collectionId)
     }
+
+    func createUpdateMessage(document: [String: Any?]) {
+        p2pStore.createUpdateMessage(document: document)
+    }
 }
 
 extension DataManager {
@@ -241,7 +246,7 @@ extension DataManager {
 
 extension DataManager {
     var sdkVersion: String {
-        ditto?.sdkVersion ?? ""
+        p2pStore.sdkVersion
     }
 
     var appInfo: String {
@@ -249,6 +254,10 @@ extension DataManager {
         let version = Bundle.main.appVersion
         let build = Bundle.main.appBuild
         return "\(name) \(version) build \(build)"
+    }
+
+    var peerKeyString: String {
+        p2pStore.peerKeyString
     }
 }
 

@@ -106,17 +106,7 @@ extension Message {
             hasBeenConverted: true
         ).docDictionary()
 
-        // Update the currently existing TAK chat message with a Ditto Chat compatable one
-        Task {
-            try? await DataManager.shared.ditto?.store.execute(
-                query: """
-                    INSERT INTO chat
-                    DOCUMENTS (:message)
-                    ON ID CONFLICT DO UPDATE
-                    """,
-                arguments: ["message": message]
-            )
-        }
+        DataManager.shared.createUpdateMessage(document: message)
     }
 }
 
@@ -200,7 +190,7 @@ extension Message {
         self.authorType = "a-f-G-U-C"
         self.msg = message
         self.parent = parent
-        let peerKey = DataManager.shared.ditto?.presence.graph.localPeer.peerKeyString ?? ""
+        let peerKey = DataManager.shared.peerKeyString
         self.pks = peerKey
         self.room = room
         self.schver = schver
