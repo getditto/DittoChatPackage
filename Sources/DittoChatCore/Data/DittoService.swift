@@ -22,7 +22,7 @@ class DittoService: ReplicatingDataInterface {
     private var privateRoomMessagesSubscriptions = [String: DittoSubscription]()
     private var publicRoomMessagesSubscriptions = [String: DittoSubscription]()
 
-    private var ditto: Ditto!
+    private var ditto: Ditto? = nil
     private let usersKey: String
     private var privateStore: LocalDataInterface
     private var chatRetentionPolicy: ChatRetentionPolicy
@@ -137,6 +137,8 @@ extension DittoService {
     // MARK: Subscriptions
 
     func addSubscriptions(for room: Room) {
+        guard let ditto else { return }
+
         if room.isPrivate {
             addPrivateRoomSubscriptions(roomId: room.id, collectionId: room.collectionId!, messagesId: room.messagesId)
         } else {
@@ -173,6 +175,8 @@ extension DittoService {
 
     // This function without room param is for qrCode join private room, where there isn't yet a room
     func addPrivateRoomSubscriptions(roomId: String, collectionId: String, messagesId: String) {
+        guard let ditto else { return }
+
         let rSub = ditto.store[collectionId].findAll().subscribe()
         privateRoomSubscriptions[roomId] = rSub
 
@@ -185,12 +189,14 @@ extension DittoService {
     // MARK: Users
 
     func currentUserPublisher() -> AnyPublisher<ChatUser?, Never> {
-        privateStore.currentUserIdPublisher
+        guard let ditto else { return Just<ChatUser?>(nil).eraseToAnyPublisher() }
+
+        return privateStore.currentUserIdPublisher
             .map { [weak self] userId -> AnyPublisher<ChatUser?, Never> in
                 guard let self, let userId = userId else {
                     return Just<ChatUser?>(nil).eraseToAnyPublisher()
                 }
-                return self.ditto.store.collection(self.usersKey)
+                return ditto.store.collection(self.usersKey)
                     .findByID(userId)
                     .singleDocumentLiveQueryPublisher()
                     .compactMap { doc, _ in return doc }
@@ -202,6 +208,8 @@ extension DittoService {
     }
 
     func findUserById(_ id: String, inCollection collection: String) async throws -> ChatUser {
+        guard let ditto else { return .unknownUser() }
+
         let result = try await ditto.store.execute(query: "SELECT * FROM \(collection) WHERE _id = :_id", arguments: ["_id": id])
 
         guard let value = result.items.first?.value else {
@@ -212,6 +220,8 @@ extension DittoService {
     }
 
     func addUser(_ usr: ChatUser) {
+        guard let ditto else { return }
+
         _ = try? ditto.store.collection(usersKey)
             .upsert(usr.docDictionary())
     }
@@ -221,6 +231,8 @@ extension DittoService {
                     lastName: String?,
                     subscriptions: [String: Date?]?,
                     mentions: [String: [String]]?) {
+        guard let ditto else { return }
+
         ditto.store.collection(usersKey)
             .findByID(id)
             .update({ dittoMutableDocument in
@@ -236,6 +248,8 @@ extension DittoService {
     }
 
     func allUsersPublisher() -> AnyPublisher<[ChatUser], Never> {
+        guard let ditto else { return Empty<[ChatUser], Never>().eraseToAnyPublisher() }
+
         return ditto.store.collection(usersKey).findAll().liveQueryPublisher()
             .map { docs, _ in
                 docs.map { ChatUser(document: $0) }
@@ -248,6 +262,8 @@ extension DittoService {
 
 extension DittoService {
     func messagePublisher(for msgId: String, in collectionId: String) -> AnyPublisher<Message, Never> {
+        guard let ditto else { return Empty<Message, Never>().eraseToAnyPublisher() }
+
         return ditto.store.collection(collectionId)
             .findByID(msgId)
             .singleDocumentLiveQueryPublisher()
@@ -257,6 +273,8 @@ extension DittoService {
     }
 
     func messagesPublisher(for room: Room) -> AnyPublisher<[Message], Never> {
+        guard let ditto else { return Empty<[Message], Never>().eraseToAnyPublisher() }
+
         return ditto.store.collection(room.messagesId)
             .find("roomId == $args.roomId", args: ["roomId": room.id,])
             .sort(createdOnKey, direction: .ascending)
@@ -268,6 +286,8 @@ extension DittoService {
     }
 
     func createMessage(for room: Room, text: String) {
+        guard let ditto else { return }
+
         guard let userId = privateStore.currentUserId else { return }
         guard let room = self.room(for: room) else { return }
 
@@ -276,12 +296,16 @@ extension DittoService {
     }
 
     func saveEditedTextMessage(_ message: Message, in room: Room) {
+        guard let ditto else { return }
+
         let _ = ditto.store[room.messagesId].findByID(message.id).update { mutableDoc in
             mutableDoc?[textKey].set(message.text)
         }
     }
 
     func saveDeletedImageMessage(_ message: Message, in room: Room) {
+        guard let ditto else { return }
+
         let _ = ditto.store[room.messagesId].findByID(message.id).update { mutableDoc in
             mutableDoc?[thumbnailImageTokenKey] = nil
             mutableDoc?[largeImageTokenKey] = nil
@@ -291,6 +315,8 @@ extension DittoService {
 
     // image param expected to be native image size/resolution, from which downsampled thumbnail will be derived
     func createImageMessage(for room: Room, image: UIImage, text: String?) async throws {
+        guard let ditto else { return }
+
         let userId = privateStore.currentUserId ?? createdByUnknownKey
         var nowDate = DateFormatter.isoDate.string(from: Date())
         var fname = attachmentFilename(for: user(for: userId), type: .thumbnailImage, timestamp: nowDate)
@@ -413,6 +439,8 @@ extension DittoService {
     }
 
     private func user(for userId: String) -> ChatUser? {
+        guard let ditto else { return nil }
+
         if let doc = ditto.store[usersKey].findByID(userId).exec() {
             return ChatUser(document: doc)
         }
@@ -426,7 +454,9 @@ extension DittoService {
         for token: DittoAttachmentToken,
         in collectionId: String
     ) -> DittoSwift.DittoCollection.FetchAttachmentPublisher {
-        ditto.store[collectionId].fetchAttachmentPublisher(attachmentToken: token)
+        guard let ditto else { fatalError("Ditto Instance does not exist when getting attachments") }
+
+        return ditto.store[collectionId].fetchAttachmentPublisher(attachmentToken: token)
     }
 }
 
@@ -434,6 +464,8 @@ extension DittoService {
     // MARK: Rooms
 
     private func updateAllPublicRooms() {
+        guard let ditto else { return }
+
         allPublicRoomsCancellable = ditto.store.collection(publicRoomsCollectionId)
             .findAll()
             .sort(createdOnKey, direction: .ascending)
@@ -446,7 +478,9 @@ extension DittoService {
     }
 
     func roomPublisher(for room: Room) -> AnyPublisher<Room?, Never> {
-        ditto.store.collection(room.isPrivate ? room.collectionId! : publicRoomsCollectionId)
+        guard let ditto else { return Just<Room?>(nil).eraseToAnyPublisher() }
+
+        return ditto.store.collection(room.isPrivate ? room.collectionId! : publicRoomsCollectionId)
             .findByID(room.id)
             .singleDocumentLiveQueryPublisher()
             .compactMap { doc, _ in return doc }
@@ -458,6 +492,8 @@ extension DittoService {
     /// placeholder Room instances are used to display, e.g., archived rooms. In other cases, they are rooms from a publisher of
     /// Room instances,
     func room(for room: Room) -> Room? {
+        guard let ditto else { return nil }
+
         let collectionId = room.collectionId ?? publicRoomsCollectionId
 
         guard let doc = ditto.store[collectionId].findByID(room.id).exec() else {
@@ -472,6 +508,8 @@ extension DittoService {
 
     /// This function returns a room from the Ditto db for the given room id. The id argument will be passed from the UI, In other cases, they are rooms from a publisher of Room instances.
     func findPublicRoomById(id: String) -> Room? {
+        guard let ditto else { return nil }
+
         guard let doc = ditto.store[publicRoomsCollectionId].findByID(id).exec() else {
             print("DittoService.\(#function): WARNING (except for archived private rooms)" +
                 " - expected non-nil room room.id: \(id)"
@@ -483,6 +521,8 @@ extension DittoService {
     }
 
     func createRoom(id: String?, name: String, isPrivate: Bool) -> DittoDocumentID? {
+        guard let ditto else { return nil }
+
         let collectionId = isPrivate ? UUID().uuidString : publicRoomsCollectionId
         let messagesId: String = publicMessagesCollectionId
 
@@ -535,6 +575,8 @@ extension DittoService {
     }
 
     private func createDefaultPublicRoom(takEnabled: Bool) {
+        guard let ditto else { return }
+
         // TODO: Replace with a first launch value instead that is specific for this use case
         if allPublicRooms.count > 2 {
             return
@@ -622,6 +664,8 @@ extension DittoService {
     }
 
     func unarchivePublicRoom(_ room: Room) {
+        guard let ditto else { return }
+
         privateStore.unarchivePublicRoom(room)
 
         guard let _ = ditto.store[publicRoomsCollectionId].findByID(room.id).exec() else {
@@ -648,6 +692,8 @@ extension DittoService {
     }
 
     func deletePublicRoom(_ room: Room) {
+        guard let ditto else { return }
+
         removeSubscriptions(for: room)
         evictRoom(room)
 
@@ -657,6 +703,8 @@ extension DittoService {
     }
 
     func deletePrivateRoom(_ room: Room) {
+        guard let ditto else { return }
+
         guard let collectionId = room.collectionId else {
             print("\(#function): ERROR: Expected PrivateRoom collectionId not NIL")
             return
@@ -682,6 +730,8 @@ extension DittoService {
     }
 
     private func evictPrivateRoom(_ room: Room) {
+        guard let ditto else { return }
+
         guard let collectionId = room.collectionId else {
             print("\(#function): ERROR: Expected PrivateRoom collectionId not NIL")
             return
@@ -696,6 +746,8 @@ extension DittoService {
     }
 
     private func evictPublicRoom(_ room: Room) {
+        guard let ditto else { return }
+
         // evict all messages in collection
         ditto.store[room.messagesId].find("roomId == $args.roomId", args: ["roomId": room.id,]).evict()
 
