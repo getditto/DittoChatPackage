@@ -25,16 +25,18 @@ class DittoService: ReplicatingDataInterface {
     private var ditto: Ditto!
     private let usersKey: String
     private var privateStore: LocalDataInterface
+    private var chatRetentionPolicy: ChatRetentionPolicy
 
     private var joinRoomQuery: DittoSwift.DittoLiveQuery?
 
-    init(privateStore: LocalDataInterface, ditto: Ditto, usersCollection: String) {
+    init(privateStore: LocalDataInterface, ditto: Ditto, usersCollection: String, takEnabled: Bool, chatRetentionPolicy: ChatRetentionPolicy) {
         self.ditto = ditto
         self.privateStore = privateStore
         self.usersKey = usersCollection
         self.usersSubscription = ditto.store[usersCollection].findAll().subscribe()
+        self.chatRetentionPolicy = chatRetentionPolicy
 
-        createDefaultPublicRoom()
+        createDefaultPublicRoom(takEnabled: takEnabled)
 
         // kick off the public rooms findAll() liveQueryPublisher
         updateAllPublicRooms()
@@ -532,7 +534,7 @@ extension DittoService {
         
     }
 
-    private func createDefaultPublicRoom() {
+    private func createDefaultPublicRoom(takEnabled: Bool) {
         // TODO: Replace with a first launch value instead that is specific for this use case
         if allPublicRooms.count > 2 {
             return
@@ -549,16 +551,18 @@ extension DittoService {
                 isPrivateKey: false
             ] as [String: Any?] )
 
-        // Create default Public room with pre-configured id, messagesId
-        try! ditto.store.collection(publicRoomsCollectionId)
-            .upsert([
-                dbIdKey: publicTAKKey,
-                nameKey: publicTAKRoomTitleKey,
-                collectionIdKey: publicRoomsCollectionId,
-                messagesIdKey: publicTAKMessagesIdKey,
-                createdOnKey: DateFormatter.isoDate.string(from: Date()),
-                isPrivateKey: false
-            ] as [String: Any?] )
+        if takEnabled {
+            // Create default Public room with pre-configured id, messagesId
+            try! ditto.store.collection(publicRoomsCollectionId)
+                .upsert([
+                    dbIdKey: publicTAKKey,
+                    nameKey: publicTAKRoomTitleKey,
+                    collectionIdKey: publicRoomsCollectionId,
+                    messagesIdKey: publicTAKMessagesIdKey,
+                    createdOnKey: DateFormatter.isoDate.string(from: Date()),
+                    isPrivateKey: false
+                ] as [String: Any?] )
+        }
     }
 }
 

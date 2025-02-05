@@ -10,10 +10,7 @@ import Combine
 import Foundation
 
 class RoomsListScreenVM: ObservableObject {
-    @Published var presentProfileScreen: Bool = false
     @Published var presentCreateRoomScreen = false
-    @Published var presentScannerView = false
-    @Published var presentSettingsView = false
     @Published var publicRooms: [Room] = []
     @Published var privateRooms: [Room] = []
     @Published var defaultPublicRoom: Room?
@@ -21,8 +18,6 @@ class RoomsListScreenVM: ObservableObject {
     @Published var currentUser: ChatUser?
 
     init() {
-        self.presentProfileScreen = DataManager.shared.currentUserId == nil
-
         DataManager.shared
             .publicRoomsPublisher
             .receive(on: DispatchQueue.main)
@@ -45,16 +40,8 @@ class RoomsListScreenVM: ObservableObject {
             .assign(to: &$currentUser)
     }
 
-    func profileButtonAction() {
-        presentProfileScreen = true
-    }
-
     func createRoomButtonAction() {
         presentCreateRoomScreen = true
-    }
-
-    func scanButtonAction() {
-        presentScannerView = true
     }
 
     func joinPrivateRoom(code: String) {

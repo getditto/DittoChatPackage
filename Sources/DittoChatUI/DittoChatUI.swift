@@ -23,8 +23,8 @@ public protocol DittoChatViews {
 public class DittoChatUI: DittoChatViews {
     public var dittoChat: DittoChat!
 
-    public init() {
-        dittoChat = DittoChat()
+    public init(chatConfig: ChatConfig? = nil) {
+        dittoChat = DittoChat(config: chatConfig)
     }
 
     public func setup(withDitto ditto: Ditto, usersCollection: String) {
