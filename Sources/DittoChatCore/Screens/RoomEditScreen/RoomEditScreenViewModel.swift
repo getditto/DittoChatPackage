@@ -13,14 +13,17 @@ class RoomEditScreenViewModel: ObservableObject {
     @Published var name: String = ""
     @Published var saveButtonDisabled = false
     @Published var isValid = true
+    private let dataManager: DataManager
 
-    init() {
+    init(dataManager: DataManager) {
+        self.dataManager = dataManager
+
         $name
             .map { $0.isEmpty }
             .assign(to: &$saveButtonDisabled)
     }
 
     func createRoom() {
-        let _ = DataManager.shared.createRoom(name: name, isPrivate: false)
+        let _ = dataManager.createRoom(name: name, isPrivate: false)
     }
 }

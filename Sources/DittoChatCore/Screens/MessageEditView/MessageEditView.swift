@@ -54,12 +54,14 @@ struct MessageEditView: View {
     @Environment(\.dismiss) private var dismiss
     @StateObject var viewModel: MessageEditVM
     let roomName: String
+    private let dataManager: DataManager
 
     init(
         _ msgsUsers: (editUsrMsg: MessageWithUser, chats: ArraySlice<MessageWithUser>),
         roomName: String,
         saveEditCallback: @escaping (Message) -> Void,
-        cancelEditCallback: @escaping () -> Void
+        cancelEditCallback: @escaping () -> Void,
+        dataManager: DataManager
     ) {
         self._viewModel = StateObject(
             wrappedValue: MessageEditVM(
@@ -69,6 +71,7 @@ struct MessageEditView: View {
             )
         )
         self.roomName = roomName
+        self.dataManager = dataManager
     }
 
     var body: some View {
@@ -148,7 +151,8 @@ struct MessageEditView: View {
             MessageBubbleView(
                 messageWithUser: usrMsg,
                 messagesId: "placeholder_in_MessageEditView",
-                isEditing: .constant(true)
+                isEditing: .constant(true),
+                dataManager: dataManager
             )
             .id(usrMsg.id)
         } else {

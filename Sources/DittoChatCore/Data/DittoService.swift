@@ -270,7 +270,7 @@ extension DittoService {
         guard let userId = privateStore.currentUserId else { return }
         guard let room = self.room(for: room) else { return }
 
-        let message = Message(roomId: room.id, message: text, userName: userId, userId: userId).docDictionary()
+        let message = Message(roomId: room.id, message: text, userName: userId, userId: userId, peerKey: peerKeyString).docDictionary()
         try! ditto.store.collection(room.messagesId).upsert(message)
     }
 
@@ -321,7 +321,7 @@ extension DittoService {
         // create new message doc with thumbnail attachment
         let docId = UUID().uuidString
 
-        var message = Message(roomId: room.id, userName: userId, userId: userId).docDictionary()
+        var message = Message(roomId: room.id, userName: userId, userId: userId, peerKey: peerKeyString).docDictionary()
         message.updateValue(thumbAttachment, forKey: thumbnailImageTokenKey)
         message.updateValue(docId, forKey: dbIdKey)
 
@@ -504,6 +504,7 @@ extension DittoService {
             name: name,
             messagesId: messagesId,
             isPrivate: isPrivate,
+            userId: privateStore.currentUserId ?? unknownUserIdKey,
             collectionId: collectionId
         )
 
@@ -533,8 +534,8 @@ extension DittoService {
         let roomName = String(parts[3])
         let isPrivate = Bool(String(parts[4])) ?? true
         let createdBy = String(parts[5])
-        let createdOn = DateFormatter.isoDate.date(from: String(parts[6]))
-        
+        let createdOn = DateFormatter.isoDate.date(from: String(parts[6])) ?? .distantPast
+
         addPrivateRoomSubscriptions(
             roomId: roomId,
             collectionId: collectionId,
@@ -542,7 +543,7 @@ extension DittoService {
         )
         
         let room = Room(id: roomId, name: roomName, messagesId: messagesId, isPrivate: isPrivate, collectionId: collectionId, createdBy: createdBy, createdOn: createdOn)
-        
+
         self.privateStore.addPrivateRoom(room)
         
     }

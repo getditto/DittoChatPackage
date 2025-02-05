@@ -76,18 +76,15 @@ protocol ReplicatingDataInterface {
 }
 
 open class DataManager {
-    static let shared = DataManager()
-    @Published private(set) var publicRoomsPublisher: AnyPublisher<[Room], Never>!
-    @Published private(set) var privateRoomsPublisher: AnyPublisher<[Room], Never>!
+    @Published private(set) var publicRoomsPublisher: AnyPublisher<[Room], Never>
+    @Published private(set) var privateRoomsPublisher: AnyPublisher<[Room], Never>
     var takChatEnabled: Bool = false
     var retentionPolicy: ChatRetentionPolicy = .init(days: 30)
 
-    private var localStore: LocalDataInterface!
-    var p2pStore: ReplicatingDataInterface!
+    private var localStore: LocalDataInterface
+    var p2pStore: ReplicatingDataInterface
 
-    private init() {}
-
-    func setUp(ditto: Ditto, usersCollection: String) {
+    init(ditto: Ditto, usersCollection: String) {
         let localStore: LocalStoreService = LocalStoreService()
         self.localStore = localStore
         self.p2pStore = DittoService(privateStore: localStore, ditto: ditto, usersCollection: usersCollection, takEnabled: takChatEnabled, chatRetentionPolicy: retentionPolicy)
@@ -97,10 +94,6 @@ open class DataManager {
 
     func logout() {
         p2pStore.logout()
-        localStore = nil
-        p2pStore = nil
-        publicRoomsPublisher = nil
-        privateRoomsPublisher = nil
     }
 }
 

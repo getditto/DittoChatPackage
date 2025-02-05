@@ -12,8 +12,7 @@ import Combine
 import DittoChatCore
 
 public protocol DittoChatViews {
-    var dittoChat: DittoChat! { get }
-    func setup(withDitto ditto: Ditto, usersCollection: String)
+    var dittoChat: DittoChat { get }
     func roomView(id: String) throws -> ChatScreen
     func roomsView() -> RoomsListScreen
     func logout()
@@ -21,29 +20,24 @@ public protocol DittoChatViews {
 }
 
 public class DittoChatUI: DittoChatViews {
-    public var dittoChat: DittoChat!
+    public var dittoChat: DittoChat
 
-    public init(chatConfig: ChatConfig? = nil) {
+    public init(chatConfig: ChatConfig) {
         dittoChat = DittoChat(config: chatConfig)
-    }
-
-    public func setup(withDitto ditto: Ditto, usersCollection: String) {
-        dittoChat.setup(withDitto: ditto, usersCollection: usersCollection)
     }
 
     public func roomView(id: String) throws -> ChatScreen {
         let room = try dittoChat.readRoomById(id: id)
 
-        return ChatScreen(room: room)
+        return ChatScreen(room: room, dataManager: dittoChat.dataManager)
     }
 
     public func roomsView() -> RoomsListScreen {
-        return RoomsListScreen()
+        return RoomsListScreen(dataManager: dittoChat.dataManager)
     }
 
     public func logout() {
         dittoChat.logout()
-        dittoChat = nil
     }
 
     public func setCurrentUser(withConfig config: UserConfig) {

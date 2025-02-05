@@ -33,17 +33,19 @@ class ChatScreenVM: ObservableObject {
     @Published var isEditing = false
     @Published var keyboardStatus: KeyboardChangeEvent = .unchanged
     var editMsgId: String?
+    private let dataManager: DataManager
 
     // Basic chat mode
     var isBasicChatScreen: Bool {
-        DataManager.shared.basicChat && room.id == publicKey
+        dataManager.basicChat && room.id == publicKey
     }
 
-    init(room: Room) {
+    init(room: Room, dataManager: DataManager) {
         self.room = room
+        self.dataManager = dataManager
 
-        let users = DataManager.shared.allUsersPublisher()
-        let messages = DataManager.shared.messagesPublisher(for: room)
+        let users = dataManager.allUsersPublisher()
+        let messages = dataManager.messagesPublisher(for: room)
 
         messages.combineLatest(users)
             .map { messages, users -> [MessageWithUser] in
@@ -56,7 +58,7 @@ class ChatScreenVM: ObservableObject {
             }
             .assign(to: &$messagesWithUsers)
 
-        DataManager.shared.roomPublisher(for: room)
+        dataManager.roomPublisher(for: room)
             .map { room -> String in
                 if let room = room { self.room = room }
                 return room?.name ?? ""
@@ -70,7 +72,7 @@ class ChatScreenVM: ObservableObject {
         }
         #endif
 
-        DataManager.shared.currentUserPublisher()
+        dataManager.currentUserPublisher()
             .assign(to: &$currentUser)
     }
 
@@ -78,7 +80,7 @@ class ChatScreenVM: ObservableObject {
         // only allow non-empty string messages
         guard !inputText.isEmpty else { return }
 
-        DataManager.shared.createMessage(for: room, text: inputText)
+        dataManager.createMessage(for: room, text: inputText)
 
         inputText = ""
     }
@@ -89,7 +91,7 @@ class ChatScreenVM: ObservableObject {
         }
         
         do {
-            try await DataManager.shared.createImageMessage(for: room, image: image, text: inputText)
+            try await dataManager.createImageMessage(for: room, image: image, text: inputText)
 
         } catch {
             print("Caught error: \(error.localizedDescription)")
@@ -147,7 +149,7 @@ class ChatScreenVM: ObservableObject {
         if msg.text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
             return deleteTextMessage(msg)
         }
-        DataManager.shared.saveEditedTextMessage(msg, in: room)
+        dataManager.saveEditedTextMessage(msg, in: room)
         cleanupEdit()
     }
 
@@ -162,7 +164,7 @@ class ChatScreenVM: ObservableObject {
         editedMsg.text = deletedImageMessageKey
         editedMsg.thumbnailImageToken = nil
         editedMsg.largeImageToken = nil
-        DataManager.shared.saveDeletedImageMessage(editedMsg, in: room)
+        dataManager.saveDeletedImageMessage(editedMsg, in: room)
     }
 
     func presentAttachment(_ msg: Message) {
@@ -196,6 +198,6 @@ class ChatScreenVM: ObservableObject {
         subs.updateValue(.now, forKey: room.id)
         mentions.updateValue([], forKey: room.id)
 
-        DataManager.shared.updateUser(withId: currentUser.id, firstName: nil, lastName: nil, subscriptions: subs, mentions: mentions)
+        dataManager.updateUser(withId: currentUser.id, firstName: nil, lastName: nil, subscriptions: subs, mentions: mentions)
     }
 }

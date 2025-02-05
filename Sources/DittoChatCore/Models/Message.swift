@@ -106,7 +106,8 @@ extension Message {
             hasBeenConverted: true
         ).docDictionary()
 
-        DataManager.shared.createUpdateMessage(document: message)
+        // TODO: Need to figure this one out
+        //DataManager.shared.createUpdateMessage(document: message)
     }
 }
 
@@ -137,7 +138,7 @@ extension Message {
         self.createdOn = createdOn ?? Date()
         self.roomId = roomId
         self.text = text ?? ""
-        self.userId = DataManager.shared.currentUserId ?? createdByUnknownKey
+        self.userId = userId ?? createdByUnknownKey
         self.largeImageToken = largeImageToken
         self.thumbnailImageToken = thumbnailImageToken
         self.archivedMessage = archivedMessage
@@ -170,6 +171,7 @@ extension Message {
         archivedMessage: String? = nil,
         isArchived: Bool = false,
         parent: String = "RootContactGroup",
+        peerKey: String,
         room: String = "ditto",
         schver: Int = 1,
         hasBeenConverted: Bool = true
@@ -190,7 +192,6 @@ extension Message {
         self.authorType = "a-f-G-U-C"
         self.msg = message
         self.parent = parent
-        let peerKey = DataManager.shared.peerKeyString
         self.pks = peerKey
         self.room = room
         self.schver = schver
