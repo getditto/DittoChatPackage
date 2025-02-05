@@ -30,13 +30,6 @@ struct RoomEditScreen: View {
                 }
                 Section {
                     HStack {
-                        CheckboxButton(isChecked: $viewModel.roomIsPrivate)
-                        Text("Private Room")
-                        Spacer()
-                    }
-                }
-                Section {
-                    HStack {
                         Spacer()
 
                         Button {

@@ -12,7 +12,6 @@ import Foundation
 class RoomEditScreenViewModel: ObservableObject {
     @Published var name: String = ""
     @Published var saveButtonDisabled = false
-    @Published var roomIsPrivate = false
     @Published var isValid = true
 
     init() {
@@ -22,6 +21,6 @@ class RoomEditScreenViewModel: ObservableObject {
     }
 
     func createRoom() {
-        let _ = DataManager.shared.createRoom(name: name, isPrivate: roomIsPrivate)
+        let _ = DataManager.shared.createRoom(name: name, isPrivate: false)
     }
 }

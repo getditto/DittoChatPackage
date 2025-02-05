@@ -34,20 +34,12 @@ class ChatScreenVM: ObservableObject {
     @Published var keyboardStatus: KeyboardChangeEvent = .unchanged
     var editMsgId: String?
 
-    @Published var presentShareRoomScreen = false
-
     // Basic chat mode
-    @Published var presentProfileScreen: Bool = false
-    @Published var presentSettingsView = false
     var isBasicChatScreen: Bool {
         DataManager.shared.basicChat && room.id == publicKey
     }
 
     init(room: Room) {
-        // In Basic chat mode, display profile screen if user is nil (first launch)
-        if room.id == publicKey && DataManager.shared.basicChat {
-            self.presentProfileScreen = DataManager.shared.currentUserId == nil
-        }
         self.room = room
 
         let users = DataManager.shared.allUsersPublisher()
@@ -180,14 +172,6 @@ class ChatScreenVM: ObservableObject {
 
     func cleanupAttachmentAttribs() {
         attachmentMessage = nil
-    }
-
-    // private room
-    func shareQRCode() -> String? {
-        if let collectionId = room.collectionId {
-            return "\(room.id)\n\(collectionId)\n\(room.messagesId)\n\(room.name)\n\(room.isPrivate)\n\(room.createdBy)\n\(room.createdOn)"
-        }
-        return nil
     }
 
     func lastUnreadMessage() -> String? {

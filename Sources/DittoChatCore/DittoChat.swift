@@ -63,11 +63,35 @@ public struct UserConfig {
     }
 }
 
+public struct ChatConfig {
+    public var retentionPolicy: ChatRetentionPolicy
+    public var takChatEnabled: Bool
+
+    public init(retentionPolicy: ChatRetentionPolicy = .init(days: 30), takChatEnabled: Bool = false) {
+        self.retentionPolicy = retentionPolicy
+        self.takChatEnabled = takChatEnabled
+    }
+}
+
+// TODO: Hook this up to actually work
+public struct ChatRetentionPolicy {
+    public var days: Int
+    
+    public init(days: Int) {
+        self.days = days
+    }
+}
+
 public class DittoChat: DittoSwiftChat {
     private var dataManager: DataManager!
 
-    public init() {
+    public init(config: ChatConfig? = nil) {
         self.dataManager = DataManager.shared
+
+        if let config = config {
+            dataManager.takChatEnabled = config.takChatEnabled
+            dataManager.retentionPolicy = config.retentionPolicy
+        }
     }
     
     // MARK: Carry over from previous public things

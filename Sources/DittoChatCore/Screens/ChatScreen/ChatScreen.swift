@@ -119,50 +119,6 @@ public struct ChatScreen: View {
             )
         }
 #endif
-        .sheet(isPresented: $viewModel.presentShareRoomScreen) {
-            if let codeStr = viewModel.shareQRCode() {
-                QRCodeView(
-                    roomName: viewModel.roomName,
-                    codeString: codeStr
-                )
-            } else {
-                NavigationView {
-                    GeneralErrorView(message: AppError.qrCodeFail.localizedDescription)
-                }
-            }
-        }
-        .sheet(isPresented: $viewModel.presentProfileScreen) { // basic chat mode
-            ProfileScreen()
-        }
-        .sheet(isPresented: $viewModel.presentSettingsView) { // basic chat mode
-            SettingsScreen()
-        }
-        .toolbar {
-            // basic chat mode
-            if viewModel.isBasicChatScreen {
-                ToolbarItemGroup(placement: .navigationBarLeading) {
-                    Button {
-                        viewModel.presentProfileScreen = true
-                    } label: {
-                        Image(systemName: personCircleKey)
-                    }
-                    Button {
-                        viewModel.presentSettingsView = true
-                    } label: {
-                        Image(systemName: gearShapeKey)
-                    }
-                }
-            }
-            ToolbarItemGroup(placement: .navigationBarTrailing) {
-                if viewModel.room.isPrivate {
-                    Button {
-                        viewModel.presentShareRoomScreen = true
-                    } label: {
-                        Image(systemName: qrCodeKey)
-                    }
-                }
-            }
-        }
         .fullScreenCover(isPresented: $viewModel.presentEditingView) {
             if let msgsUsers = try? viewModel.editMessagesWithUsers() {
                 NavigationView {

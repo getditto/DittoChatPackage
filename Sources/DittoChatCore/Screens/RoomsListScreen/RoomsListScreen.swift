@@ -100,47 +100,15 @@ public struct RoomsListScreen: View {
                 .withErrorHandling()
         }
 #endif
-        .sheet(isPresented: $viewModel.presentProfileScreen) {
-            ProfileScreen()
-        }
-#if os(iOS)
-        .sheet(isPresented: $viewModel.presentScannerView) {
-            ScannerView(
-                successAction: { code in
-                    viewModel.joinPrivateRoom(code: code)
-                }
-            )
-        }
-#endif
         .sheet(isPresented: $viewModel.presentCreateRoomScreen) {
             RoomEditScreen()
         }
-        .sheet(isPresented: $viewModel.presentSettingsView) {
-            SettingsScreen()
-        }
         .toolbar {
-            ToolbarItemGroup(placement: .navigationBarLeading) {
-                Button {
-                    viewModel.profileButtonAction()
-                } label: {
-                    Image(systemName: personCircleKey)
-                }
-                Button {
-                    viewModel.presentSettingsView = true
-                } label: {
-                    Image(systemName: gearShapeKey)
-                }
-            }
             ToolbarItemGroup(placement: .principal) {
                 Text(appTitleKey)
                     .fontWeight(.bold)
             }
             ToolbarItemGroup(placement: .navigationBarTrailing) {
-                Button {
-                    viewModel.scanButtonAction()
-                } label: {
-                    Label(scanPrivateRoomTitleKey, systemImage: qrCodeViewfinderKey)
-                }
                 Button {
                     viewModel.createRoomButtonAction()
                 } label: {
