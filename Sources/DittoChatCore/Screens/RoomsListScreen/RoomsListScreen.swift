@@ -100,7 +100,7 @@ public struct RoomsListScreen: View {
 #if !os(tvOS)
         .navigationBarTitleDisplayMode(.inline)
         .navigationDestination(for: Room.self) { room in
-            ChatScreen(room: room)
+            ChatScreen(room: room, dataManager: viewModel.dataManager)
                 .withErrorHandling()
         }
 #endif

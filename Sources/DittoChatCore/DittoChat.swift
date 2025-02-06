@@ -68,11 +68,11 @@ public struct ChatConfig {
     public var takChatEnabled: Bool
     public var usersCollection: String
 
-    public init(ditto: Ditto, retentionPolicy: ChatRetentionPolicy = .init(days: 30), takChatEnabled: Bool = false, usersCollection: String = "users") {
+    public init(ditto: Ditto, retentionPolicy: ChatRetentionPolicy = .init(days: 30), usersCollection: String = "users", takEnabled: Bool? = nil) {
         self.ditto = ditto
         self.retentionPolicy = retentionPolicy
-        self.takChatEnabled = takChatEnabled
         self.usersCollection = usersCollection
+        self.takChatEnabled = takEnabled ?? false
     }
 }
 

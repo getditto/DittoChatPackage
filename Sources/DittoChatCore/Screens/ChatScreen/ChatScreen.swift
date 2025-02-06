@@ -116,7 +116,8 @@ public struct ChatScreen: View {
             AttachmentPreview(
                 vm: MessageBubbleVM(
                     viewModel.attachmentMessage!,
-                    messagesId: viewModel.room.messagesId
+                    messagesId: viewModel.room.messagesId,
+                    dataManager: dataManager
                 ),
                 errorHandler: errorHandler
             )
