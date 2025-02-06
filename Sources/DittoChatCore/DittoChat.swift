@@ -67,12 +67,17 @@ public struct ChatConfig {
     public var retentionPolicy: ChatRetentionPolicy
     public var takChatEnabled: Bool
     public var usersCollection: String
+    public var userId: String?
 
-    public init(ditto: Ditto, retentionPolicy: ChatRetentionPolicy = .init(days: 30), usersCollection: String = "users", takEnabled: Bool? = nil) {
+    public init(
+        ditto: Ditto, retentionPolicy: ChatRetentionPolicy = .init(days: 30), usersCollection: String = "users", 
+        userId: String? = nil, takEnabled: Bool? = nil
+    ) {
         self.ditto = ditto
         self.retentionPolicy = retentionPolicy
         self.usersCollection = usersCollection
         self.takChatEnabled = takEnabled ?? false
+        self.userId = userId
     }
 }
 
@@ -90,9 +95,11 @@ public class DittoChat: DittoSwiftChat {
 
     public init(config: ChatConfig) {
         self.dataManager = DataManager(ditto: config.ditto, usersCollection: config.usersCollection)
-
         dataManager.takChatEnabled = config.takChatEnabled
         dataManager.retentionPolicy = config.retentionPolicy
+        if let userId = config.userId {
+            self.setCurrentUser(withConfig: UserConfig(id: userId))
+        }
     }
     
     // MARK: Carry over from previous public things
