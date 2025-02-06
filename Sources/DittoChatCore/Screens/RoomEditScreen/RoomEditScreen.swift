@@ -10,7 +10,11 @@ import SwiftUI
 
 struct RoomEditScreen: View {
     @Environment(\.dismiss) private var dismiss
-    @ObservedObject var viewModel = RoomEditScreenViewModel()
+    @ObservedObject var viewModel: RoomEditScreenViewModel
+
+    init(dataManager: DataManager) {
+        self.viewModel = RoomEditScreenViewModel(dataManager: dataManager)
+    }
 
     var body: some View {
         NavigationView {
@@ -59,10 +63,11 @@ struct RoomEditScreen: View {
 }
 
 #if DEBUG
+import DittoSwift
 struct RoomEditScreen_Previews: PreviewProvider {
     static var previews: some View {
         Group {
-            RoomEditScreen()
+            RoomEditScreen(dataManager: DataManager(ditto: Ditto(), usersCollection: "users"))
         }
     }
 }

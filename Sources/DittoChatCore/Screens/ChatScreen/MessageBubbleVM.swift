@@ -19,12 +19,14 @@ class MessageBubbleVM: ObservableObject {
     @Published var presentDeleteAlert = false
     private let messagesId: String
     private var tmpStorage: TemporaryFile?
+    private let dataManager: DataManager
 
-    init(_ msg: Message, messagesId: String) {
+    init(_ msg: Message, messagesId: String, dataManager: DataManager) {
         self.message = msg
         self.messagesId = messagesId
+        self.dataManager = dataManager
 
-        DataManager.shared.messagePublisher(for: message.id, in: messagesId)
+        dataManager.messagePublisher(for: message.id, in: messagesId)
             .receive(on: RunLoop.main)
             .assign(to: &$message)
     }
@@ -88,7 +90,8 @@ class MessageBubbleVM: ObservableObject {
 
                     // do nothing for large image fetch
                 }
-            }
+            },
+            dataManager: dataManager
         )
     }
 
@@ -114,14 +117,15 @@ struct ImageAttachmentFetcher {
     func fetch(with token: DittoAttachmentToken?,
                from collectionId: String,
                onProgress: @escaping ProgressHandler,
-               onComplete: @escaping CompletionHandler
+               onComplete: @escaping CompletionHandler,
+               dataManager: DataManager
     ) {
         guard let token = token else { return }
         
         // Fetch the thumbnail data from Ditto, calling the progress handler to
         // report the operation's ongoing progress.
-        let ditto = DataManager.shared.ditto
-        let _ = ditto?.store[collectionId].fetchAttachment(token: token) { event in
+        let ditto = dataManager.p2pStore.ditto
+        let _ = ditto.store[collectionId].fetchAttachment(token: token) { event in
             switch event {
             case .progress(let downloadedBytes, let totalBytes):
                 let percent = Double(downloadedBytes) / Double(totalBytes)

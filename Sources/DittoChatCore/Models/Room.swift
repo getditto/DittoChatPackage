@@ -49,11 +49,12 @@ extension Room {
         name: String,
         messagesId: String,
         isPrivate: Bool,
+        userId: String,
         collectionId: String? = nil,
         createdBy: String? = nil,
         createdOn: Date? = nil
     ) {
-        let userId = DataManager.shared.currentUserId ?? createdByUnknownKey
+        //let userId = DataManager.shared.currentUserId ?? createdByUnknownKey
         self.id = id
         self.name = name
         self.messagesId = messagesId
@@ -78,15 +79,15 @@ extension Room {
     }
 }
 
-public extension Room {
-    // This "dummy" object is a Room object used by DittoChatApp.swift
-    // to initialize a basic chat mode ChatScreen as root view
-    static var basicChatDummy: Room {
-        Room(
-            id: publicKey,
-            name: publicRoomTitleKey,
-            messagesId: publicMessagesIdKey,
-            isPrivate: false
-        )
-    }
-}
+//public extension Room {
+//    // This "dummy" object is a Room object used by DittoChatApp.swift
+//    // to initialize a basic chat mode ChatScreen as root view
+//    static var basicChatDummy: Room {
+//        Room(
+//            id: publicKey,
+//            name: publicRoomTitleKey,
+//            messagesId: publicMessagesIdKey,
+//            isPrivate: false
+//        )
+//    }
+//}

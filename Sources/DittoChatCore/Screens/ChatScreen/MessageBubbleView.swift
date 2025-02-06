@@ -19,20 +19,23 @@ struct MessageBubbleView: View {
     @Binding var isEditing: Bool
     let messageUser: MessageWithUser
     var messageOpCallback: ((MessageOperation, Message) -> Void)?
+    private let dataManager: DataManager
 
     init(
         messageWithUser: MessageWithUser,
         messagesId: String,
         messageOpCallback: ((MessageOperation, Message) -> Void)? = nil,
-        isEditing: Binding<Bool>
+        isEditing: Binding<Bool>,
+        dataManager: DataManager
     ) {
         self._viewModel = StateObject(
-            wrappedValue: MessageBubbleVM(messageWithUser.message, messagesId: messagesId)
+            wrappedValue: MessageBubbleVM(messageWithUser.message, messagesId: messagesId, dataManager: dataManager)
         )
         self.messageUser = messageWithUser
         self._isEditing = isEditing
         self.needsImageSync = messageWithUser.message.thumbnailImageToken != nil
         self.messageOpCallback = messageOpCallback
+        self.dataManager = dataManager
     }
 
     private var user: ChatUser {
@@ -55,8 +58,8 @@ struct MessageBubbleView: View {
     // and always available to local user to preview at full rez
     private var largeImageAvailable: Bool {
         if message.thumbnailImageToken != nil {
-            if message.userId == DataManager.shared.currentUserId
-                || DataManager.shared.acceptLargeImages
+            if message.userId == dataManager.currentUserId
+                || dataManager.acceptLargeImages
             {
                 return true
             }
@@ -70,7 +73,7 @@ struct MessageBubbleView: View {
                 return .right
             }
         } else {
-            if user.id == DataManager.shared.currentUserId {
+            if user.id == dataManager.currentUserId {
                 return .right
             }
         }
@@ -81,7 +84,7 @@ struct MessageBubbleView: View {
         if forPreview {
             return user.id == previewUserId
         }
-        return user.id == DataManager.shared.currentUserId
+        return user.id == dataManager.currentUserId
     }
 
     private var backgroundColor: Color {
@@ -304,16 +307,20 @@ struct MessageBubbleView: View {
         preview: Bool,
         isEditing: Binding<Bool> = .constant(false)
     ) {
+        let dataManager =  DataManager(ditto: Ditto(), usersCollection: "users")
+
         self._viewModel = StateObject(
             wrappedValue: MessageBubbleVM(
                 Message(roomId: "abc", text: "Hello World!"),
-                messagesId: messagesId
+                messagesId: messagesId,
+                dataManager: dataManager
             )
         )
         self._isEditing = isEditing
         self.messageUser = messageWithUser
         self.forPreview = preview
         self.messageOpCallback = nil
+        self.dataManager = dataManager
     }
 }
 

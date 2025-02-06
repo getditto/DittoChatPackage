@@ -22,7 +22,7 @@ class DittoService: ReplicatingDataInterface {
     private var privateRoomMessagesSubscriptions = [String: DittoSubscription]()
     private var publicRoomMessagesSubscriptions = [String: DittoSubscription]()
 
-    private var ditto: Ditto!
+    var ditto: Ditto
     private let usersKey: String
     private var privateStore: LocalDataInterface
     private var chatRetentionPolicy: ChatRetentionPolicy
@@ -92,7 +92,6 @@ class DittoService: ReplicatingDataInterface {
         publicRoomMessagesSubscriptions.forEach { (key: String, value: DittoSubscription) in
             value.cancel()
         }
-        ditto = nil
     }
 }
 
@@ -185,12 +184,12 @@ extension DittoService {
     // MARK: Users
 
     func currentUserPublisher() -> AnyPublisher<ChatUser?, Never> {
-        privateStore.currentUserIdPublisher
+        return privateStore.currentUserIdPublisher
             .map { [weak self] userId -> AnyPublisher<ChatUser?, Never> in
                 guard let self, let userId = userId else {
                     return Just<ChatUser?>(nil).eraseToAnyPublisher()
                 }
-                return self.ditto.store.collection(self.usersKey)
+                return ditto.store.collection(self.usersKey)
                     .findByID(userId)
                     .singleDocumentLiveQueryPublisher()
                     .compactMap { doc, _ in return doc }
@@ -271,7 +270,7 @@ extension DittoService {
         guard let userId = privateStore.currentUserId else { return }
         guard let room = self.room(for: room) else { return }
 
-        let message = Message(roomId: room.id, message: text, userName: userId, userId: userId).docDictionary()
+        let message = Message(roomId: room.id, message: text, userName: userId, userId: userId, peerKey: peerKeyString).docDictionary()
         try! ditto.store.collection(room.messagesId).upsert(message)
     }
 
@@ -322,7 +321,7 @@ extension DittoService {
         // create new message doc with thumbnail attachment
         let docId = UUID().uuidString
 
-        var message = Message(roomId: room.id, userName: userId, userId: userId).docDictionary()
+        var message = Message(roomId: room.id, userName: userId, userId: userId, peerKey: peerKeyString).docDictionary()
         message.updateValue(thumbAttachment, forKey: thumbnailImageTokenKey)
         message.updateValue(docId, forKey: dbIdKey)
 
@@ -426,7 +425,21 @@ extension DittoService {
         for token: DittoAttachmentToken,
         in collectionId: String
     ) -> DittoSwift.DittoCollection.FetchAttachmentPublisher {
-        ditto.store[collectionId].fetchAttachmentPublisher(attachmentToken: token)
+        return ditto.store[collectionId].fetchAttachmentPublisher(attachmentToken: token)
+    }
+
+    func createUpdateMessage(document: [String : Any?]) {
+        // Update the currently existing TAK chat message with a Ditto Chat compatable one
+        Task {
+            try? await ditto.store.execute(
+                query: """
+                    INSERT INTO chat
+                    DOCUMENTS (:message)
+                    ON ID CONFLICT DO UPDATE
+                    """,
+                arguments: ["message": document]
+            )
+        }
     }
 }
 
@@ -446,7 +459,7 @@ extension DittoService {
     }
 
     func roomPublisher(for room: Room) -> AnyPublisher<Room?, Never> {
-        ditto.store.collection(room.isPrivate ? room.collectionId! : publicRoomsCollectionId)
+        return ditto.store.collection(room.isPrivate ? room.collectionId! : publicRoomsCollectionId)
             .findByID(room.id)
             .singleDocumentLiveQueryPublisher()
             .compactMap { doc, _ in return doc }
@@ -491,6 +504,7 @@ extension DittoService {
             name: name,
             messagesId: messagesId,
             isPrivate: isPrivate,
+            userId: privateStore.currentUserId ?? unknownUserIdKey,
             collectionId: collectionId
         )
 
@@ -520,8 +534,8 @@ extension DittoService {
         let roomName = String(parts[3])
         let isPrivate = Bool(String(parts[4])) ?? true
         let createdBy = String(parts[5])
-        let createdOn = DateFormatter.isoDate.date(from: String(parts[6]))
-        
+        let createdOn = DateFormatter.isoDate.date(from: String(parts[6])) ?? .distantPast
+
         addPrivateRoomSubscriptions(
             roomId: roomId,
             collectionId: collectionId,
@@ -529,7 +543,7 @@ extension DittoService {
         )
         
         let room = Room(id: roomId, name: roomName, messagesId: messagesId, isPrivate: isPrivate, collectionId: collectionId, createdBy: createdBy, createdOn: createdOn)
-        
+
         self.privateStore.addPrivateRoom(room)
         
     }
@@ -704,5 +718,15 @@ extension DittoService {
 
         // We don't need to evict a public room because it will replicate automatically anyway,
         // but room documents are very light-weight.
+    }
+}
+
+extension DittoService {
+    var peerKeyString: String {
+        ditto.presence.graph.localPeer.peerKeyString
+    }
+
+    var sdkVersion: String {
+        ditto.sdkVersion
     }
 }

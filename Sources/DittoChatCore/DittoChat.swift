@@ -11,8 +11,7 @@ import SwiftUI
 import Combine
 
 public protocol DittoSwiftChat {
-    func setup(withDitto: Ditto, usersCollection: String)
-
+    var dataManager: DataManager { get }
     // Create
     func createRoom(withConfig: RoomConfig) throws -> String
     func createMessage(withConfig: MessageConfig) throws
@@ -64,12 +63,21 @@ public struct UserConfig {
 }
 
 public struct ChatConfig {
+    public var ditto: Ditto
     public var retentionPolicy: ChatRetentionPolicy
     public var takChatEnabled: Bool
+    public var usersCollection: String
+    public var userId: String?
 
-    public init(retentionPolicy: ChatRetentionPolicy = .init(days: 30), takChatEnabled: Bool = false) {
+    public init(
+        ditto: Ditto, retentionPolicy: ChatRetentionPolicy = .init(days: 30), usersCollection: String = "users", 
+        userId: String? = nil, takEnabled: Bool? = nil
+    ) {
+        self.ditto = ditto
         self.retentionPolicy = retentionPolicy
-        self.takChatEnabled = takChatEnabled
+        self.usersCollection = usersCollection
+        self.takChatEnabled = takEnabled ?? false
+        self.userId = userId
     }
 }
 
@@ -83,14 +91,14 @@ public struct ChatRetentionPolicy {
 }
 
 public class DittoChat: DittoSwiftChat {
-    private var dataManager: DataManager!
+    public var dataManager: DataManager
 
-    public init(config: ChatConfig? = nil) {
-        self.dataManager = DataManager.shared
-
-        if let config = config {
-            dataManager.takChatEnabled = config.takChatEnabled
-            dataManager.retentionPolicy = config.retentionPolicy
+    public init(config: ChatConfig) {
+        self.dataManager = DataManager(ditto: config.ditto, usersCollection: config.usersCollection)
+        dataManager.takChatEnabled = config.takChatEnabled
+        dataManager.retentionPolicy = config.retentionPolicy
+        if let userId = config.userId {
+            self.setCurrentUser(withConfig: UserConfig(id: userId))
         }
     }
     
@@ -123,11 +131,6 @@ public class DittoChat: DittoSwiftChat {
 
     public func allUsersPublisher() -> AnyPublisher<[ChatUser], Never> {
         dataManager.allUsersPublisher()
-    }
-
-    // MARK: Public interface
-    public func setup(withDitto ditto: DittoSwift.Ditto, usersCollection: String) {
-        dataManager.setUp(ditto: ditto, usersCollection: usersCollection)
     }
 
     // MARK: Create
@@ -178,6 +181,5 @@ public class DittoChat: DittoSwiftChat {
     /// Note: Make sure that you call stop sync before calling this logout function.
     public func logout() {
         dataManager.logout()
-        dataManager = nil
     }
 }

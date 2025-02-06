@@ -13,9 +13,11 @@ import SwiftUI
 public struct ChatScreen: View {
     @StateObject var viewModel: ChatScreenVM
     @EnvironmentObject var errorHandler: ErrorHandler
+    private let dataManager: DataManager
 
-    public init(room: Room) {
-        self._viewModel = StateObject(wrappedValue: ChatScreenVM(room: room))
+    public init(room: Room, dataManager: DataManager) {
+        self.dataManager = dataManager
+        self._viewModel = StateObject(wrappedValue: ChatScreenVM(room: room, dataManager: dataManager))
     }
 
     var navBarTitle: String {
@@ -37,7 +39,8 @@ public struct ChatScreen: View {
                                     messageWithUser: usrMsg,
                                     messagesId: viewModel.room.messagesId,
                                     messageOpCallback: viewModel.messageOperationCallback,
-                                    isEditing: $viewModel.isEditing
+                                    isEditing: $viewModel.isEditing,
+                                    dataManager: dataManager
                                 )
                                 .id(usrMsg.message.id)
                                 .transition(.slide)
@@ -113,7 +116,8 @@ public struct ChatScreen: View {
             AttachmentPreview(
                 vm: MessageBubbleVM(
                     viewModel.attachmentMessage!,
-                    messagesId: viewModel.room.messagesId
+                    messagesId: viewModel.room.messagesId,
+                    dataManager: dataManager
                 ),
                 errorHandler: errorHandler
             )
@@ -126,7 +130,8 @@ public struct ChatScreen: View {
                         msgsUsers,
                         roomName: viewModel.roomName,
                         saveEditCallback: viewModel.saveEditedTextMessage,
-                        cancelEditCallback: viewModel.cancelEditCallback
+                        cancelEditCallback: viewModel.cancelEditCallback,
+                        dataManager: dataManager
                     )
                 }
             } else {
@@ -176,9 +181,13 @@ public struct ChatScreen: View {
 }
 
 #if DEBUG
+import DittoSwift
 struct ChatScreen_Previews: PreviewProvider {
     static var previews: some View {
-        ChatScreen(room: Room(id: "abc", name: "My Room", messagesId: "def", isPrivate: true))
+        ChatScreen(
+            room: Room(id: "abc", name: "My Room", messagesId: "def", isPrivate: true, userId: "test"),
+            dataManager: DataManager(ditto: Ditto(), usersCollection: "users")
+        )
     }
 }
 #endif

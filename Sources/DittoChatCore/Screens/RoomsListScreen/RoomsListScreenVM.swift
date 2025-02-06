@@ -16,10 +16,12 @@ class RoomsListScreenVM: ObservableObject {
     @Published var defaultPublicRoom: Room?
     @Published var defaultTAKPublicRoom: Room?
     @Published var currentUser: ChatUser?
+    let dataManager: DataManager
 
-    init() {
-        DataManager.shared
-            .publicRoomsPublisher
+    init(dataManager: DataManager) {
+        self.dataManager = dataManager
+
+        dataManager.publicRoomsPublisher
             .receive(on: DispatchQueue.main)
             .map { [weak self] rooms in
                 self?.defaultPublicRoom = rooms.first(where: { $0.id == publicKey })
@@ -29,14 +31,13 @@ class RoomsListScreenVM: ObservableObject {
             }
             .assign(to: &$publicRooms)
 
-        DataManager.shared
-            .privateRoomsPublisher
+        dataManager.privateRoomsPublisher
             .map { privRooms in
                 privRooms.sorted(by: { $0.createdOn > $1.createdOn })
             }
             .assign(to: &$privateRooms)
 
-        DataManager.shared.currentUserPublisher()
+        dataManager.currentUserPublisher()
             .assign(to: &$currentUser)
     }
 
@@ -45,11 +46,11 @@ class RoomsListScreenVM: ObservableObject {
     }
 
     func joinPrivateRoom(code: String) {
-        DataManager.shared.joinPrivateRoom(qrCode: code)
+        dataManager.joinPrivateRoom(qrCode: code)
     }
 
     func archiveRoom(_ room: Room) {
-        DataManager.shared.archiveRoom(room)
+        dataManager.archiveRoom(room)
     }
 
     func toggleSubscriptionFor(room: Room) {
@@ -58,13 +59,13 @@ class RoomsListScreenVM: ObservableObject {
             var subscriptions = currentUser.subscriptions
             subscriptions.updateValue(.now, forKey: room.id)
 
-            DataManager.shared.updateUser(withId: currentUser.id, firstName: nil, lastName: nil, subscriptions: subscriptions, mentions: nil)
+            dataManager.updateUser(withId: currentUser.id, firstName: nil, lastName: nil, subscriptions: subscriptions, mentions: nil)
             return
         }
 
         var newSubscriptions = currentUser.subscriptions
         newSubscriptions.updateValue(nil, forKey: room.id)
 
-        DataManager.shared.updateUser(withId: currentUser.id, firstName: nil, lastName: nil, subscriptions: newSubscriptions, mentions: nil)
+        dataManager.updateUser(withId: currentUser.id, firstName: nil, lastName: nil, subscriptions: newSubscriptions, mentions: nil)
     }
 }

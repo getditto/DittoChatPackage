@@ -11,8 +11,8 @@ import SwiftUI
 struct RoomsListRowItem: View {
     @ObservedObject var viewModel: RoomsListRowItemViewModel
 
-    init(room: Room) {
-        self.viewModel = RoomsListRowItemViewModel(room: room)
+    init(room: Room, dataManager: DataManager) {
+        self.viewModel = RoomsListRowItemViewModel(room: room, dataManager: dataManager)
     }
 
     var body: some View {
@@ -46,13 +46,13 @@ class RoomsListRowItemViewModel: ObservableObject {
     @Published var currentUser: ChatUser?
     @Published var room: Room
 
-    init(room: Room) {
+    init(room: Room, dataManager: DataManager) {
         self.room = room
 
-        DataManager.shared.messagesPublisher(for: room)
+        dataManager.messagesPublisher(for: room)
             .assign(to: &$messages)
 
-        DataManager.shared.currentUserPublisher()
+        dataManager.currentUserPublisher()
             .assign(to: &$currentUser)
     }
 
@@ -96,6 +96,7 @@ class RoomsListRowItemViewModel: ObservableObject {
 }
 
 #if DEBUG
+import DittoSwift
 struct RoomsListRowItem_Previews: PreviewProvider {
     static var previews: some View {
         RoomsListRowItem(
@@ -103,8 +104,10 @@ struct RoomsListRowItem_Previews: PreviewProvider {
                 id: "id123",
                 name: "My Room",
                 messagesId: "msgId123",
-                isPrivate: false
-            )
+                isPrivate: false,
+                userId: "some user"
+            ),
+            dataManager: DataManager(ditto: Ditto(), usersCollection: "users")
         )
     }
 }

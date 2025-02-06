@@ -9,16 +9,20 @@
 import SwiftUI
 
 public struct RoomsListScreen: View {
-    @ObservedObject var viewModel = RoomsListScreenVM()
+    @ObservedObject var viewModel: RoomsListScreenVM
+    private let dataManager: DataManager
 
-    public init() { /*Make init public access level*/ }
+    public init(dataManager: DataManager) {
+        self.dataManager = dataManager
+        self.viewModel = RoomsListScreenVM(dataManager: dataManager)
+    }
 
     public var body: some View {
         List {
             if let defaultPublicRoom = viewModel.defaultPublicRoom {
                 Section(openPublicRoomTitleKey) {
-                    NavigationLink(destination: ChatScreen(room: defaultPublicRoom)) {
-                        RoomsListRowItem(room: defaultPublicRoom)
+                    NavigationLink(destination: ChatScreen(room: defaultPublicRoom, dataManager: dataManager)) {
+                        RoomsListRowItem(room: defaultPublicRoom, dataManager: viewModel.dataManager)
                     }
                     #if !os(tvOS)
                     .swipeActions(edge: .leading, allowsFullSwipe: true) {
@@ -33,8 +37,8 @@ public struct RoomsListScreen: View {
             }
             if let defaultTAKPublicRoom = viewModel.defaultTAKPublicRoom {
                 Section(takPublicRoomTitleKey) {
-                    NavigationLink(destination: ChatScreen(room: defaultTAKPublicRoom)) {
-                        RoomsListRowItem(room: defaultTAKPublicRoom)
+                    NavigationLink(destination: ChatScreen(room: defaultTAKPublicRoom, dataManager: dataManager)) {
+                        RoomsListRowItem(room: defaultTAKPublicRoom, dataManager: viewModel.dataManager)
                     }
                     #if !os(tvOS)
                     .swipeActions(edge: .leading, allowsFullSwipe: true) {
@@ -49,8 +53,8 @@ public struct RoomsListScreen: View {
             }
             Section( viewModel.publicRooms.count > 0 ? publicRoomsTitleKey : "" ) {
                 ForEach(viewModel.publicRooms) { room in
-                    NavigationLink(destination: ChatScreen(room: room)) {
-                        RoomsListRowItem(room: room)
+                    NavigationLink(destination: ChatScreen(room: room, dataManager: dataManager)) {
+                        RoomsListRowItem(room: room, dataManager: viewModel.dataManager)
                     }
                     #if !os(tvOS)
                     .swipeActions(edge: .trailing, allowsFullSwipe: false) {
@@ -72,8 +76,8 @@ public struct RoomsListScreen: View {
             
             Section( viewModel.privateRooms.count > 0 ? privateRoomsTitleKey : "" ) {
                 ForEach(viewModel.privateRooms) { room in
-                    NavigationLink(destination: ChatScreen(room: room)) {
-                        RoomsListRowItem(room: room)
+                    NavigationLink(destination: ChatScreen(room: room, dataManager: dataManager)) {
+                        RoomsListRowItem(room: room, dataManager: viewModel.dataManager)
                     }
                     #if !os(tvOS)
                     .swipeActions(edge: .trailing, allowsFullSwipe: false) {
@@ -96,12 +100,12 @@ public struct RoomsListScreen: View {
 #if !os(tvOS)
         .navigationBarTitleDisplayMode(.inline)
         .navigationDestination(for: Room.self) { room in
-            ChatScreen(room: room)
+            ChatScreen(room: room, dataManager: viewModel.dataManager)
                 .withErrorHandling()
         }
 #endif
         .sheet(isPresented: $viewModel.presentCreateRoomScreen) {
-            RoomEditScreen()
+            RoomEditScreen(dataManager: viewModel.dataManager)
         }
         .toolbar {
             ToolbarItemGroup(placement: .principal) {
@@ -120,10 +124,11 @@ public struct RoomsListScreen: View {
 }
 
 #if DEBUG
+import DittoSwift
 struct RoomsListScreen_Previews: PreviewProvider {
     static var previews: some View {
         NavigationView {
-            RoomsListScreen()
+            RoomsListScreen(dataManager: DataManager(ditto: Ditto(), usersCollection: "users"))
         }
     }
 }
