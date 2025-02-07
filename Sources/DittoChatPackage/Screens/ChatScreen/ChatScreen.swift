@@ -58,6 +58,13 @@ public struct ChatScreen: View {
                             }
                         }
                     }
+                    .onChange(of: viewModel.messagesWithUsers) { value in
+                        DispatchQueue.main.async {
+                            withAnimation {
+                                scrollToBottom(proxy: proxy)
+                            }
+                        }
+                    }
                     .onChange(of: viewModel.keyboardStatus) { status in
                         guard !viewModel.presentEditingView else { return }
                         if status == .willShow || status == .willHide { return }

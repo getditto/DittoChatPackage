@@ -87,7 +87,7 @@ extension Message {
             createdOn: self.timeMs,
             roomId: self.roomId,
             text: self.msg,
-            userId: self.authorCs,
+            userId: self.takUid,
             largeImageToken: self.largeImageToken,
             thumbnailImageToken: self.thumbnailImageToken,
             archivedMessage: self.archivedMessage,
@@ -105,6 +105,21 @@ extension Message {
             timeMs: self.timeMs,
             hasBeenConverted: true
         ).docDictionary()
+
+        // Create the TAK user if it doesnt already exist
+        if !takUid.isEmpty {
+            let user = ChatUser(id: takUid, firstName: authorCs, lastName: " ", subscriptions: [:], mentions: [:])
+            Task {
+                try? await DittoInstance.shared.ditto.store.execute(
+                    query: """
+                        INSERT INTO users
+                        DOCUMENTS (:user)
+                        ON ID CONFLICT DO UPDATE
+                        """,
+                    arguments: ["user": user.docDictionary()]
+                )
+            }
+        }
 
         // Update the currently existing TAK chat message with a Ditto Chat compatable one
         Task {
@@ -143,17 +158,18 @@ extension Message {
         takUid: String? = nil,
         timeMs: Date? = nil
     ) {
+        let currentUser = DataManager.shared.currentUserId ?? createdByUnknownKey
         self.id = id ?? UUID().uuidString
         self.createdOn = createdOn ?? Date()
         self.roomId = roomId
         self.text = text ?? ""
-        self.userId = DataManager.shared.currentUserId ?? createdByUnknownKey
+        self.userId = currentUser
         self.largeImageToken = largeImageToken
         self.thumbnailImageToken = thumbnailImageToken
         self.archivedMessage = archivedMessage
         self.isArchived = isArchived
 
-        self.authorCs = authorCs ?? ""
+        self.authorCs = authorCs ?? currentUser ?? ""
         self.authorId = authorId ?? ""
         self.authorLoc = authorLoc ?? ""
         self.authorType = authorType ?? ""
@@ -206,6 +222,7 @@ extension Message {
         self.schver = schver
         self.takUid = UUID().uuidString
         self.timeMs = createdOn
+        self.hasBeenConverted = hasBeenConverted
     }
 }
 

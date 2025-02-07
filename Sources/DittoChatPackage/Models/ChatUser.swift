@@ -71,6 +71,22 @@ extension ChatUser {
         }
         mentions = document[mentionsKey].dictionaryValue as? [String: [String]] ?? [:]
     }
+
+    init(documentValue: [String: Any?]) {
+        id = documentValue[dbIdKey] as? String ?? ""
+        firstName = documentValue[firstNameKey] as? String ?? ""
+        lastName = documentValue[lastNameKey] as? String ?? ""
+//        subscriptions = document[subscriptionsKey].dictionaryValue as? [String : RoomSubscription?] ?? [:]
+        var subscriptionDictionary = documentValue[subscriptionsKey] as? [String : String?] ?? [:]
+        subscriptions = subscriptionDictionary.mapValues { dateString in
+            if let dateString {
+                try? Date(dateString, strategy: .iso8601)
+            } else {
+                nil
+            }
+        }
+        mentions = documentValue[mentionsKey] as? [String: [String]] ?? [:]
+    }
 }
 
 extension ChatUser {
