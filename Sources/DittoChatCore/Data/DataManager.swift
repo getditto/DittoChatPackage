@@ -95,6 +95,10 @@ open class DataManager {
     func logout() {
         p2pStore.logout()
     }
+    
+    deinit {
+        print("(Chat)DittoManager deinit")
+    }
 }
 
 extension DataManager {

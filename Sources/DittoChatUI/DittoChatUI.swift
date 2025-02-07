@@ -43,4 +43,8 @@ public class DittoChatUI: DittoChatViews {
     public func setCurrentUser(withConfig config: UserConfig) {
         dittoChat.setCurrentUser(withConfig: config)
     }
+    
+    deinit {
+        print("DittoChatUI deinit")
+    }
 }

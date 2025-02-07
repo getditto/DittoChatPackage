@@ -93,6 +93,10 @@ class DittoService: ReplicatingDataInterface {
             value.cancel()
         }
     }
+    
+    deinit {
+        print("(Chat)DittoSevice deinit")
+    }
 }
 
 ///  General Overview
