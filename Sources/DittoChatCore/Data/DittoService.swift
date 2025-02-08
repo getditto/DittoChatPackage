@@ -77,6 +77,7 @@ class DittoService: ReplicatingDataInterface {
     }
 
     func logout() {
+        print("(ChatPackage)DittoSevice \(#function) --> in")
         usersSubscription.cancel()
 
         cancellables.forEach { anyCancellable in
@@ -97,7 +98,9 @@ class DittoService: ReplicatingDataInterface {
     }
     
     func cleanup() {
+        print("(ChatPackage)DittoSevice \(#function) --> in")
         logout()
+        print("(ChatPackage)DittoSevice \(#function) SET _ditto to nil")
         _ditto = nil
     }
     

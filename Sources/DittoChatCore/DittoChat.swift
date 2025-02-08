@@ -184,6 +184,7 @@ public class DittoChat: DittoSwiftChat {
     }
     
     public func cleanup() {
+        print("(ChatPackage)DittoChat \(#function) --> in")
         dataManager.cleanup()
     }
     
