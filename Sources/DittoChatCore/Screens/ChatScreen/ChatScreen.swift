@@ -13,9 +13,9 @@ import SwiftUI
 public struct ChatScreen: View {
     @StateObject var viewModel: ChatScreenVM
     @EnvironmentObject var errorHandler: ErrorHandler
-    private let dataManager: DataManager
+    private let dataManager: ChatCoreDataManager
 
-    public init(room: Room, dataManager: DataManager) {
+    public init(room: Room, dataManager: ChatCoreDataManager) {
         self.dataManager = dataManager
         self._viewModel = StateObject(wrappedValue: ChatScreenVM(room: room, dataManager: dataManager))
     }
@@ -186,7 +186,7 @@ struct ChatScreen_Previews: PreviewProvider {
     static var previews: some View {
         ChatScreen(
             room: Room(id: "abc", name: "My Room", messagesId: "def", isPrivate: true, userId: "test"),
-            dataManager: DataManager(ditto: Ditto(), usersCollection: "users")
+            dataManager: ChatCoreDataManager(ditto: Ditto(), usersCollection: "users")
         )
     }
 }

@@ -16,9 +16,9 @@ class RoomsListScreenVM: ObservableObject {
     @Published var defaultPublicRoom: Room?
     @Published var defaultTAKPublicRoom: Room?
     @Published var currentUser: ChatUser?
-    let dataManager: DataManager
+    let dataManager: ChatCoreDataManager
 
-    init(dataManager: DataManager) {
+    init(dataManager: ChatCoreDataManager) {
         self.dataManager = dataManager
 
         dataManager.publicRoomsPublisher
