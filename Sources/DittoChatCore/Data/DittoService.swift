@@ -22,8 +22,8 @@ class ChatCoreDittoService: ReplicatingDataInterface {
     private var privateRoomMessagesSubscriptions = [String: DittoSubscription]()
     private var publicRoomMessagesSubscriptions = [String: DittoSubscription]()
 
-    private var _ditto: Ditto?
-    var ditto: Ditto { _ditto ?? Ditto() }
+    private weak var _ditto: Ditto?
+    var ditto: Ditto { _ditto! }
     private let usersKey: String
     private var privateStore: LocalDataInterface
     private var chatRetentionPolicy: ChatRetentionPolicy
