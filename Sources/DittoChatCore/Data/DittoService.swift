@@ -84,6 +84,7 @@ class ChatCoreDittoService: ReplicatingDataInterface {
         publicRoomMessagesSubscriptions.forEach { (key: String, value: DittoSubscription) in
             value.cancel()
         }
+        publicRoomMessagesSubscriptions.removeAll()
 
         privateRoomSubscriptions.forEach { (key: String, value: DittoSubscription) in
             value.cancel()
