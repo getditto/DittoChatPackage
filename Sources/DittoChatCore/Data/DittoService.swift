@@ -105,11 +105,20 @@ class ChatCoreDittoService: ReplicatingDataInterface {
     }
 
     func cleanup() {
+        // try reversing order
+        print("LOG.CHAT.DittoService.\(#function) --> in")
+        print("LOG.CHAT.DittoService.\(#function): SET DITTO NIL")
+        _ditto = nil
+        logout()
+        print("LOG.CHAT.DittoService.\(#function) <-- out")
+
+        /*
         print("LOG.CHAT.DittoService.\(#function) --> in")
         logout()
         print("LOG.CHAT.DittoService.\(#function): SET DITTO NIL")
         _ditto = nil
         print("LOG.CHAT.DittoService.\(#function) <-- out")
+         */
     }
         
     deinit {
