@@ -10,9 +10,9 @@ import SwiftUI
 
 public struct RoomsListScreen: View {
     @ObservedObject var viewModel: RoomsListScreenVM
-    private let dataManager: DataManager
+    private let dataManager: ChatCoreDataManager
 
-    public init(dataManager: DataManager) {
+    public init(dataManager: ChatCoreDataManager) {
         self.dataManager = dataManager
         self.viewModel = RoomsListScreenVM(dataManager: dataManager)
     }
@@ -128,7 +128,7 @@ import DittoSwift
 struct RoomsListScreen_Previews: PreviewProvider {
     static var previews: some View {
         NavigationView {
-            RoomsListScreen(dataManager: DataManager(ditto: Ditto(), usersCollection: "users"))
+            RoomsListScreen(dataManager: ChatCoreDataManager(ditto: Ditto(), usersCollection: "users"))
         }
     }
 }

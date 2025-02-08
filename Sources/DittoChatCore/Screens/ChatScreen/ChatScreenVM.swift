@@ -33,14 +33,14 @@ class ChatScreenVM: ObservableObject {
     @Published var isEditing = false
     @Published var keyboardStatus: KeyboardChangeEvent = .unchanged
     var editMsgId: String?
-    private let dataManager: DataManager
+    private let dataManager: ChatCoreDataManager
 
     // Basic chat mode
     var isBasicChatScreen: Bool {
         dataManager.basicChat && room.id == publicKey
     }
 
-    init(room: Room, dataManager: DataManager) {
+    init(room: Room, dataManager: ChatCoreDataManager) {
         self.room = room
         self.dataManager = dataManager
 

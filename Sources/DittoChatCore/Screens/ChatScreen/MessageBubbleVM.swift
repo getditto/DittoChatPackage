@@ -19,9 +19,9 @@ class MessageBubbleVM: ObservableObject {
     @Published var presentDeleteAlert = false
     private let messagesId: String
     private var tmpStorage: TemporaryFile?
-    private let dataManager: DataManager
+    private let dataManager: ChatCoreDataManager
 
-    init(_ msg: Message, messagesId: String, dataManager: DataManager) {
+    init(_ msg: Message, messagesId: String, dataManager: ChatCoreDataManager) {
         self.message = msg
         self.messagesId = messagesId
         self.dataManager = dataManager
@@ -118,7 +118,7 @@ struct ImageAttachmentFetcher {
                from collectionId: String,
                onProgress: @escaping ProgressHandler,
                onComplete: @escaping CompletionHandler,
-               dataManager: DataManager
+               dataManager: ChatCoreDataManager
     ) {
         guard let token = token else { return }
         

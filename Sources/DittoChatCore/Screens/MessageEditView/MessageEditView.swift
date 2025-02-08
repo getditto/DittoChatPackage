@@ -54,14 +54,14 @@ struct MessageEditView: View {
     @Environment(\.dismiss) private var dismiss
     @StateObject var viewModel: MessageEditVM
     let roomName: String
-    private let dataManager: DataManager
+    private let dataManager:ChatCoreDataManager
 
     init(
         _ msgsUsers: (editUsrMsg: MessageWithUser, chats: ArraySlice<MessageWithUser>),
         roomName: String,
         saveEditCallback: @escaping (Message) -> Void,
         cancelEditCallback: @escaping () -> Void,
-        dataManager: DataManager
+        dataManager: ChatCoreDataManager
     ) {
         self._viewModel = StateObject(
             wrappedValue: MessageEditVM(

@@ -11,7 +11,7 @@ import SwiftUI
 import Combine
 
 public protocol DittoSwiftChat {
-    var dataManager: DataManager { get }
+    var dataManager: ChatCoreDataManager { get }
     // Create
     func createRoom(withConfig: RoomConfig) throws -> String
     func createMessage(withConfig: MessageConfig) throws
@@ -91,10 +91,10 @@ public struct ChatRetentionPolicy {
 }
 
 public class DittoChat: DittoSwiftChat {
-    public var dataManager: DataManager
+    public var dataManager: ChatCoreDataManager
 
     public init(config: ChatConfig) {
-        self.dataManager = DataManager(ditto: config.ditto, usersCollection: config.usersCollection)
+        self.dataManager = ChatCoreDataManager(ditto: config.ditto, usersCollection: config.usersCollection)
         dataManager.takChatEnabled = config.takChatEnabled
         dataManager.retentionPolicy = config.retentionPolicy
         if let userId = config.userId {

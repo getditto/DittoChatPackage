@@ -13,9 +13,9 @@ class RoomEditScreenViewModel: ObservableObject {
     @Published var name: String = ""
     @Published var saveButtonDisabled = false
     @Published var isValid = true
-    private let dataManager: DataManager
+    private let dataManager: ChatCoreDataManager
 
-    init(dataManager: DataManager) {
+    init(dataManager: ChatCoreDataManager) {
         self.dataManager = dataManager
 
         $name

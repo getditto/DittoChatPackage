@@ -19,14 +19,14 @@ struct MessageBubbleView: View {
     @Binding var isEditing: Bool
     let messageUser: MessageWithUser
     var messageOpCallback: ((MessageOperation, Message) -> Void)?
-    private let dataManager: DataManager
+    private let dataManager: ChatCoreDataManager
 
     init(
         messageWithUser: MessageWithUser,
         messagesId: String,
         messageOpCallback: ((MessageOperation, Message) -> Void)? = nil,
         isEditing: Binding<Bool>,
-        dataManager: DataManager
+        dataManager: ChatCoreDataManager
     ) {
         self._viewModel = StateObject(
             wrappedValue: MessageBubbleVM(messageWithUser.message, messagesId: messagesId, dataManager: dataManager)
@@ -307,7 +307,7 @@ struct MessageBubbleView: View {
         preview: Bool,
         isEditing: Binding<Bool> = .constant(false)
     ) {
-        let dataManager =  DataManager(ditto: Ditto(), usersCollection: "users")
+        let dataManager =  ChatCoreDataManager(ditto: Ditto(), usersCollection: "users")
 
         self._viewModel = StateObject(
             wrappedValue: MessageBubbleVM(

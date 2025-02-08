@@ -11,7 +11,7 @@ import SwiftUI
 struct RoomsListRowItem: View {
     @ObservedObject var viewModel: RoomsListRowItemViewModel
 
-    init(room: Room, dataManager: DataManager) {
+    init(room: Room, dataManager: ChatCoreDataManager) {
         self.viewModel = RoomsListRowItemViewModel(room: room, dataManager: dataManager)
     }
 
@@ -46,7 +46,7 @@ class RoomsListRowItemViewModel: ObservableObject {
     @Published var currentUser: ChatUser?
     @Published var room: Room
 
-    init(room: Room, dataManager: DataManager) {
+    init(room: Room, dataManager: ChatCoreDataManager) {
         self.room = room
 
         dataManager.messagesPublisher(for: room)
@@ -107,7 +107,7 @@ struct RoomsListRowItem_Previews: PreviewProvider {
                 isPrivate: false,
                 userId: "some user"
             ),
-            dataManager: DataManager(ditto: Ditto(), usersCollection: "users")
+            dataManager: ChatCoreDataManager(ditto: Ditto(), usersCollection: "users")
         )
     }
 }

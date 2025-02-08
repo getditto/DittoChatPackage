@@ -76,7 +76,7 @@ protocol ReplicatingDataInterface {
     func cleanup()
 }
 
-open class DataManager {
+open class ChatCoreDataManager {
     @Published private(set) var publicRoomsPublisher: AnyPublisher<[Room], Never>
     @Published private(set) var privateRoomsPublisher: AnyPublisher<[Room], Never>
     var takChatEnabled: Bool = false
@@ -105,7 +105,7 @@ open class DataManager {
     }
 }
 
-extension DataManager {
+extension ChatCoreDataManager {
     // MARK: Ditto Public Rooms
 
     func room(for room: Room) -> Room? {
@@ -157,7 +157,7 @@ extension DataManager {
     }
 }
 
-extension DataManager {
+extension ChatCoreDataManager {
     // MARK: Messages
 
     func createMessage(for room: Room, text: String) {
@@ -196,7 +196,7 @@ extension DataManager {
     }
 }
 
-extension DataManager {
+extension ChatCoreDataManager {
     // MARK: Current User
 
     var currentUserId: String? {
@@ -245,7 +245,7 @@ extension DataManager {
     }
 }
 
-extension DataManager {
+extension ChatCoreDataManager {
     var sdkVersion: String {
         p2pStore.sdkVersion
     }
@@ -262,7 +262,7 @@ extension DataManager {
     }
 }
 
-extension DataManager {
+extension ChatCoreDataManager {
     var acceptLargeImages: Bool {
         get { localStore.acceptLargeImages }
         set { localStore.acceptLargeImages = newValue }
@@ -273,7 +273,7 @@ extension DataManager {
     }
 }
 
-extension DataManager {
+extension ChatCoreDataManager {
     var basicChat: Bool {
         get { localStore.basicChat }
         set { localStore.basicChat = newValue }
