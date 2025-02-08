@@ -98,7 +98,7 @@ class DittoService: ReplicatingDataInterface {
     
     func cleanup() {
         logout()
-        
+        _ditto = nil
     }
     
     deinit {
