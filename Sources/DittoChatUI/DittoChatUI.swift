@@ -36,11 +36,15 @@ public class DittoChatUI: DittoChatViews {
         return RoomsListScreen(dataManager: dittoChat.dataManager)
     }
 
+    public func setCurrentUser(withConfig config: UserConfig) {
+        dittoChat.setCurrentUser(withConfig: config)
+    }
+
     public func logout() {
         dittoChat.logout()
     }
-
-    public func setCurrentUser(withConfig config: UserConfig) {
-        dittoChat.setCurrentUser(withConfig: config)
+    
+    public func cleanup() {
+        dittoChat.cleanup()
     }
 }

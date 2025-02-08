@@ -10,7 +10,7 @@ import Combine
 import DittoSwift
 import SwiftUI
 
-class DittoService: ReplicatingDataInterface {
+class ChatCoreDittoService: ReplicatingDataInterface {
     @Published var publicRoomsPublisher = CurrentValueSubject<[Room], Never>([])
     @Published fileprivate private(set) var allPublicRooms: [Room] = []
     private var allPublicRoomsCancellable: AnyCancellable = AnyCancellable({})
@@ -22,7 +22,8 @@ class DittoService: ReplicatingDataInterface {
     private var privateRoomMessagesSubscriptions = [String: DittoSubscription]()
     private var publicRoomMessagesSubscriptions = [String: DittoSubscription]()
 
-    var ditto: Ditto
+    private var _ditto: Ditto?
+    var ditto: Ditto { _ditto! }
     private let usersKey: String
     private var privateStore: LocalDataInterface
     private var chatRetentionPolicy: ChatRetentionPolicy
@@ -30,7 +31,7 @@ class DittoService: ReplicatingDataInterface {
     private var joinRoomQuery: DittoSwift.DittoLiveQuery?
 
     init(privateStore: LocalDataInterface, ditto: Ditto, usersCollection: String, takEnabled: Bool, chatRetentionPolicy: ChatRetentionPolicy) {
-        self.ditto = ditto
+        self._ditto = ditto
         self.privateStore = privateStore
         self.usersKey = usersCollection
         self.usersSubscription = ditto.store[usersCollection].findAll().subscribe()
@@ -93,6 +94,11 @@ class DittoService: ReplicatingDataInterface {
             value.cancel()
         }
     }
+
+    func cleanup() {
+        logout()
+        _ditto = nil
+    }
 }
 
 ///  General Overview
@@ -132,7 +138,7 @@ class DittoService: ReplicatingDataInterface {
 ///  Subscriptions are added at launch for all non-archived public and private rooms via the publishers described above. The
 ///  `addSubscriptions` and `removeSubscriptions`functions are addtionally used by archiving and unarchiving functions,
 ///  as well as joining a private room via QR code.
-extension DittoService {
+extension ChatCoreDittoService {
     // MARK: Subscriptions
 
     func addSubscriptions(for room: Room) {
@@ -180,7 +186,7 @@ extension DittoService {
     }
 }
 
-extension DittoService {
+extension ChatCoreDittoService {
     // MARK: Users
 
     func currentUserPublisher() -> AnyPublisher<ChatUser?, Never> {
@@ -245,7 +251,7 @@ extension DittoService {
 
 // MARK: Messages
 
-extension DittoService {
+extension ChatCoreDittoService {
     func messagePublisher(for msgId: String, in collectionId: String) -> AnyPublisher<Message, Never> {
         return ditto.store.collection(collectionId)
             .findByID(msgId)
@@ -443,7 +449,7 @@ extension DittoService {
     }
 }
 
-extension DittoService {
+extension ChatCoreDittoService {
     // MARK: Rooms
 
     private func updateAllPublicRooms() {
@@ -580,7 +586,7 @@ extension DittoService {
     }
 }
 
-extension DittoService {
+extension ChatCoreDittoService {
     // MARK: Room Archive/Unarchive
 
     func archiveRoom(_ room: Room) {
@@ -721,7 +727,7 @@ extension DittoService {
     }
 }
 
-extension DittoService {
+extension ChatCoreDittoService {
     var peerKeyString: String {
         ditto.presence.graph.localPeer.peerKeyString
     }

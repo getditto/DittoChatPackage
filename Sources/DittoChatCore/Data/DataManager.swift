@@ -73,6 +73,7 @@ protocol ReplicatingDataInterface {
     func allUsersPublisher() -> AnyPublisher<[ChatUser], Never>
 
     func logout()
+    func cleanup()
 }
 
 open class DataManager {
@@ -87,13 +88,20 @@ open class DataManager {
     init(ditto: Ditto, usersCollection: String) {
         let localStore: LocalStoreService = LocalStoreService()
         self.localStore = localStore
-        self.p2pStore = DittoService(privateStore: localStore, ditto: ditto, usersCollection: usersCollection, takEnabled: takChatEnabled, chatRetentionPolicy: retentionPolicy)
+        self.p2pStore = ChatCoreDittoService(
+            privateStore: localStore, ditto: ditto, usersCollection: usersCollection, takEnabled: takChatEnabled, 
+            chatRetentionPolicy: retentionPolicy
+        )
         self.publicRoomsPublisher = p2pStore.publicRoomsPublisher.eraseToAnyPublisher()
         self.privateRoomsPublisher = localStore.privateRoomsPublisher
     }
 
     func logout() {
         p2pStore.logout()
+    }
+
+    func cleanup() {
+        p2pStore.cleanup()
     }
 }
 
