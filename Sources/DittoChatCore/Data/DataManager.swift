@@ -73,6 +73,7 @@ protocol ReplicatingDataInterface {
     func allUsersPublisher() -> AnyPublisher<[ChatUser], Never>
 
     func logout()
+    func cleanup()
 }
 
 open class DataManager {
@@ -94,6 +95,10 @@ open class DataManager {
 
     func logout() {
         p2pStore.logout()
+    }
+
+    func cleanup() {
+        p2pStore.cleanup()
     }
 }
 

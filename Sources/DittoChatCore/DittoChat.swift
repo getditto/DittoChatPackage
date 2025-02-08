@@ -182,4 +182,8 @@ public class DittoChat: DittoSwiftChat {
     public func logout() {
         dataManager.logout()
     }
+    
+    public func cleanup() {
+        dataManager.cleanup()
+    }
 }

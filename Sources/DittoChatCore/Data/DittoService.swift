@@ -22,7 +22,8 @@ class DittoService: ReplicatingDataInterface {
     private var privateRoomMessagesSubscriptions = [String: DittoSubscription]()
     private var publicRoomMessagesSubscriptions = [String: DittoSubscription]()
 
-    var ditto: Ditto
+    private var _ditto: Ditto?
+    var ditto: Ditto { _ditto! }
     private let usersKey: String
     private var privateStore: LocalDataInterface
     private var chatRetentionPolicy: ChatRetentionPolicy
@@ -30,7 +31,7 @@ class DittoService: ReplicatingDataInterface {
     private var joinRoomQuery: DittoSwift.DittoLiveQuery?
 
     init(privateStore: LocalDataInterface, ditto: Ditto, usersCollection: String, takEnabled: Bool, chatRetentionPolicy: ChatRetentionPolicy) {
-        self.ditto = ditto
+        self._ditto = ditto
         self.privateStore = privateStore
         self.usersKey = usersCollection
         self.usersSubscription = ditto.store[usersCollection].findAll().subscribe()
@@ -92,6 +93,11 @@ class DittoService: ReplicatingDataInterface {
         publicRoomMessagesSubscriptions.forEach { (key: String, value: DittoSubscription) in
             value.cancel()
         }
+    }
+
+    func cleanup() {
+        logout()
+        _ditto = nil
     }
 }
 
