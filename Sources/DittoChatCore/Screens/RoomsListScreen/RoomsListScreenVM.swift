@@ -42,7 +42,7 @@ class RoomsListScreenVM: ObservableObject {
     }
     
     deinit {
-        print("CHAT.RoomsListScreenVM.\(#function)")
+        print("LOG.CHAT.RoomsListScreenVM.\(#function)")
     }
 
     func createRoomButtonAction() {

@@ -76,9 +76,9 @@ class ChatCoreDittoService: ReplicatingDataInterface {
     }
 
     func logout() {
-        print("CHAT.DittoService.\(#function) --> in")
+        print("LOG.CHAT.DittoService.\(#function) --> in")
         
-        print("CHAT.DittoService.\(#function) Cancel subscriptions")
+        print("LOG.CHAT.DittoService.\(#function) Cancel subscriptions")
         usersSubscription.cancel()
 
         publicRoomMessagesSubscriptions.forEach { (key: String, value: DittoSubscription) in
@@ -95,24 +95,24 @@ class ChatCoreDittoService: ReplicatingDataInterface {
 
         allPublicRoomsCancellable.cancel()
 
-        print("CHAT.DittoService.\(#function): cancellables cancel/remove: \(cancellables.count)")
+        print("LOG.CHAT.DittoService.\(#function): cancellables cancel/remove: \(cancellables.count)")
         cancellables.forEach { anyCancellable in
             anyCancellable.cancel()
         }
         cancellables.removeAll()
-        print("CHAT.DittoService.\(#function) <-- out")
+        print("LOG.CHAT.DittoService.\(#function) <-- out")
     }
 
     func cleanup() {
-        print("CHAT.DittoService.\(#function) --> in")
+        print("LOG.CHAT.DittoService.\(#function) --> in")
         logout()
-        print("CHAT.DittoService.\(#function): SET DITTO NIL")
+        print("LOG.CHAT.DittoService.\(#function): SET DITTO NIL")
         _ditto = nil
-        print("CHAT.DittoService.\(#function) <-- out")
+        print("LOG.CHAT.DittoService.\(#function) <-- out")
     }
         
     deinit {
-        print("CHAT.DittoService.\(#function)")
+        print("LOG.CHAT.DittoService.\(#function)")
     }
 }
 
