@@ -188,7 +188,28 @@ extension ChatCoreDittoService {
 
 extension ChatCoreDittoService {
     // MARK: Users
+    func currentUserPublisher() -> AnyPublisher<ChatUser?, Never> {
+        if let ditto = _ditto {
+            return privateStore.currentUserIdPublisher
+                .map { [weak self] userId -> AnyPublisher<ChatUser?, Never> in
+                    guard let self, let userId = userId else {
+                        return Just<ChatUser?>(nil).eraseToAnyPublisher()
+                    }
+                    return ditto.store.collection(self.usersKey)
+                        .findByID(userId)
+                        .singleDocumentLiveQueryPublisher()
+                        .compactMap { doc, _ in return doc }
+                        .map { ChatUser(document: $0) }
+                        .eraseToAnyPublisher()
+                }
+                .switchToLatest()
+                .eraseToAnyPublisher()
+        } else {
+            return Just<ChatUser?>(nil).eraseToAnyPublisher()
+        }
+    }
 
+    /* orig
     func currentUserPublisher() -> AnyPublisher<ChatUser?, Never> {
         return privateStore.currentUserIdPublisher
             .map { [weak self] userId -> AnyPublisher<ChatUser?, Never> in
@@ -205,7 +226,7 @@ extension ChatCoreDittoService {
             .switchToLatest()
             .eraseToAnyPublisher()
     }
-
+     */
     func findUserById(_ id: String, inCollection collection: String) async throws -> ChatUser {
         let result = try await ditto.store.execute(query: "SELECT * FROM \(collection) WHERE _id = :_id", arguments: ["_id": id])
 
