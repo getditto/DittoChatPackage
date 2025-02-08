@@ -32,6 +32,10 @@ class LocalStoreService: LocalDataInterface {
 
         self.basicChat = UserDefaults.standard.basicChat
     }
+    
+    deinit {
+        print("(ChatPackage)LocalStoreSevice deinit")
+    }
 
     var basicChat: Bool {
         get { defaults.basicChat }
