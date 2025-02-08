@@ -78,10 +78,6 @@ class ChatCoreDittoService: ReplicatingDataInterface {
     func logout() {
         usersSubscription.cancel()
 
-        cancellables.forEach { anyCancellable in
-            anyCancellable.cancel()
-        }
-
         publicRoomMessagesSubscriptions.forEach { (key: String, value: DittoSubscription) in
             value.cancel()
         }
@@ -93,6 +89,13 @@ class ChatCoreDittoService: ReplicatingDataInterface {
         publicRoomMessagesSubscriptions.forEach { (key: String, value: DittoSubscription) in
             value.cancel()
         }
+
+        allPublicRoomsCancellable.cancel() 
+
+        cancellables.forEach { anyCancellable in
+            anyCancellable.cancel()
+        }
+        cancellables.removeAll()
     }
 
     func cleanup() {
