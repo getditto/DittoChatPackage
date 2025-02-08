@@ -75,6 +75,10 @@ class ChatScreenVM: ObservableObject {
         dataManager.currentUserPublisher()
             .assign(to: &$currentUser)
     }
+    
+    deinit {
+        print("CHAT.ChatScreenVM.\(#function)")
+    }
 
     func sendMessage() {
         // only allow non-empty string messages

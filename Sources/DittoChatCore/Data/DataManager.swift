@@ -101,7 +101,13 @@ open class ChatCoreDataManager {
     }
 
     func cleanup() {
+        print("CHAT.DataManager.\(#function) --> in")
         p2pStore.cleanup()
+        print("CHAT.DataManager.\(#function) <-- out")
+    }
+    
+    deinit {
+        print("CHAT.DataManager.\(#function)")
     }
 }
 

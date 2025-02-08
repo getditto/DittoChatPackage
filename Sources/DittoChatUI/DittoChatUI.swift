@@ -45,6 +45,12 @@ public class DittoChatUI: DittoChatViews {
     }
     
     public func cleanup() {
+        print("CHAT.ChatUI.\(#function) --> in")
         dittoChat.cleanup()
+        print("CHAT.ChatUI.\(#function) <-- out")        
+    }
+    
+    deinit {
+        print("CHAT.ChatUI.\(#function)")
     }
 }

@@ -40,6 +40,10 @@ class RoomsListScreenVM: ObservableObject {
         dataManager.currentUserPublisher()
             .assign(to: &$currentUser)
     }
+    
+    deinit {
+        print("CHAT.RoomsListScreenVM.\(#function)")
+    }
 
     func createRoomButtonAction() {
         presentCreateRoomScreen = true

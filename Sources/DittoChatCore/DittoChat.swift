@@ -184,6 +184,13 @@ public class DittoChat: DittoSwiftChat {
     }
     
     public func cleanup() {
+        print("CHAT.ChatCore.\(#function) --> in")
         dataManager.cleanup()
+        print("CHAT.ChatCore.\(#function) <-- out")
+    }    
+    
+    deinit {
+        print("CHAT.ChatCore.\(#function)")
     }
+
 }
