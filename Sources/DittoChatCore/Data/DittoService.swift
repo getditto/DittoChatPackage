@@ -105,20 +105,30 @@ class ChatCoreDittoService: ReplicatingDataInterface {
     }
 
     func cleanup() {
-        // try reversing order
+        /* try reversing order
         print("LOG.CHAT.DittoService.\(#function) --> in")
         print("LOG.CHAT.DittoService.\(#function): SET DITTO NIL")
         _ditto = nil
         logout()
-        print("LOG.CHAT.DittoService.\(#function) <-- out")
-
-        /*
-        print("LOG.CHAT.DittoService.\(#function) --> in")
-        logout()
-        print("LOG.CHAT.DittoService.\(#function): SET DITTO NIL")
-        _ditto = nil
         print("LOG.CHAT.DittoService.\(#function) <-- out")
          */
+        print("LOG.CHAT.DittoService.\(#function) --> in")
+        logout()
+
+        ditto.sync.subscriptions.forEach({ sub in
+            sub.cancel()
+        })
+
+        ditto.store.observers.forEach( { observer in
+            observer.cancel()
+        })
+
+        publicRoomsPublisher.send([])
+        publicRoomsPublisher = CurrentValueSubject<[Room], Never>([])
+
+        print("LOG.CHAT.DittoService.\(#function): SET DITTO NIL")
+        _ditto = nil
+        print("LOG.CHAT.DittoService.\(#function) <-- out")
     }
         
     deinit {
