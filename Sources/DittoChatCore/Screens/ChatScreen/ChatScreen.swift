@@ -20,15 +20,8 @@ public struct ChatScreen: View {
         self._viewModel = StateObject(wrappedValue: ChatScreenVM(room: room, dataManager: dataManager))
     }
 
-    var navBarTitle: String {
-        if viewModel.isBasicChatScreen {
-            return appTitleKey
-        } else {
-            return viewModel.roomName
-        }
-    }
-
     public var body: some View {
+        EmptyView()
         VStack {
             ScrollViewReader { proxy in
                 ZStack {
@@ -105,8 +98,6 @@ public struct ChatScreen: View {
         }
 #if !os(tvOS)
         .listStyle(.inset)
-        .navigationTitle(navBarTitle)
-        .navigationBarTitleDisplayMode(.inline)
         .fullScreenCover(
             isPresented: $viewModel.presentAttachmentView,
             onDismiss: {
@@ -128,7 +119,6 @@ public struct ChatScreen: View {
                 NavigationView {
                     MessageEditView(
                         msgsUsers,
-                        roomName: viewModel.roomName,
                         saveEditCallback: viewModel.saveEditedTextMessage,
                         cancelEditCallback: viewModel.cancelEditCallback,
                         dataManager: dataManager
@@ -139,7 +129,8 @@ public struct ChatScreen: View {
             }
         }
     }
-    #if !os(tvOS)
+
+#if !os(tvOS)
     var photosPickerButtonView: some View {
         PhotosPicker(selection: $viewModel.selectedItem,
                      matching: .images,
@@ -174,7 +165,8 @@ public struct ChatScreen: View {
             }
         }
     }
-    #endif
+#endif
+
     func scrollToBottom(proxy: ScrollViewProxy) {
         proxy.scrollTo(viewModel.messagesWithUsers.last?.id)
     }

@@ -19,6 +19,7 @@ class ChatScreenVM: ObservableObject {
     @Published var roomName: String = ""
     @Published var messagesWithUsers = [MessageWithUser]()
     var room: Room
+    var cancellables: Set<AnyCancellable> = []
 
     #if !os(tvOS)
     @Published var selectedItem: PhotosPickerItem?
@@ -57,13 +58,6 @@ class ChatScreenVM: ObservableObject {
                 return messagesWithUsers
             }
             .assign(to: &$messagesWithUsers)
-
-        dataManager.roomPublisher(for: room)
-            .map { room -> String in
-                if let room = room { self.room = room }
-                return room?.name ?? ""
-            }
-            .assign(to: &$roomName)
 
         #if !os(tvOS)
         DispatchQueue.main.async {

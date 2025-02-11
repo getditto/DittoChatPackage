@@ -53,12 +53,10 @@ class MessageEditVM: ObservableObject {
 struct MessageEditView: View {
     @Environment(\.dismiss) private var dismiss
     @StateObject var viewModel: MessageEditVM
-    let roomName: String
     private let dataManager: DataManager
 
     init(
         _ msgsUsers: (editUsrMsg: MessageWithUser, chats: ArraySlice<MessageWithUser>),
-        roomName: String,
         saveEditCallback: @escaping (Message) -> Void,
         cancelEditCallback: @escaping () -> Void,
         dataManager: DataManager
@@ -70,7 +68,7 @@ struct MessageEditView: View {
                 cancelEditCallback: cancelEditCallback
             )
         )
-        self.roomName = roomName
+
         self.dataManager = dataManager
     }
 
@@ -130,7 +128,6 @@ struct MessageEditView: View {
             }
             ToolbarItem(placement: .principal) {
                 VStack {
-                    Text(roomName)
                     Text(editingTitleKey).font(.subheadline)
                 }
             }
