@@ -60,7 +60,9 @@ class MessageBubbleVM: ObservableObject {
                     self?.fetchProgress = ratio
                 }
             },
-            onComplete: { result in
+            onComplete: { [weak self] result in
+                guard let self else { return }
+
                 switch result {
                 case .success(let (uiImage, metadata)):
 
@@ -121,7 +123,6 @@ struct ImageAttachmentFetcher {
                dataManager: DataManager
     ) {
         guard let token = token else { return }
-        
         // Fetch the thumbnail data from Ditto, calling the progress handler to
         // report the operation's ongoing progress.
         let ditto = dataManager.p2pStore.ditto

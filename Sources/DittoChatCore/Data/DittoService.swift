@@ -81,6 +81,8 @@ class DittoService: ReplicatingDataInterface {
             anyCancellable.cancel()
         }
 
+        allPublicRoomsCancellable.cancel()
+
         publicRoomMessagesSubscriptions.forEach { (key: String, value: DittoSubscription) in
             value.cancel()
         }
@@ -456,15 +458,6 @@ extension DittoService {
                 docs.map { Room(document: $0) }
             }
             .assign(to: \.allPublicRooms, on: self)
-    }
-
-    func roomPublisher(for room: Room) -> AnyPublisher<Room?, Never> {
-        return ditto.store.collection(room.isPrivate ? room.collectionId! : publicRoomsCollectionId)
-            .findByID(room.id)
-            .singleDocumentLiveQueryPublisher()
-            .compactMap { doc, _ in return doc }
-            .map { Room(document: $0) }
-            .eraseToAnyPublisher()
     }
 
     /// This function returns a room from the Ditto db for the given room. The room argument will be passed from the UI, where

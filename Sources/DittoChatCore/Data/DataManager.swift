@@ -44,7 +44,6 @@ protocol ReplicatingDataInterface {
     func findPublicRoomById(id: String) -> Room?
     func createRoom(id: String?, name: String, isPrivate: Bool) -> DittoDocumentID?
     func joinPrivateRoom(qrCode: String)
-    func roomPublisher(for room: Room) -> AnyPublisher<Room?, Never>
 
     func archiveRoom(_ room: Room)
     func unarchiveRoom(_ room: Room)
@@ -114,10 +113,6 @@ extension DataManager {
 
     func joinPrivateRoom(qrCode: String) {
         p2pStore.joinPrivateRoom(qrCode: qrCode)
-    }
-
-    func roomPublisher(for room: Room) -> AnyPublisher<Room?, Never> {
-        p2pStore.roomPublisher(for: room)
     }
 
     func archiveRoom(_ room: Room) {
