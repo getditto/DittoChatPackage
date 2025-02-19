@@ -73,41 +73,6 @@ extension Message {
         self.takUid = document[takUidKey].stringValue
         self.timeMs = Date(timeIntervalSince1970InMilliSeconds: document[timeMsKey].intValue)
         self.hasBeenConverted = document[hasBeenConvertedKey].bool
-
-        if let hasBeenConverted, hasBeenConverted == true {
-            return
-        }
-
-        self.convertToDittoChat()
-    }
-
-    func convertToDittoChat() {
-        let message = Message(
-            id: self.id,
-            createdOn: self.timeMs,
-            roomId: self.roomId,
-            text: self.msg,
-            userId: self.authorCs,
-            largeImageToken: self.largeImageToken,
-            thumbnailImageToken: self.thumbnailImageToken,
-            archivedMessage: self.archivedMessage,
-            isArchived: self.isArchived,
-            authorCs: self.authorCs,
-            authorId: self.authorId,
-            authorLoc: self.authorLoc,
-            authorType: self.authorType,
-            msg: self.msg,
-            parent: self.parent,
-            pks: self.pks,
-            room: self.room,
-            schver: self.schver,
-            takUid: self.takUid,
-            timeMs: self.timeMs,
-            hasBeenConverted: true
-        ).docDictionary()
-
-        // TODO: Need to figure this one out
-        //DataManager.shared.createUpdateMessage(document: message)
     }
 }
 
@@ -144,7 +109,7 @@ extension Message {
         self.archivedMessage = archivedMessage
         self.isArchived = isArchived
 
-        self.authorCs = authorCs ?? ""
+        self.authorCs = authorCs ?? userId ?? ""
         self.authorId = authorId ?? ""
         self.authorLoc = authorLoc ?? ""
         self.authorType = authorType ?? ""
@@ -197,6 +162,7 @@ extension Message {
         self.schver = schver
         self.takUid = UUID().uuidString
         self.timeMs = createdOn
+        self.hasBeenConverted = hasBeenConverted
     }
 }
 
