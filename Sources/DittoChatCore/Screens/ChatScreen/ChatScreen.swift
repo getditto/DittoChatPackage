@@ -95,6 +95,11 @@ public struct ChatScreen: View {
                 )
                 .padding(.leading, 0)
             }
+            .gesture(
+                DragGesture().onChanged { _ in
+                    UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
+                }
+            )
         }
 #if !os(tvOS)
         .listStyle(.inset)
