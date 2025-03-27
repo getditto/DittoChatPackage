@@ -95,7 +95,6 @@ public class DittoChat: DittoSwiftChat {
 
     public init(config: ChatConfig) {
         self.dataManager = DataManager(ditto: config.ditto, usersCollection: config.usersCollection)
-        dataManager.takChatEnabled = config.takChatEnabled
         dataManager.retentionPolicy = config.retentionPolicy
         if let userId = config.userId {
             self.setCurrentUser(withConfig: UserConfig(id: userId))

@@ -29,14 +29,14 @@ class DittoService: ReplicatingDataInterface {
 
     private var joinRoomQuery: DittoSwift.DittoLiveQuery?
 
-    init(privateStore: LocalDataInterface, ditto: Ditto, usersCollection: String, takEnabled: Bool, chatRetentionPolicy: ChatRetentionPolicy) {
+    init(privateStore: LocalDataInterface, ditto: Ditto, usersCollection: String, chatRetentionPolicy: ChatRetentionPolicy) {
         self.ditto = ditto
         self.privateStore = privateStore
         self.usersKey = usersCollection
         self.usersSubscription = ditto.store[usersCollection].findAll().subscribe()
         self.chatRetentionPolicy = chatRetentionPolicy
 
-        createDefaultPublicRoom(takEnabled: takEnabled)
+        createDefaultPublicRoom()
 
         // kick off the public rooms findAll() liveQueryPublisher
         updateAllPublicRooms()
@@ -286,7 +286,7 @@ extension DittoService {
                     query: """
                             INSERT INTO users
                             DOCUMENTS (:user)
-                            ON ID CONFLICT DO UPDATE
+                            ON ID CONFLICT DO NOTHING
                             """,
                     arguments: ["user": user.docDictionary()]
                 )
@@ -593,9 +593,9 @@ extension DittoService {
         
     }
 
-    private func createDefaultPublicRoom(takEnabled: Bool) {
+    private func createDefaultPublicRoom() {
         // TODO: Replace with a first launch value instead that is specific for this use case
-        if allPublicRooms.count > 2 {
+        if allPublicRooms.count > 1 {
             return
         }
 
@@ -610,18 +610,6 @@ extension DittoService {
                 isPrivateKey: false
             ] as [String: Any?] )
 
-        if takEnabled {
-            // Create default Public room with pre-configured id, messagesId
-            try! ditto.store.collection(publicRoomsCollectionId)
-                .upsert([
-                    dbIdKey: publicTAKKey,
-                    nameKey: publicTAKRoomTitleKey,
-                    collectionIdKey: publicRoomsCollectionId,
-                    messagesIdKey: publicTAKMessagesIdKey,
-                    createdOnKey: DateFormatter.isoDate.string(from: Date()),
-                    isPrivateKey: false
-                ] as [String: Any?] )
-        }
     }
 }
 
