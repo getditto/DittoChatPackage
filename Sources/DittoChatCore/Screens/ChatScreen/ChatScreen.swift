@@ -12,7 +12,7 @@ import SwiftUI
 
 public struct ChatScreen: View {
     @StateObject var viewModel: ChatScreenVM
-    @EnvironmentObject var errorHandler: ErrorHandler
+    @StateObject var errorHandler: ErrorHandler = ErrorHandler()
     private let dataManager: DataManager
 
     public init(room: Room, dataManager: DataManager) {

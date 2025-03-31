@@ -236,8 +236,7 @@ fileprivate extension UserDefaults {
 fileprivate extension UserDefaults {
     @objc var acceptLargeImages: Bool {
         get {
-            let accept = bool(forKey: acceptLargeImagesKey) as Bool?
-            return accept ?? false
+            object(forKey: acceptLargeImagesKey) as? Bool ?? true
         }
         set(value) {
             set(value, forKey: acceptLargeImagesKey)

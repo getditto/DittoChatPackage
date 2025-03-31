@@ -13,7 +13,7 @@ import DittoSwift
 import SwiftUI
 
 struct MessageBubbleView: View {
-    @EnvironmentObject var errorHandler: ErrorHandler
+    @StateObject var errorHandler: ErrorHandler = ErrorHandler()
     @StateObject private var viewModel: MessageBubbleVM
     @State private var needsImageSync = true
     @Binding var isEditing: Bool
