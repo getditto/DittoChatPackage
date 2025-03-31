@@ -77,7 +77,6 @@ protocol ReplicatingDataInterface {
 open class DataManager {
     @Published private(set) var publicRoomsPublisher: AnyPublisher<[Room], Never>
     @Published private(set) var privateRoomsPublisher: AnyPublisher<[Room], Never>
-    var takChatEnabled: Bool = false
     var retentionPolicy: ChatRetentionPolicy = .init(days: 30)
 
     private var localStore: LocalDataInterface
@@ -86,7 +85,7 @@ open class DataManager {
     init(ditto: Ditto, usersCollection: String) {
         let localStore: LocalStoreService = LocalStoreService()
         self.localStore = localStore
-        self.p2pStore = DittoService(privateStore: localStore, ditto: ditto, usersCollection: usersCollection, takEnabled: takChatEnabled, chatRetentionPolicy: retentionPolicy)
+        self.p2pStore = DittoService(privateStore: localStore, ditto: ditto, usersCollection: usersCollection, chatRetentionPolicy: retentionPolicy)
         self.publicRoomsPublisher = p2pStore.publicRoomsPublisher.eraseToAnyPublisher()
         self.privateRoomsPublisher = localStore.privateRoomsPublisher
     }

@@ -47,7 +47,7 @@ public struct ChatScreen: View {
                             scrollToBottom(proxy: proxy)
                         }
                     }
-                    .onChange(of: viewModel.messagesWithUsers.count) { value in
+                    .onChange(of: viewModel.messagesWithUsers) { value in
                         DispatchQueue.main.async {
                             withAnimation {
                                 scrollToBottom(proxy: proxy)

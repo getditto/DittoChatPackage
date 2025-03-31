@@ -29,14 +29,14 @@ class DittoService: ReplicatingDataInterface {
 
     private var joinRoomQuery: DittoSwift.DittoLiveQuery?
 
-    init(privateStore: LocalDataInterface, ditto: Ditto, usersCollection: String, takEnabled: Bool, chatRetentionPolicy: ChatRetentionPolicy) {
+    init(privateStore: LocalDataInterface, ditto: Ditto, usersCollection: String, chatRetentionPolicy: ChatRetentionPolicy) {
         self.ditto = ditto
         self.privateStore = privateStore
         self.usersKey = usersCollection
         self.usersSubscription = ditto.store[usersCollection].findAll().subscribe()
         self.chatRetentionPolicy = chatRetentionPolicy
 
-        createDefaultPublicRoom(takEnabled: takEnabled)
+        createDefaultPublicRoom()
 
         // kick off the public rooms findAll() liveQueryPublisher
         updateAllPublicRooms()
@@ -253,7 +253,7 @@ extension DittoService {
             .findByID(msgId)
             .singleDocumentLiveQueryPublisher()
             .compactMap { doc, _ in return doc }
-            .map { Message(document: $0) }
+            .map { self.convertChat(message: Message(document: $0)) }
             .eraseToAnyPublisher()
     }
 
@@ -263,17 +263,69 @@ extension DittoService {
             .sort(createdOnKey, direction: .ascending)
             .liveQueryPublisher()
             .map { docs, _ in
-                docs.map { Message(document: $0) }
+                docs.map { self.convertChat(message: Message(document: $0)) }
             }
             .eraseToAnyPublisher()
+    }
+
+
+    /// Converts the given chat message from the TAK format to our internal format if it has not already been converted
+    /// - Parameter message: The message to check to see if conversion is needed
+    /// - Returns: The same message just with hasBeenConverted set to true if it was false or empty
+    func convertChat(message: Message) -> Message {
+        guard message.hasBeenConverted == false else { return message }
+
+        var message = message
+        message.hasBeenConverted = true
+
+        // Create the TAK user if it doesnt already exist
+        if !message.takUid.isEmpty {
+            let user = ChatUser(id: message.takUid, firstName: message.authorCs, lastName: "", subscriptions: [:], mentions: [:])
+            Task {
+                try? await ditto.store.execute(
+                    query: """
+                            INSERT INTO users
+                            DOCUMENTS (:user)
+                            ON ID CONFLICT DO NOTHING
+                            """,
+                    arguments: ["user": user.docDictionary()]
+                )
+            }
+        }
+
+        // Update the currently existing TAK chat message with a Ditto Chat compatable one
+        Task {
+            try? await ditto.store.execute(
+                query: """
+                        INSERT INTO chat
+                        DOCUMENTS (:message)
+                        ON ID CONFLICT DO UPDATE
+                        """,
+                arguments: ["message": message.docDictionary()]
+            )
+        }
+
+        return message
     }
 
     func createMessage(for room: Room, text: String) {
         guard let userId = privateStore.currentUserId else { return }
         guard let room = self.room(for: room) else { return }
 
-        let message = Message(roomId: room.id, message: text, userName: userId, userId: userId, peerKey: peerKeyString).docDictionary()
-        try! ditto.store.collection(room.messagesId).upsert(message)
+        Task {
+            let userQuery = try? await ditto.store.execute(query: "SELECT * FROM users WHERE _id = '\(userId)'")
+            let userDictionary = userQuery?.items.first?.value
+
+            if let userDictionary {
+                let user = ChatUser(value: userDictionary)
+
+                let message = Message(roomId: room.id, message: text, userName: user.fullName, userId: userId, peerKey: "", hasBeenConverted: true).docDictionary()
+                try? self.ditto.store.collection(room.messagesId).upsert(message)
+            } else {
+                let message = Message(roomId: room.id, message: text, userName: userId, userId: userId, peerKey: "", hasBeenConverted: true).docDictionary()
+                try? self.ditto.store.collection(room.messagesId).upsert(message)
+            }
+        }
     }
 
     func saveEditedTextMessage(_ message: Message, in room: Room) {
@@ -541,9 +593,9 @@ extension DittoService {
         
     }
 
-    private func createDefaultPublicRoom(takEnabled: Bool) {
+    private func createDefaultPublicRoom() {
         // TODO: Replace with a first launch value instead that is specific for this use case
-        if allPublicRooms.count > 2 {
+        if allPublicRooms.count > 1 {
             return
         }
 
@@ -558,18 +610,6 @@ extension DittoService {
                 isPrivateKey: false
             ] as [String: Any?] )
 
-        if takEnabled {
-            // Create default Public room with pre-configured id, messagesId
-            try! ditto.store.collection(publicRoomsCollectionId)
-                .upsert([
-                    dbIdKey: publicTAKKey,
-                    nameKey: publicTAKRoomTitleKey,
-                    collectionIdKey: publicRoomsCollectionId,
-                    messagesIdKey: publicTAKMessagesIdKey,
-                    createdOnKey: DateFormatter.isoDate.string(from: Date()),
-                    isPrivateKey: false
-                ] as [String: Any?] )
-        }
     }
 }
 
