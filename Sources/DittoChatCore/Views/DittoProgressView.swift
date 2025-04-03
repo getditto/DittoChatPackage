@@ -45,15 +45,6 @@ struct DittoProgressView: View {
             PercentageLabel($progress, side: side)
         }
         .frame(width: side, height: side, alignment: .center)
-        .toolbar {
-            ToolbarItem(placement: .navigationBarLeading) {
-                Button {
-                    dismiss()
-                } label: {
-                    Image(systemName: xmarkCircleKey)
-                }
-            }
-        }
     }
 }
 
