@@ -258,8 +258,14 @@ extension DittoService {
     }
 
     func messagesPublisher(for room: Room) -> AnyPublisher<[Message], Never> {
+        let retentionDaysDouble = Double(chatRetentionPolicy.days)
+        let thirtyDaysAgo = Date().addingTimeInterval(-retentionDaysDouble * 24 * 60 * 60)
         return ditto.store.collection(room.messagesId)
-            .find("roomId == $args.roomId", args: ["roomId": room.id,])
+            .find("roomId == $args.roomId && createdOn >= $args.date",
+                args: [
+                    "roomId": room.id,
+                    "date": thirtyDaysAgo.ISO8601Format()
+                ])
             .sort(createdOnKey, direction: .ascending)
             .liveQueryPublisher()
             .map { docs, _ in
