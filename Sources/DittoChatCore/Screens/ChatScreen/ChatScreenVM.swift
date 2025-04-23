@@ -41,12 +41,12 @@ class ChatScreenVM: ObservableObject {
         dataManager.basicChat && room.id == publicKey
     }
 
-    init(room: Room, dataManager: DataManager) {
+    init(room: Room, dataManager: DataManager, retentionDays: Int?) {
         self.room = room
         self.dataManager = dataManager
 
         let users = dataManager.allUsersPublisher()
-        let messages = dataManager.messagesPublisher(for: room)
+        let messages = dataManager.messagesPublisher(for: room, retentionDays: retentionDays)
 
         messages.combineLatest(users)
             .map { messages, users -> [MessageWithUser] in

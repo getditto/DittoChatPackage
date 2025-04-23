@@ -53,7 +53,7 @@ protocol ReplicatingDataInterface {
     func saveEditedTextMessage(_ message: Message, in room: Room)
     func saveDeletedImageMessage(_ message: Message, in room: Room)
     func createImageMessage(for room: Room, image: UIImage, text: String?) async throws
-    func messagesPublisher(for room: Room) -> AnyPublisher<[Message], Never>
+    func messagesPublisher(for room: Room, retentionDays: Int?) -> AnyPublisher<[Message], Never>
     func messagePublisher(for msgId: String, in collectionId: String) -> AnyPublisher<Message, Never>
     func attachmentPublisher(
         for token: DittoAttachmentToken,
@@ -166,8 +166,8 @@ extension DataManager {
         p2pStore.messagePublisher(for: msgId, in: collectionId)
     }
 
-    func messagesPublisher(for room: Room) -> AnyPublisher<[Message], Never> {
-        p2pStore.messagesPublisher(for: room)
+    func messagesPublisher(for room: Room, retentionDays: Int?) -> AnyPublisher<[Message], Never> {
+        p2pStore.messagesPublisher(for: room, retentionDays: retentionDays)
     }
 
     func attachmentPublisher(

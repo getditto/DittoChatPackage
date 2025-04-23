@@ -12,9 +12,7 @@ import Foundation
 class RoomsListScreenVM: ObservableObject {
     @Published var presentCreateRoomScreen = false
     @Published var publicRooms: [Room] = []
-    @Published var privateRooms: [Room] = []
     @Published var defaultPublicRoom: Room?
-    @Published var defaultTAKPublicRoom: Room?
     @Published var currentUser: ChatUser?
     let dataManager: DataManager
 
@@ -30,22 +28,12 @@ class RoomsListScreenVM: ObservableObject {
             }
             .assign(to: &$publicRooms)
 
-        dataManager.privateRoomsPublisher
-            .map { privRooms in
-                privRooms.sorted(by: { $0.createdOn > $1.createdOn })
-            }
-            .assign(to: &$privateRooms)
-
         dataManager.currentUserPublisher()
             .assign(to: &$currentUser)
     }
 
     func createRoomButtonAction() {
         presentCreateRoomScreen = true
-    }
-
-    func joinPrivateRoom(code: String) {
-        dataManager.joinPrivateRoom(qrCode: code)
     }
 
     func archiveRoom(_ room: Room) {

@@ -257,14 +257,14 @@ extension DittoService {
             .eraseToAnyPublisher()
     }
 
-    func messagesPublisher(for room: Room) -> AnyPublisher<[Message], Never> {
-        let retentionDaysDouble = Double(chatRetentionPolicy.days)
-        let thirtyDaysAgo = Date().addingTimeInterval(-retentionDaysDouble * 24 * 60 * 60)
+    func messagesPublisher(for room: Room, retentionDays: Int?) -> AnyPublisher<[Message], Never> {
+        let retentionDaysDouble = Double(retentionDays ?? chatRetentionPolicy.days)
+        let retentionDaysAgo = Date().addingTimeInterval(-retentionDaysDouble * 24 * 60 * 60)
         return ditto.store.collection(room.messagesId)
             .find("roomId == $args.roomId && createdOn >= $args.date",
                 args: [
                     "roomId": room.id,
-                    "date": thirtyDaysAgo.ISO8601Format()
+                    "date": retentionDaysAgo.ISO8601Format()
                 ])
             .sort(createdOnKey, direction: .ascending)
             .liveQueryPublisher()

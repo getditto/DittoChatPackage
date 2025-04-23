@@ -15,9 +15,9 @@ public struct ChatScreen: View {
     @StateObject var errorHandler: ErrorHandler = ErrorHandler()
     private let dataManager: DataManager
 
-    public init(room: Room, dataManager: DataManager) {
+    public init(room: Room, dataManager: DataManager, retentionDays: Int? = nil) {
         self.dataManager = dataManager
-        self._viewModel = StateObject(wrappedValue: ChatScreenVM(room: room, dataManager: dataManager))
+        self._viewModel = StateObject(wrappedValue: ChatScreenVM(room: room, dataManager: dataManager, retentionDays: retentionDays))
     }
 
     public var body: some View {
@@ -183,7 +183,7 @@ struct ChatScreen_Previews: PreviewProvider {
     static var previews: some View {
         ChatScreen(
             room: Room(id: "abc", name: "My Room", messagesId: "def", isPrivate: true, userId: "test"),
-            dataManager: DataManager(ditto: Ditto(), usersCollection: "users")
+            dataManager: DataManager(ditto: Ditto(), usersCollection: "users"), retentionDays: 365
         )
     }
 }

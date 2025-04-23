@@ -35,22 +35,6 @@ public struct RoomsListScreen: View {
                     #endif
                 }
             }
-            if let defaultTAKPublicRoom = viewModel.defaultTAKPublicRoom {
-                Section(takPublicRoomTitleKey) {
-                    NavigationLink(destination: ChatScreen(room: defaultTAKPublicRoom, dataManager: dataManager)) {
-                        RoomsListRowItem(room: defaultTAKPublicRoom, dataManager: viewModel.dataManager)
-                    }
-                    #if !os(tvOS)
-                    .swipeActions(edge: .leading, allowsFullSwipe: true) {
-                        Button(action: {
-                            viewModel.toggleSubscriptionFor(room: defaultTAKPublicRoom)
-                        }, label: {
-                            Text("Sub")
-                        })
-                    }
-                    #endif
-                }
-            }
             Section( viewModel.publicRooms.count > 0 ? publicRoomsTitleKey : "" ) {
                 ForEach(viewModel.publicRooms) { room in
                     NavigationLink(destination: ChatScreen(room: room, dataManager: dataManager)) {
@@ -73,34 +57,11 @@ public struct RoomsListScreen: View {
                     #endif
                 }
             }
-            
-            Section( viewModel.privateRooms.count > 0 ? privateRoomsTitleKey : "" ) {
-                ForEach(viewModel.privateRooms) { room in
-                    NavigationLink(destination: ChatScreen(room: room, dataManager: dataManager)) {
-                        RoomsListRowItem(room: room, dataManager: viewModel.dataManager)
-                    }
-                    #if !os(tvOS)
-                    .swipeActions(edge: .trailing, allowsFullSwipe: false) {
-                        Button(settingsLeaveTitleKey) {
-                            viewModel.archiveRoom(room)
-                        }
-                        .tint(.red)
-                    }
-                    .swipeActions(edge: .leading, allowsFullSwipe: true) {
-                        Button(action: {
-                            viewModel.toggleSubscriptionFor(room: room)
-                        }, label: {
-                            Text("Sub")
-                        })
-                    }
-                    #endif
-                }
-            }
         }
 #if !os(tvOS)
         .navigationBarTitleDisplayMode(.inline)
         .navigationDestination(for: Room.self) { room in
-            ChatScreen(room: room, dataManager: viewModel.dataManager)
+            ChatScreen(room: room, dataManager: viewModel.dataManager, retentionDays: nil)
                 .withErrorHandling()
         }
 #endif
