@@ -17,7 +17,7 @@ protocol DittoDataInterface {
     var sdkVersion: String { get }
 
     func room(for room: Room) async -> Room?
-    func findPublicRoomById(id: String) -> Room?
+    func findPublicRoomById(id: String) async -> Room?
     func createRoom(id: String?, name: String, isGenerated: Bool) async -> String?
 
     func archiveRoom(_ room: Room)
