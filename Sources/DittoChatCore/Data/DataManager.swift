@@ -40,10 +40,9 @@ protocol ReplicatingDataInterface {
     var peerKeyString: String { get }
     var sdkVersion: String { get }
 
-    func room(for room: Room) -> Room?
+    func room(for room: Room) async -> Room?
     func findPublicRoomById(id: String) -> Room?
-    func createRoom(id: String?, name: String, isPrivate: Bool) -> DittoDocumentID?
-    func joinPrivateRoom(qrCode: String)
+    func createRoom(id: String?, name: String, isPrivate: Bool) async -> String?
 
     func archiveRoom(_ room: Room)
     func unarchiveRoom(_ room: Room)
@@ -58,7 +57,7 @@ protocol ReplicatingDataInterface {
     func attachmentPublisher(
         for token: DittoAttachmentToken,
         in collectionId: String
-    ) -> DittoSwift.DittoCollection.FetchAttachmentPublisher
+    ) -> DittoStore.FetchAttachmentPublisher
     func createUpdateMessage(document: [String: Any?])
 
     func addUser(_ usr: ChatUser)
@@ -98,20 +97,16 @@ open class DataManager {
 extension DataManager {
     // MARK: Ditto Public Rooms
 
-    func room(for room: Room) -> Room? {
-        p2pStore.room(for: room)
+    func room(for room: Room) async -> Room? {
+        await p2pStore.room(for: room)
     }
 
     public func findPublicRoomById(id: String) -> Room? {
         p2pStore.findPublicRoomById(id: id)
     }
 
-    public func createRoom(id: String? = UUID().uuidString, name: String, isPrivate: Bool) -> DittoDocumentID? {
-        return p2pStore.createRoom(id: id, name: name, isPrivate: isPrivate)
-    }
-
-    func joinPrivateRoom(qrCode: String) {
-        p2pStore.joinPrivateRoom(qrCode: qrCode)
+    public func createRoom(id: String? = UUID().uuidString, name: String, isPrivate: Bool) async -> String? {
+        return await p2pStore.createRoom(id: id, name: name, isPrivate: isPrivate)
     }
 
     func archiveRoom(_ room: Room) {
@@ -173,7 +168,7 @@ extension DataManager {
     func attachmentPublisher(
         for token: DittoAttachmentToken,
         in collectionId: String
-    ) -> DittoSwift.DittoCollection.FetchAttachmentPublisher {
+    ) -> DittoSwift.DittoStore.FetchAttachmentPublisher {
         p2pStore.attachmentPublisher(for: token, in: collectionId)
     }
 
