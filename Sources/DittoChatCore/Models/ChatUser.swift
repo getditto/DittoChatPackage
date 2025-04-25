@@ -55,7 +55,7 @@ public struct ChatUser: Identifiable, Hashable, Equatable {
 //    }
 //}
 
-extension ChatUser {
+extension ChatUser: DittoDecodable {
     init(document: DittoDocument) {
         id = document[dbIdKey].stringValue
         firstName = document[firstNameKey].stringValue

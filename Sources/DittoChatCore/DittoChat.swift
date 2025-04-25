@@ -13,7 +13,7 @@ import Combine
 public protocol DittoSwiftChat {
     var dataManager: DataManager { get }
     // Create
-    func createRoom(withConfig: RoomConfig) throws -> String
+    func createRoom(withConfig: RoomConfig) async throws -> String
     func createMessage(withConfig: MessageConfig) throws
     func setCurrentUser(withConfig: UserConfig)
 
@@ -133,12 +133,12 @@ public class DittoChat: DittoSwiftChat {
     }
 
     // MARK: Create
-    public func createRoom(withConfig config: RoomConfig) throws -> String {
-        guard let id = dataManager.createRoom(id: config.id, name: config.name, isPrivate: config.isPrivate) else {
+    public func createRoom(withConfig config: RoomConfig) async throws -> String {
+        guard let id = await dataManager.createRoom(id: config.id, name: config.name, isPrivate: config.isPrivate) else {
             throw AppError.unknown("room not found")
         }
 
-        return id.stringValue
+        return id
     }
 
     public func createMessage(withConfig config: MessageConfig) throws {

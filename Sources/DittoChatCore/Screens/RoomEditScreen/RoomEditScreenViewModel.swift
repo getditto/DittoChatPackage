@@ -24,6 +24,8 @@ class RoomEditScreenViewModel: ObservableObject {
     }
 
     func createRoom() {
-        let _ = dataManager.createRoom(name: name, isPrivate: false)
+        Task {
+            let _ = await dataManager.createRoom(name: name, isPrivate: false)
+        }
     }
 }

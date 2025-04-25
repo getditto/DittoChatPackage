@@ -21,8 +21,8 @@ struct Message: Identifiable, Equatable {
     var roomId: String
     var text: String
     var userId: String
-    var largeImageToken: DittoAttachmentToken?
-    var thumbnailImageToken: DittoAttachmentToken?
+    var largeImageToken: [String: Any]?
+    var thumbnailImageToken: [String: Any]?
 
     var archivedMessage: String?
     var isArchived: Bool
@@ -45,34 +45,44 @@ struct Message: Identifiable, Equatable {
     var isImageMessage: Bool {
         thumbnailImageToken != nil || largeImageToken != nil
     }
+
+    // FIXME: Excluding attachment tokens from equality because Any is not equatable
+        static func == (lhs: Message, rhs: Message) -> Bool {
+            return lhs.id == rhs.id &&
+            lhs.createdOn == rhs.createdOn &&
+            lhs.roomId == rhs.roomId &&
+            lhs.text == rhs.text &&
+            lhs.userId == rhs.userId &&
+            lhs.isImageMessage == rhs.isImageMessage
+        }
 }
 
-extension Message {
-    init(document: DittoDocument) {
-        self.id = document[dbIdKey].stringValue
-        self.createdOn = DateFormatter.isoDate.date(from: document[createdOnKey].stringValue) ?? Date()
-        self.roomId = document[roomIdKey].stringValue
-        self.text = document[textKey].stringValue
-        self.userId = document[userIdKey].stringValue
-        self.largeImageToken = document[largeImageTokenKey].attachmentToken
-        self.thumbnailImageToken = document[thumbnailImageTokenKey].attachmentToken
-        self.archivedMessage = document[archivedMessageKey].string
-        self.isArchived = document[isArchivedKey].bool ?? false
+extension Message: DittoDecodable {
+    init(value: [String: Any?]) {
+        self.id = value[dbIdKey] as? String ?? ""
+        self.createdOn = DateFormatter.isoDate.date(from: value[createdOnKey] as? String ?? "") ?? Date()
+        self.roomId = value[roomIdKey] as? String ?? ""
+        self.text = value[textKey] as? String ?? ""
+        self.userId = value[userIdKey] as? String ?? ""
+        self.largeImageToken = value[largeImageTokenKey] as? [String: Any]
+        self.thumbnailImageToken = value[thumbnailImageTokenKey] as? [String: Any]
+        self.archivedMessage = value[archivedMessageKey] as? String
+        self.isArchived = value[isArchivedKey] as? Bool ?? false
 
         // TAK related values
-        self.authorCs = document[authorCsKey].stringValue
-        self.authorId = document[authorIdKey].stringValue
-        self.authorLoc = document[authorLocKey].stringValue
-        self.authorType = document[authorTypeKey].stringValue
-        self.msg = document[msgKey].stringValue
-        self.parent = document[parentKey].stringValue
-        self.pks = document[pksKey].stringValue
-        self.room = document[roomKey].stringValue
-        self.roomId = document[roomIdKey].stringValue
-        self.schver = document[schverKey].intValue
-        self.takUid = document[takUidKey].stringValue
-        self.timeMs = Date(timeIntervalSince1970InMilliSeconds: document[timeMsKey].intValue)
-        self.hasBeenConverted = document[hasBeenConvertedKey].bool
+        self.authorCs = value[authorCsKey] as? String ?? ""
+        self.authorId = value[authorIdKey] as? String ?? ""
+        self.authorLoc = value[authorLocKey] as? String ?? ""
+        self.authorType = value[authorTypeKey] as? String ?? ""
+        self.msg = value[msgKey] as? String ?? ""
+        self.parent = value[parentKey] as? String ?? ""
+        self.pks = value[pksKey] as? String ?? ""
+        self.room = value[roomKey] as? String ?? ""
+        self.roomId = value[roomIdKey] as? String ?? ""
+        self.schver = value[schverKey] as? Int ?? 0
+        self.takUid = value[takUidKey] as? String ?? ""
+        self.timeMs = Date(timeIntervalSince1970InMilliSeconds: value[timeMsKey] as? Int ?? 0)
+        self.hasBeenConverted = value[hasBeenConvertedKey] as? Bool
     }
 }
 
@@ -83,8 +93,8 @@ extension Message {
         roomId: String,
         text: String? = nil,
         userId: String? = nil,
-        largeImageToken: DittoAttachmentToken? = nil,
-        thumbnailImageToken: DittoAttachmentToken? = nil,
+        largeImageToken: [String: Any]? = nil,
+        thumbnailImageToken: [String: Any]? = nil,
         archivedMessage: String? = nil,
         isArchived: Bool = false,
         authorCs: String? = nil,
@@ -131,8 +141,8 @@ extension Message {
         message: String = "",
         userName: String,
         userId: String,
-        largeImageToken: DittoAttachmentToken? = nil,
-        thumbnailImageToken: DittoAttachmentToken? = nil,
+        largeImageToken: [String: Any]? = nil,
+        thumbnailImageToken: [String: Any]? = nil,
         archivedMessage: String? = nil,
         isArchived: Bool = false,
         parent: String = "RootContactGroup",
