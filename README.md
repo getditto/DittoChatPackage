@@ -16,11 +16,9 @@ To setup chat to work in your application:
 - DataManager.shared = // Your entry point to chat features
 - DataManager.shared.publicRoomsPublisher = // The list of chat rooms as a publisher
 - public func findPublicRoomById(id: String) -> Room?
-- public func createRoom(name: String, isPrivate: Bool) -> DittoDocumentID?
-- public func deleteRoom(_ room: Room)
+- public func createRoom(name: String) async -> String?
 - public func saveCurrentUser(firstName: String, lastName: String) // To set the user if you are managing users and dont need chat to make new ones
 - public struct Room // The Room object to work with chat rooms
-
 
 UI: 
 

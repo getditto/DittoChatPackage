@@ -15,16 +15,14 @@ public struct Room: Identifiable, Hashable, Equatable {
     public let id: String
     public let name: String
     public let messagesId: String
-    public private(set) var isPrivate: Bool
     public let collectionId: String?
     public let createdBy: String
     public let createdOn: Date
 
-    public init(id: String, name: String, messagesId: String, isPrivate: Bool, collectionId: String?, createdBy: String, createdOn: Date) {
+    public init(id: String, name: String, messagesId: String, collectionId: String?, createdBy: String, createdOn: Date) {
         self.id = id
         self.name = name
         self.messagesId = messagesId
-        self.isPrivate = isPrivate
         self.collectionId = collectionId
         self.createdBy = createdBy
         self.createdOn = createdOn
@@ -36,7 +34,6 @@ extension Room: DittoDecodable {
         self.id = document[dbIdKey].stringValue
         self.name = document[nameKey].stringValue
         self.messagesId = document[messagesIdKey].stringValue
-        self.isPrivate = document[isPrivateKey].boolValue
         self.collectionId = document[collectionIdKey].string
         self.createdBy = document[createdByKey].stringValue
         self.createdOn = DateFormatter.isoDate.date(from: document[createdOnKey].stringValue) ?? Date()
@@ -46,7 +43,6 @@ extension Room: DittoDecodable {
         self.id = value[dbIdKey] as? String ?? ""
         self.name = value[nameKey] as? String ?? ""
         self.messagesId = value[messagesIdKey] as? String ?? ""
-        self.isPrivate = value[isPrivateKey] as? Bool ?? false
         self.collectionId = value[collectionIdKey] as? String
         self.createdBy = value[createdByKey] as? String ?? ""
         self.createdOn = DateFormatter.isoDate.date(from: value[createdOnKey] as? String ?? "") ?? Date()
@@ -58,7 +54,6 @@ extension Room {
         id: String,
         name: String,
         messagesId: String,
-        isPrivate: Bool,
         userId: String,
         collectionId: String? = nil,
         createdBy: String? = nil,
@@ -68,7 +63,6 @@ extension Room {
         self.id = id
         self.name = name
         self.messagesId = messagesId
-        self.isPrivate = isPrivate
         self.collectionId = collectionId
         self.createdBy = createdBy ?? userId
         self.createdOn = createdOn ?? Date()
@@ -81,7 +75,6 @@ extension Room {
             dbIdKey: id,
             nameKey: name,
             messagesIdKey: messagesId,
-            isPrivateKey: isPrivate,
             collectionIdKey: collectionId,
             createdByKey: createdBy,
             createdOnKey: DateFormatter.isoDate.string(from: createdOn),
@@ -97,7 +90,6 @@ extension Room {
 //            id: publicKey,
 //            name: publicRoomTitleKey,
 //            messagesId: publicMessagesIdKey,
-//            isPrivate: false
 //        )
 //    }
 //}
