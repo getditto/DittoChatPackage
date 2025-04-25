@@ -155,24 +155,36 @@ extension DittoService {
         }
     }
 
-    // TODO: Change to DQL
     func updateUser(withId id: String,
                     firstName: String?,
                     lastName: String?,
                     subscriptions: [String: Date?]?,
                     mentions: [String: [String]]?) {
-        ditto.store.collection(usersKey)
-            .findByID(id)
-            .update({ dittoMutableDocument in
-                guard let dittoMutableDocument else { return }
+        Task {
+            do {
+                // fetch current user to get current values
+                let currentUser = try await findUserById(id, inCollection: usersKey)
 
-                if let firstName { dittoMutableDocument[firstNameKey].set(firstName) }
-                if let lastName { dittoMutableDocument[lastNameKey].set(lastName) }
-                if let subscriptions {
-                    dittoMutableDocument[subscriptionsKey].set(subscriptions.mapValues { date in date?.ISO8601Format() })
-                }
-                if let mentions { dittoMutableDocument[mentionsKey].set(mentions) }
-            })
+                let query = """
+                    INSERT INTO '\(usersKey)'
+                    DOCUMENTS (:newDoc)
+                    ON ID CONFLICT DO UPDATE
+                    """
+                let subscriptions = subscriptions ?? currentUser.subscriptions
+                let subs = subscriptions.mapValues { date in date?.ISO8601Format() }
+                let newDoc = [
+                    firstNameKey: firstName ?? currentUser.firstName,
+                    lastNameKey: lastName ?? currentUser.lastName,
+                    subscriptionsKey: subs,
+                    mentionsKey: mentions ?? currentUser.mentions,
+                ]
+                let args = ["newDoc": newDoc]
+
+                try? await ditto.store.execute(query: query, arguments: args)
+            } catch {
+                print(error.localizedDescription)
+            }
+        }
     }
 
     func allUsersPublisher() -> AnyPublisher<[ChatUser], Never> {
@@ -247,7 +259,7 @@ extension DittoService {
             Task {
                 try? await ditto.store.execute(
                     query: """
-                            INSERT INTO users
+                            INSERT INTO `\(usersKey)`
                             DOCUMENTS (:user)
                             ON ID CONFLICT DO NOTHING
                             """,
@@ -277,7 +289,7 @@ extension DittoService {
         Task {
             guard let room = await self.room(for: room) else { return }
 
-            let userQuery = try? await ditto.store.execute(query: "SELECT * FROM users WHERE _id = '\(userId)'")
+            let userQuery = try? await ditto.store.execute(query: "SELECT * FROM `\(usersKey)` WHERE _id = '\(userId)'")
             let userDictionary = userQuery?.items.first?.value
             let query = "INSERT INTO `\(room.messagesId)` DOCUMENTS (:newDoc) ON ID CONFLICT DO UPDATE"
             let fullName = userDictionary?["fullName"] as? String
