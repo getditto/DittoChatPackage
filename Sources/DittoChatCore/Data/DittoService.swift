@@ -120,7 +120,7 @@ extension DittoService {
                     return Just<ChatUser?>(nil).eraseToAnyPublisher()
                 }
 
-                return self.ditto.store.observePublisher(query: "SELECT * FROM `\(usersKey)` WHERE _id = :id", arguments: ["id":userId], mapTo: ChatUser.self, onlyFirst: true)
+                return self.ditto.store.observePublisher(query: "SELECT * FROM COLLECTION `\(usersKey)` (`\(subscriptionsKey)` MAP, `\(mentionsKey)` MAP) WHERE _id = :id", arguments: ["id":userId], mapTo: ChatUser.self, onlyFirst: true)
                     .catch { error in
                         assertionFailure("ERROR with \(#function)" + error.localizedDescription)
                         return Empty<ChatUser?, Never>()
@@ -148,7 +148,7 @@ extension DittoService {
     func addUser(_ usr: ChatUser) {
         Task {
             do {
-                try await ditto.store.execute(query: "INSERT INTO `\(usersKey)` DOCUMENTS (:newUser) ON ID CONFLICT DO UPDATE", arguments: ["newUser": usr.docDictionary()])
+                try await ditto.store.execute(query: "INSERT INTO COLLECTION `\(usersKey)` (`\(subscriptionsKey)` MAP, `\(mentionsKey)` MAP) DOCUMENTS (:newUser) ON ID CONFLICT DO UPDATE", arguments: ["newUser": usr.docDictionary()])
             } catch {
                 print("addUser Error: \(error)")
             }
@@ -166,13 +166,14 @@ extension DittoService {
                 let currentUser = try await findUserById(id, inCollection: usersKey)
 
                 let query = """
-                    INSERT INTO '\(usersKey)'
+                    INSERT INTO COLLECTION `\(usersKey)` (`\(subscriptionsKey)` MAP, `\(mentionsKey)` MAP)
                     DOCUMENTS (:newDoc)
                     ON ID CONFLICT DO UPDATE
                     """
                 let subscriptions = subscriptions ?? currentUser.subscriptions
                 let subs = subscriptions.mapValues { date in date?.ISO8601Format() }
                 let newDoc = [
+                    dbIdKey: id,
                     firstNameKey: firstName ?? currentUser.firstName,
                     lastNameKey: lastName ?? currentUser.lastName,
                     subscriptionsKey: subs,
@@ -180,7 +181,7 @@ extension DittoService {
                 ]
                 let args = ["newDoc": newDoc]
 
-                try? await ditto.store.execute(query: query, arguments: args)
+                try await ditto.store.execute(query: query, arguments: args)
             } catch {
                 print(error.localizedDescription)
             }
@@ -189,7 +190,8 @@ extension DittoService {
 
     func allUsersPublisher() -> AnyPublisher<[ChatUser], Never> {
 
-        return ditto.store.observePublisher(query: "SELECT * FROM `\(usersKey)`", mapTo: ChatUser.self)
+        return ditto.store
+            .observePublisher(query: "SELECT * FROM COLLECTION `\(usersKey)` (`\(subscriptionsKey)` MAP, `\(mentionsKey)` MAP)", mapTo: ChatUser.self)
             .catch { error in
                 assertionFailure("ERROR with \(#function)" + error.localizedDescription)
                 return Empty<[ChatUser], Never>()
@@ -259,7 +261,7 @@ extension DittoService {
             Task {
                 try? await ditto.store.execute(
                     query: """
-                            INSERT INTO `\(usersKey)`
+                            INSERT INTO COLLECTION `\(usersKey)` (`\(subscriptionsKey)` MAP, `\(mentionsKey)` MAP)
                             DOCUMENTS (:user)
                             ON ID CONFLICT DO NOTHING
                             """,
@@ -289,7 +291,7 @@ extension DittoService {
         Task {
             guard let room = await self.room(for: room) else { return }
 
-            let userQuery = try? await ditto.store.execute(query: "SELECT * FROM `\(usersKey)` WHERE _id = '\(userId)'")
+            let userQuery = try? await ditto.store.execute(query: "SELECT * FROM COLLECTION `\(usersKey)` (`\(subscriptionsKey)` MAP, `\(mentionsKey)` MAP) WHERE _id = '\(userId)'")
             let userDictionary = userQuery?.items.first?.value
             let query = "INSERT INTO `\(room.messagesId)` DOCUMENTS (:newDoc) ON ID CONFLICT DO UPDATE"
             let fullName = userDictionary?["fullName"] as? String
@@ -475,7 +477,7 @@ extension DittoService {
     }
 
     private func user(for userId: String) async -> ChatUser? {
-        let query = "SELECT * FROM `\(usersKey)` WHERE _id = :id"
+        let query = "SELECT * FROM COLLECTION `\(usersKey)` (`\(subscriptionsKey)` MAP, `\(mentionsKey)` MAP) WHERE _id = :id"
         let args = ["id": userId]
 
        do {
