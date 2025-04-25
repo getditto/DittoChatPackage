@@ -32,15 +32,15 @@ public struct Room: Identifiable, Hashable, Equatable {
 }
 
 extension Room: DittoDecodable {
-    public init(document: DittoDocument) {
-        self.id = document[dbIdKey].stringValue
-        self.name = document[nameKey].stringValue
-        self.messagesId = document[messagesIdKey].stringValue
-        self.collectionId = document[collectionIdKey].string
-        self.createdBy = document[createdByKey].stringValue
-        self.createdOn = DateFormatter.isoDate.date(from: document[createdOnKey].stringValue) ?? Date()
-        self.isGenerated = document[isGeneratedKey].boolValue
-    }
+//    public init(document: DittoDocument) {
+//        self.id = document[dbIdKey].stringValue
+//        self.name = document[nameKey].stringValue
+//        self.messagesId = document[messagesIdKey].stringValue
+//        self.collectionId = document[collectionIdKey].string
+//        self.createdBy = document[createdByKey].stringValue
+//        self.createdOn = DateFormatter.isoDate.date(from: document[createdOnKey].stringValue) ?? Date()
+//        self.isGenerated = document[isGeneratedKey].boolValue
+//    }
 
     public init(value: [String : Any?]) {
         self.id = value[dbIdKey] as? String ?? ""

@@ -559,19 +559,21 @@ extension DittoService {
     }
 
     /// This function returns a room from the Ditto db for the given room id. The id argument will be passed from the UI, In other cases, they are rooms from a publisher of Room instances.
-    func findPublicRoomById(id: String) -> Room? {
+    func findPublicRoomById(id: String) async -> Room? {
         var id = id
         if id == "public" {
             id = publicKey
         }
 
-        guard let doc = ditto.store[publicRoomsCollectionId].findByID(id).exec() else {
+        guard let result = try? await ditto.store.execute(query: "SELECT * FROM `\(publicRoomsCollectionId)` WHERE _id = :id", arguments: ["id": id]),
+              let doc = result.items.first?.value else {
             print("DittoService.\(#function): WARNING" +
                 " - expected non-nil room room.id: \(id)"
             )
             return nil
         }
-        let room = Room(document: doc)
+
+        let room = Room(value: doc)
         return room
     }
 

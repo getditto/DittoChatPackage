@@ -13,12 +13,12 @@ import UIKit
 public protocol DittoSwiftChat {
     // Create
     func createRoom(withConfig: RoomConfig) async throws -> String
-    func createMessage(withConfig: MessageConfig) throws
+    func createMessage(withConfig: MessageConfig) async throws
     func setCurrentUser(withConfig: UserConfig)
 
     // Read
     var publicRoomsPublisher: AnyPublisher<[Room], Never> { get }
-    func readRoomById(id: String) throws -> Room
+    func readRoomById(id: String) async throws -> Room
     func allUsersPublisher() -> AnyPublisher<[ChatUser], Never>
 
     // Update
@@ -110,8 +110,8 @@ public class DittoChat: DittoSwiftChat, ObservableObject {
         set { localStore.currentUserId = newValue }
     }
 
-    public func readRoomById(id: String) throws -> Room {
-        guard let room = self.findPublicRoomById(id: id) else {
+    public func readRoomById(id: String) async throws -> Room {
+        guard let room = await self.findPublicRoomById(id: id) else {
             throw AppError.unknown("room not found")
         }
 
@@ -131,8 +131,8 @@ public class DittoChat: DittoSwiftChat, ObservableObject {
         return id
     }
 
-    public func createMessage(withConfig config: MessageConfig) throws {
-        let room = try readRoomById(id: config.roomId)
+    public func createMessage(withConfig config: MessageConfig) async throws {
+        let room = try await readRoomById(id: config.roomId)
 
         self.createMessage(for: room, text: config.message)
     }
@@ -169,8 +169,8 @@ extension DittoChat {
         await p2pStore.room(for: room)
     }
 
-    internal func findPublicRoomById(id: String) -> Room? {
-        p2pStore.findPublicRoomById(id: id)
+    internal func findPublicRoomById(id: String) async -> Room? {
+        await p2pStore.findPublicRoomById(id: id)
     }
 
     public func createRoom(id: String? = UUID().uuidString, name: String, isGenerated: Bool = false) async -> String? {

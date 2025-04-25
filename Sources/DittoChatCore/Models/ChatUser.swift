@@ -64,27 +64,11 @@ public struct ChatUser: Identifiable, Hashable, Equatable {
 //}
 
 extension ChatUser: DittoDecodable {
-    public init(document: DittoDocument) {
-        id = document[dbIdKey].stringValue
-        firstName = document[firstNameKey].stringValue
-        lastName = document[lastNameKey].stringValue
-//        subscriptions = document[subscriptionsKey].dictionaryValue as? [String : RoomSubscription?] ?? [:]
-        var subscriptionDictionary = document[subscriptionsKey].dictionaryValue as? [String : String?] ?? [:]
-        subscriptions = subscriptionDictionary.mapValues { dateString in
-            if let dateString {
-                try? Date(dateString, strategy: .iso8601)
-            } else {
-                nil
-            }
-        }
-        mentions = document[mentionsKey].dictionaryValue as? [String: [String]] ?? [:]
-    }
 
     public init(value: [String: Any?]) {
         id = value[dbIdKey] as! String
         firstName = value[firstNameKey] as? String ?? ""
         lastName = value[lastNameKey] as? String ?? ""
-//        subscriptions = document[subscriptionsKey].dictionaryValue as? [String : RoomSubscription?] ?? [:]
         var subscriptionDictionary = value[subscriptionsKey] as? [String : String?] ?? [:]
         subscriptions = subscriptionDictionary.mapValues { dateString in
             if let dateString {

@@ -13,16 +13,11 @@ import DittoChatCore
 
 public protocol DittoChatViews {
     var dittoChat: DittoChat { get }
-    func roomView(id: String, retentionDays: Int?) throws -> ChatScreen
+    func roomView(room: Room, retentionDays: Int?) throws -> ChatScreen
+    func readRoomById(id: String) async throws -> Room
     func roomsView() -> RoomsListScreen
     func logout()
     func setCurrentUser(withConfig config: UserConfig)
-}
-
-public extension DittoChatViews {
-    func roomView(id: String, retentionDays: Int? = nil) -> RoomsListScreen {
-        self.roomView(id: id, retentionDays: retentionDays)
-    }
 }
 
 public class DittoChatUI: DittoChatViews {
@@ -32,10 +27,12 @@ public class DittoChatUI: DittoChatViews {
         dittoChat = DittoChat(config: chatConfig)
     }
 
-    public func roomView(id: String, retentionDays: Int? = nil) throws -> ChatScreen {
-        let room = try dittoChat.readRoomById(id: id)
-
+    public func roomView(room: Room, retentionDays: Int? = nil) throws -> ChatScreen {
         return ChatScreen(room: room, dittoChat: dittoChat, retentionDays: retentionDays)
+    }
+
+    public func readRoomById(id: String) async throws -> Room {
+        try await dittoChat.readRoomById(id: id)
     }
 
     public func roomsView() -> RoomsListScreen {
