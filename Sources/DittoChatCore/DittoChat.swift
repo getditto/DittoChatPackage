@@ -7,8 +7,8 @@
 
 import Foundation
 import DittoSwift
-import SwiftUI
 import Combine
+import UIKit
 
 public protocol DittoSwiftChat {
     // Create

@@ -7,8 +7,8 @@
 //
 
 import Combine
-import SwiftUI
 import DittoSwift
+import UIKit
 
 protocol DittoDataInterface {
     var ditto: Ditto { get }

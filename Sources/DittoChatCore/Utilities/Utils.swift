@@ -8,7 +8,6 @@
 
 import Combine
 import CoreImage.CIFilterBuiltins
-import SwiftUI
 import UIKit
 
 extension DateFormatter {
@@ -64,23 +63,6 @@ extension String {
     }
 }
 
-extension View {
-    /// Simple view wrapper of built-in utility to print to debugger console the causes of a view redraw
-    /// Usage: call `printSwiftUIChanges()` inside a view element. The print output will occur every tie the view is refreshed,
-    ///  identifying the change(s) that caused the redraw.
-    ///
-    /// Note: the output will be relative to the entire view no matter if the call is made in,  e.g., a nested VStack
-    ///
-    ///  Output example:
-    ///   @self, @identity, _viewModel
-    func printSwiftUIChanges() -> EmptyView {
-        #if DEBUG
-            Self._printChanges()
-        #endif
-        return EmptyView()
-    }
-}
-
 extension Bundle {
     var appName: String {
         if let displayName: String = self.infoDictionary?["CFBundleDisplayName"] as? String {
@@ -101,37 +83,6 @@ extension Bundle {
         Bundle.main.object(
             forInfoDictionaryKey: "CFBundleVersion"
         ) as? String ?? notAvailableLabelKey
-    }
-}
-
-extension CGFloat {
-    @MainActor
-    static var screenWidth: CGFloat {
-        UIScreen.main.bounds.width
-    }
-
-    @MainActor
-    static var screenHeight: CGFloat {
-        UIScreen.main.bounds.height
-    }
-}
-
-/* View size capture for debugging
- https://www.fivestars.blog/articles/swiftui-share-layout-information/
- */
-struct SizePreferenceKey: PreferenceKey {
-  static var defaultValue: CGSize = .zero
-  static func reduce(value: inout CGSize, nextValue: () -> CGSize) {}
-}
-extension View {
-    func readSize(onChange: @escaping (CGSize) -> Void) -> some View {
-        background(
-            GeometryReader { geometryProxy in
-                Color.clear
-                    .preference(key: SizePreferenceKey.self, value: geometryProxy.size)
-            }
-        )
-        .onPreferenceChange(SizePreferenceKey.self, perform: onChange)
     }
 }
 

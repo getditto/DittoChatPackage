@@ -7,6 +7,7 @@
 //
 
 import SwiftUI
+import DittoChatCore
 
 struct GeneralErrorView: View {
     @Environment(\.colorScheme) var colorScheme
@@ -54,3 +55,15 @@ struct GeneralErrorView_Previews: PreviewProvider {
     }
 }
 #endif
+
+extension CGFloat {
+    @MainActor
+    static var screenWidth: CGFloat {
+        UIScreen.main.bounds.width
+    }
+
+    @MainActor
+    static var screenHeight: CGFloat {
+        UIScreen.main.bounds.height
+    }
+}

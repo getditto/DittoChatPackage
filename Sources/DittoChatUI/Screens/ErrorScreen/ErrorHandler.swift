@@ -8,6 +8,7 @@
 //  https://www.ralfebert.com/swiftui/generic-error-handling/
 
 import SwiftUI
+import DittoChatCore
 
 public struct ErrorAlert: Identifiable {
     public var id = UUID()
