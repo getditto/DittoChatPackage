@@ -35,11 +35,11 @@ public class DittoChatUI: DittoChatViews {
     public func roomView(id: String, retentionDays: Int? = nil) throws -> ChatScreen {
         let room = try dittoChat.readRoomById(id: id)
 
-        return ChatScreen(room: room, dataManager: dittoChat.dataManager, retentionDays: retentionDays)
+        return ChatScreen(room: room, dittoChat: dittoChat, retentionDays: retentionDays)
     }
 
     public func roomsView() -> RoomsListScreen {
-        return RoomsListScreen(dataManager: dittoChat.dataManager)
+        return RoomsListScreen(dittoChat: dittoChat)
     }
 
     public func logout() {

@@ -14,21 +14,24 @@ class RoomsListScreenVM: ObservableObject {
     @Published var publicRooms: [Room] = []
     @Published var defaultPublicRoom: Room?
     @Published var currentUser: ChatUser?
-    let dataManager: DataManager
+    let dittoChat: DittoChat
 
-    init(dataManager: DataManager) {
-        self.dataManager = dataManager
+    init(dittoChat: DittoChat) {
+        self.dittoChat = dittoChat
 
-        dataManager.publicRoomsPublisher
+        dittoChat.publicRoomsPublisher
             .receive(on: DispatchQueue.main)
             .map { [weak self] rooms in
                 self?.defaultPublicRoom = rooms.first(where: { $0.id == publicKey })
                 // remove default public room; it's presented by itself in 1st list section
                 return rooms.filter { $0.id != publicKey }
             }
+            .map { rooms in
+                rooms.filter { $0.isGenerated == false }
+            }
             .assign(to: &$publicRooms)
 
-        dataManager.currentUserPublisher()
+        dittoChat.currentUserPublisher()
             .assign(to: &$currentUser)
     }
 
@@ -37,7 +40,7 @@ class RoomsListScreenVM: ObservableObject {
     }
 
     func archiveRoom(_ room: Room) {
-        dataManager.archiveRoom(room)
+        dittoChat.archiveRoom(room)
     }
 
     func toggleSubscriptionFor(room: Room) {
@@ -46,13 +49,13 @@ class RoomsListScreenVM: ObservableObject {
             var subscriptions = currentUser.subscriptions
             subscriptions.updateValue(.now, forKey: room.id)
 
-            dataManager.updateUser(withId: currentUser.id, firstName: nil, lastName: nil, subscriptions: subscriptions, mentions: nil)
+            dittoChat.updateUser(withId: currentUser.id, firstName: nil, lastName: nil, subscriptions: subscriptions, mentions: nil)
             return
         }
 
         var newSubscriptions = currentUser.subscriptions
         newSubscriptions.updateValue(nil, forKey: room.id)
 
-        dataManager.updateUser(withId: currentUser.id, firstName: nil, lastName: nil, subscriptions: newSubscriptions, mentions: nil)
+        dittoChat.updateUser(withId: currentUser.id, firstName: nil, lastName: nil, subscriptions: newSubscriptions, mentions: nil)
     }
 }

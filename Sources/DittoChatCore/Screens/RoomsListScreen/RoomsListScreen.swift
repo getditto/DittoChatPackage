@@ -10,19 +10,19 @@ import SwiftUI
 
 public struct RoomsListScreen: View {
     @ObservedObject var viewModel: RoomsListScreenVM
-    private let dataManager: DataManager
+    private let dittoChat: DittoChat
 
-    public init(dataManager: DataManager) {
-        self.dataManager = dataManager
-        self.viewModel = RoomsListScreenVM(dataManager: dataManager)
+    public init(dittoChat: DittoChat) {
+        self.dittoChat = dittoChat
+        self.viewModel = RoomsListScreenVM(dittoChat: dittoChat)
     }
 
     public var body: some View {
         List {
             if let defaultPublicRoom = viewModel.defaultPublicRoom {
                 Section(openPublicRoomTitleKey) {
-                    NavigationLink(destination: ChatScreen(room: defaultPublicRoom, dataManager: dataManager)) {
-                        RoomsListRowItem(room: defaultPublicRoom, dataManager: viewModel.dataManager)
+                    NavigationLink(destination: ChatScreen(room: defaultPublicRoom, dittoChat: dittoChat)) {
+                        RoomsListRowItem(room: defaultPublicRoom, dittoChat: viewModel.dittoChat)
                     }
                     #if !os(tvOS)
                     .swipeActions(edge: .leading, allowsFullSwipe: true) {
@@ -37,8 +37,8 @@ public struct RoomsListScreen: View {
             }
             Section( viewModel.publicRooms.count > 0 ? publicRoomsTitleKey : "" ) {
                 ForEach(viewModel.publicRooms) { room in
-                    NavigationLink(destination: ChatScreen(room: room, dataManager: dataManager)) {
-                        RoomsListRowItem(room: room, dataManager: viewModel.dataManager)
+                    NavigationLink(destination: ChatScreen(room: room, dittoChat: dittoChat)) {
+                        RoomsListRowItem(room: room, dittoChat: viewModel.dittoChat)
                     }
                     #if !os(tvOS)
                     .swipeActions(edge: .trailing, allowsFullSwipe: false) {
@@ -61,12 +61,12 @@ public struct RoomsListScreen: View {
 #if !os(tvOS)
         .navigationBarTitleDisplayMode(.inline)
         .navigationDestination(for: Room.self) { room in
-            ChatScreen(room: room, dataManager: viewModel.dataManager, retentionDays: nil)
+            ChatScreen(room: room, dittoChat: viewModel.dittoChat, retentionDays: nil)
                 .withErrorHandling()
         }
 #endif
         .sheet(isPresented: $viewModel.presentCreateRoomScreen) {
-            RoomEditScreen(dataManager: viewModel.dataManager)
+            RoomEditScreen(dittoChat: viewModel.dittoChat)
         }
         .toolbar {
             ToolbarItemGroup(placement: .principal) {
@@ -89,7 +89,7 @@ import DittoSwift
 struct RoomsListScreen_Previews: PreviewProvider {
     static var previews: some View {
         NavigationView {
-            RoomsListScreen(dataManager: DataManager(ditto: Ditto(), usersCollection: "users"))
+            RoomsListScreen(dittoChat: DittoChat(config: ChatConfig(ditto: Ditto(), usersCollection: "users")))
         }
     }
 }

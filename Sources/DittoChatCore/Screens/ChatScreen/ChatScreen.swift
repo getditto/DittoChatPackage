@@ -13,11 +13,11 @@ import SwiftUI
 public struct ChatScreen: View {
     @StateObject var viewModel: ChatScreenVM
     @StateObject var errorHandler: ErrorHandler = ErrorHandler()
-    private let dataManager: DataManager
+    private let dittoChat: DittoChat
 
-    public init(room: Room, dataManager: DataManager, retentionDays: Int? = nil) {
-        self.dataManager = dataManager
-        self._viewModel = StateObject(wrappedValue: ChatScreenVM(room: room, dataManager: dataManager, retentionDays: retentionDays))
+    public init(room: Room, dittoChat: DittoChat, retentionDays: Int? = nil) {
+        self.dittoChat = dittoChat
+        self._viewModel = StateObject(wrappedValue: ChatScreenVM(room: room, dittoChat: dittoChat, retentionDays: retentionDays))
     }
 
     public var body: some View {
@@ -33,7 +33,7 @@ public struct ChatScreen: View {
                                     messagesId: viewModel.room.messagesId,
                                     messageOpCallback: viewModel.messageOperationCallback,
                                     isEditing: $viewModel.isEditing,
-                                    dataManager: dataManager
+                                    dittoChat: dittoChat
                                 )
                                 .id(usrMsg.message.id)
                                 .transition(.slide)
@@ -113,7 +113,7 @@ public struct ChatScreen: View {
                 vm: MessageBubbleVM(
                     viewModel.attachmentMessage!,
                     messagesId: viewModel.room.messagesId,
-                    dataManager: dataManager
+                    dittoChat: dittoChat
                 ),
                 errorHandler: errorHandler
             )
@@ -126,7 +126,7 @@ public struct ChatScreen: View {
                         msgsUsers,
                         saveEditCallback: viewModel.saveEditedTextMessage,
                         cancelEditCallback: viewModel.cancelEditCallback,
-                        dataManager: dataManager
+                        dittoChat: dittoChat
                     )
                 }
             } else {
@@ -183,7 +183,7 @@ struct ChatScreen_Previews: PreviewProvider {
     static var previews: some View {
         ChatScreen(
             room: Room(id: "abc", name: "My Room", messagesId: "def", userId: "test"),
-            dataManager: DataManager(ditto: Ditto(), usersCollection: "users"), retentionDays: 365
+            dittoChat: DittoChat(config: ChatConfig(ditto: Ditto(), usersCollection: "users")), retentionDays: 365
         )
     }
 }

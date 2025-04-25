@@ -34,19 +34,14 @@ class ChatScreenVM: ObservableObject {
     @Published var isEditing = false
     @Published var keyboardStatus: KeyboardChangeEvent = .unchanged
     var editMsgId: String?
-    private let dataManager: DataManager
+    private let dittoChat: DittoChat
 
-    // Basic chat mode
-    var isBasicChatScreen: Bool {
-        dataManager.basicChat && room.id == publicKey
-    }
-
-    init(room: Room, dataManager: DataManager, retentionDays: Int?) {
+    init(room: Room, dittoChat: DittoChat, retentionDays: Int?) {
         self.room = room
-        self.dataManager = dataManager
+        self.dittoChat = dittoChat
 
-        let users = dataManager.allUsersPublisher()
-        let messages = dataManager.messagesPublisher(for: room, retentionDays: retentionDays)
+        let users = dittoChat.allUsersPublisher()
+        let messages = dittoChat.messagesPublisher(for: room, retentionDays: retentionDays)
 
         messages.combineLatest(users)
             .map { messages, users -> [MessageWithUser] in
@@ -66,7 +61,7 @@ class ChatScreenVM: ObservableObject {
         }
         #endif
 
-        dataManager.currentUserPublisher()
+        dittoChat.currentUserPublisher()
             .assign(to: &$currentUser)
     }
 
@@ -74,7 +69,7 @@ class ChatScreenVM: ObservableObject {
         // only allow non-empty string messages
         guard !inputText.isEmpty else { return }
 
-        dataManager.createMessage(for: room, text: inputText)
+        dittoChat.createMessage(for: room, text: inputText)
 
         inputText = ""
     }
@@ -85,7 +80,7 @@ class ChatScreenVM: ObservableObject {
         }
         
         do {
-            try await dataManager.createImageMessage(for: room, image: image, text: inputText)
+            try await dittoChat.createImageMessage(for: room, image: image, text: inputText)
 
         } catch {
             print("Caught error: \(error.localizedDescription)")
@@ -143,7 +138,7 @@ class ChatScreenVM: ObservableObject {
         if msg.text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
             return deleteTextMessage(msg)
         }
-        dataManager.saveEditedTextMessage(msg, in: room)
+        dittoChat.saveEditedTextMessage(msg, in: room)
         cleanupEdit()
     }
 
@@ -158,7 +153,7 @@ class ChatScreenVM: ObservableObject {
         editedMsg.text = deletedImageMessageKey
         editedMsg.thumbnailImageToken = nil
         editedMsg.largeImageToken = nil
-        dataManager.saveDeletedImageMessage(editedMsg, in: room)
+        dittoChat.saveDeletedImageMessage(editedMsg, in: room)
     }
 
     func presentAttachment(_ msg: Message) {
@@ -192,6 +187,6 @@ class ChatScreenVM: ObservableObject {
         subs.updateValue(.now, forKey: room.id)
         mentions.updateValue([], forKey: room.id)
 
-        dataManager.updateUser(withId: currentUser.id, firstName: nil, lastName: nil, subscriptions: subs, mentions: mentions)
+        dittoChat.updateUser(withId: currentUser.id, firstName: nil, lastName: nil, subscriptions: subs, mentions: mentions)
     }
 }

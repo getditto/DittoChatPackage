@@ -18,14 +18,16 @@ public struct Room: Identifiable, Hashable, Equatable {
     public let collectionId: String?
     public let createdBy: String
     public let createdOn: Date
+    public let isGenerated: Bool
 
-    public init(id: String, name: String, messagesId: String, collectionId: String?, createdBy: String, createdOn: Date) {
+    public init(id: String, name: String, messagesId: String, collectionId: String?, createdBy: String, createdOn: Date, isGenerated: Bool = false) {
         self.id = id
         self.name = name
         self.messagesId = messagesId
         self.collectionId = collectionId
         self.createdBy = createdBy
         self.createdOn = createdOn
+        self.isGenerated = isGenerated
     }
 }
 
@@ -37,6 +39,7 @@ extension Room: DittoDecodable {
         self.collectionId = document[collectionIdKey].string
         self.createdBy = document[createdByKey].stringValue
         self.createdOn = DateFormatter.isoDate.date(from: document[createdOnKey].stringValue) ?? Date()
+        self.isGenerated = document[isGeneratedKey].boolValue
     }
 
     init(value: [String : Any?]) {
@@ -46,6 +49,7 @@ extension Room: DittoDecodable {
         self.collectionId = value[collectionIdKey] as? String
         self.createdBy = value[createdByKey] as? String ?? ""
         self.createdOn = DateFormatter.isoDate.date(from: value[createdOnKey] as? String ?? "") ?? Date()
+        self.isGenerated = value[isGeneratedKey] as? Bool ?? false
     }
 }
 
@@ -57,7 +61,8 @@ extension Room {
         userId: String,
         collectionId: String? = nil,
         createdBy: String? = nil,
-        createdOn: Date? = nil
+        createdOn: Date? = nil,
+        isGenerated: Bool = false
     ) {
         //let userId = DataManager.shared.currentUserId ?? createdByUnknownKey
         self.id = id
@@ -66,6 +71,7 @@ extension Room {
         self.collectionId = collectionId
         self.createdBy = createdBy ?? userId
         self.createdOn = createdOn ?? Date()
+        self.isGenerated = isGenerated
     }
 }
 
@@ -78,18 +84,7 @@ extension Room {
             collectionIdKey: collectionId,
             createdByKey: createdBy,
             createdOnKey: DateFormatter.isoDate.string(from: createdOn),
+            isGeneratedKey: isGenerated
         ]
     }
 }
-
-//public extension Room {
-//    // This "dummy" object is a Room object used by DittoChatApp.swift
-//    // to initialize a basic chat mode ChatScreen as root view
-//    static var basicChatDummy: Room {
-//        Room(
-//            id: publicKey,
-//            name: publicRoomTitleKey,
-//            messagesId: publicMessagesIdKey,
-//        )
-//    }
-//}
