@@ -14,6 +14,7 @@ import Combine
 import QuickLook
 #endif
 import SwiftUI
+import DittoChatCore
 
 #if !os(tvOS)
 struct AttachmentPreview: View {

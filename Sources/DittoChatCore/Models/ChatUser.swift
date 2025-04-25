@@ -24,6 +24,14 @@ public struct ChatUser: Identifiable, Hashable, Equatable {
     }
     public var subscriptions: [String : Date?]
     public var mentions: [String: [String]]
+
+    public init(id: String, firstName: String, lastName: String, subscriptions: [String : Date?], mentions: [String : [String]]) {
+        self.id = id
+        self.firstName = firstName
+        self.lastName = lastName
+        self.subscriptions = subscriptions
+        self.mentions = mentions
+    }
 }
 
 //public struct RoomSubscription: Hashable, Codable {
@@ -56,7 +64,7 @@ public struct ChatUser: Identifiable, Hashable, Equatable {
 //}
 
 extension ChatUser: DittoDecodable {
-    init(document: DittoDocument) {
+    public init(document: DittoDocument) {
         id = document[dbIdKey].stringValue
         firstName = document[firstNameKey].stringValue
         lastName = document[lastNameKey].stringValue
@@ -72,7 +80,7 @@ extension ChatUser: DittoDecodable {
         mentions = document[mentionsKey].dictionaryValue as? [String: [String]] ?? [:]
     }
 
-    init(value: [String: Any?]) {
+    public init(value: [String: Any?]) {
         id = value[dbIdKey] as! String
         firstName = value[firstNameKey] as? String ?? ""
         lastName = value[lastNameKey] as? String ?? ""
@@ -90,7 +98,7 @@ extension ChatUser: DittoDecodable {
 }
 
 extension ChatUser {
-    static func unknownUser() -> ChatUser {
+    public static func unknownUser() -> ChatUser {
         ChatUser(
             id: unknownUserIdKey,
             firstName: noFirstNameKey,

@@ -6,7 +6,7 @@
 //  Copyright © 2023 DittoLive Incorporated. All rights reserved.
 //
 
-import SwiftUI
+import UIKit
 
 // WWDC 2021 - Meet async/await in Swift
 extension UIImage {

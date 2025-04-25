@@ -8,6 +8,7 @@
 
 import Combine
 import Foundation
+import DittoChatCore
 
 class RoomsListScreenVM: ObservableObject {
     @Published var presentCreateRoomScreen = false

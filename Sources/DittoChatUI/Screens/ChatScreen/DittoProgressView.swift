@@ -10,6 +10,7 @@
 //
 
 import SwiftUI
+import DittoChatCore
 
 struct DittoProgressView: View {
     @Environment(\.dismiss) private var dismiss

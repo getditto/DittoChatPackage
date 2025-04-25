@@ -9,6 +9,7 @@
 import Combine
 import DittoSwift
 import SwiftUI
+import DittoChatCore
 
 class MessageBubbleVM: ObservableObject {
     @Published private(set) var thumbnailImage: Image?
@@ -52,7 +53,8 @@ class MessageBubbleVM: ObservableObject {
         ImageAttachmentFetcher().fetch(
             with: token,
             from: messagesId,
-            onProgress: { [weak self] ratio in
+            dittoChat: dittoChat,
+            onProgress: { [weak self] (ratio: ImageAttachmentFetcher.CompletionRatio) in
                 switch type {
                 case .thumbnailImage:
                     self?.thumbnailProgress = ratio
@@ -60,11 +62,13 @@ class MessageBubbleVM: ObservableObject {
                     self?.fetchProgress = ratio
                 }
             },
-            onComplete: { [weak self] result in
+            onComplete: { [weak self] (result: Result<ImageAttachmentFetcher.ImageMetadataTuple, any Error>) in
                 guard let self else { return }
 
                 switch result {
-                case .success(let (uiImage, metadata)):
+                case .success(let tuple):
+                    let uiImage = tuple.0
+                    let metadata = tuple.1
 
                     switch type {
                     case .thumbnailImage:
@@ -92,8 +96,7 @@ class MessageBubbleVM: ObservableObject {
 
                     // do nothing for large image fetch
                 }
-            },
-            dittoChat: dittoChat
+            }
         )
     }
 
@@ -110,23 +113,22 @@ class MessageBubbleVM: ObservableObject {
     }
 }
 
-struct ImageAttachmentFetcher {
-    typealias CompletionRatio = CGFloat
-    typealias ImageMetadataTuple = (image: UIImage, metadata: [String: String])
-    typealias ProgressHandler = (CompletionRatio) -> Void
-    typealias CompletionHandler = (Result<ImageMetadataTuple, Error>) -> Void
+public struct ImageAttachmentFetcher {
+    public typealias CompletionRatio = CGFloat
+    public typealias ImageMetadataTuple = (image: UIImage, metadata: [String: String])
+    public typealias ProgressHandler = (CompletionRatio) -> Void
+    public typealias CompletionHandler = (Result<ImageMetadataTuple, Error>) -> Void
 
-    func fetch(with token: [String: Any]?,
+    public func fetch(with token: [String: Any]?,
                from collectionId: String,
+                dittoChat: DittoChat,
                onProgress: @escaping ProgressHandler,
-               onComplete: @escaping CompletionHandler,
-               dittoChat: DittoChat
-    ) {
+               onComplete: @escaping CompletionHandler) {
         guard let token = token else { return }
 
         // Fetch the thumbnail data from Ditto, calling the progress handler to
         // report the operation's ongoing progress.
-        let _ = try? dittoChat.p2pStore.ditto.store.fetchAttachment(token: token) { event in
+        let _ = try? dittoChat.fetchAttachment(token: token) { event in
             switch event {
             case .progress(let downloadedBytes, let totalBytes):
                 let percent = Double(downloadedBytes) / Double(totalBytes)

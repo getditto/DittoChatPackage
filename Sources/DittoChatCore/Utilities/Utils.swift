@@ -8,11 +8,10 @@
 
 import Combine
 import CoreImage.CIFilterBuiltins
-import SwiftUI
 import UIKit
 
 extension DateFormatter {
-    static var shortTime: DateFormatter {
+    public static var shortTime: DateFormatter {
         let format = DateFormatter()
         format.timeStyle = .short
         return format
@@ -47,7 +46,7 @@ extension String {
         return UIImage(systemName: "xmark.circle") ?? UIImage()
     }
 
-    func isValidInput(_ input: String) -> Bool {
+    public func isValidInput(_ input: String) -> Bool {
         let characterLimit = 2500
         guard input.count <= characterLimit else {
             return false
@@ -61,23 +60,6 @@ extension String {
 extension String {
     func trim() -> String {
         self.trimmingCharacters(in: .whitespacesAndNewlines)
-    }
-}
-
-extension View {
-    /// Simple view wrapper of built-in utility to print to debugger console the causes of a view redraw
-    /// Usage: call `printSwiftUIChanges()` inside a view element. The print output will occur every tie the view is refreshed,
-    ///  identifying the change(s) that caused the redraw.
-    ///
-    /// Note: the output will be relative to the entire view no matter if the call is made in,  e.g., a nested VStack
-    ///
-    ///  Output example:
-    ///   @self, @identity, _viewModel
-    func printSwiftUIChanges() -> EmptyView {
-        #if DEBUG
-            Self._printChanges()
-        #endif
-        return EmptyView()
     }
 }
 
@@ -104,38 +86,7 @@ extension Bundle {
     }
 }
 
-extension CGFloat {
-    @MainActor
-    static var screenWidth: CGFloat {
-        UIScreen.main.bounds.width
-    }
-
-    @MainActor
-    static var screenHeight: CGFloat {
-        UIScreen.main.bounds.height
-    }
-}
-
-/* View size capture for debugging
- https://www.fivestars.blog/articles/swiftui-share-layout-information/
- */
-struct SizePreferenceKey: PreferenceKey {
-  static var defaultValue: CGSize = .zero
-  static func reduce(value: inout CGSize, nextValue: () -> CGSize) {}
-}
-extension View {
-    func readSize(onChange: @escaping (CGSize) -> Void) -> some View {
-        background(
-            GeometryReader { geometryProxy in
-                Color.clear
-                    .preference(key: SizePreferenceKey.self, value: geometryProxy.size)
-            }
-        )
-        .onPreferenceChange(SizePreferenceKey.self, perform: onChange)
-    }
-}
-
-enum KeyboardChangeEvent {
+public enum KeyboardChangeEvent {
     case willShow, didShow, willHide, didHide, unchanged
 }
 
@@ -143,7 +94,7 @@ enum KeyboardChangeEvent {
 // https://www.vadimbulavin.com/how-to-move-swiftui-view-when-keyboard-covers-text-field/
 extension Publishers {
     @MainActor
-    static var keyboardStatus: AnyPublisher<KeyboardChangeEvent, Never> {
+    public static var keyboardStatus: AnyPublisher<KeyboardChangeEvent, Never> {
         let willShow = NotificationCenter.default.publisher(for: UIApplication.keyboardWillShowNotification)
             .map { _ in KeyboardChangeEvent.willShow }
 

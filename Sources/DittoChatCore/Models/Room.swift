@@ -32,7 +32,7 @@ public struct Room: Identifiable, Hashable, Equatable {
 }
 
 extension Room: DittoDecodable {
-    init(document: DittoDocument) {
+    public init(document: DittoDocument) {
         self.id = document[dbIdKey].stringValue
         self.name = document[nameKey].stringValue
         self.messagesId = document[messagesIdKey].stringValue
@@ -42,7 +42,7 @@ extension Room: DittoDecodable {
         self.isGenerated = document[isGeneratedKey].boolValue
     }
 
-    init(value: [String : Any?]) {
+    public init(value: [String : Any?]) {
         self.id = value[dbIdKey] as? String ?? ""
         self.name = value[nameKey] as? String ?? ""
         self.messagesId = value[messagesIdKey] as? String ?? ""
@@ -54,7 +54,7 @@ extension Room: DittoDecodable {
 }
 
 extension Room {
-    init(
+    public init(
         id: String,
         name: String,
         messagesId: String,

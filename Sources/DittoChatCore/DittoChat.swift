@@ -7,8 +7,8 @@
 
 import Foundation
 import DittoSwift
-import SwiftUI
 import Combine
+import UIKit
 
 public protocol DittoSwiftChat {
     // Create
@@ -87,8 +87,8 @@ public struct ChatRetentionPolicy {
 
 public class DittoChat: DittoSwiftChat, ObservableObject {
     @Published private(set) public var publicRoomsPublisher: AnyPublisher<[Room], Never>
-    internal var retentionPolicy: ChatRetentionPolicy = .init(days: 30)
-    internal var acceptLargeImages: Bool = true
+    public var retentionPolicy: ChatRetentionPolicy = .init(days: 30)
+    public var acceptLargeImages: Bool = true
 
     private var localStore: LocalDataInterface
     internal var p2pStore: DittoDataInterface
@@ -173,11 +173,11 @@ extension DittoChat {
         p2pStore.findPublicRoomById(id: id)
     }
 
-    internal func createRoom(id: String? = UUID().uuidString, name: String, isGenerated: Bool = false) async -> String? {
+    public func createRoom(id: String? = UUID().uuidString, name: String, isGenerated: Bool = false) async -> String? {
         return await p2pStore.createRoom(id: id, name: name, isGenerated: isGenerated)
     }
 
-    internal func archiveRoom(_ room: Room) {
+    public func archiveRoom(_ room: Room) {
         p2pStore.archiveRoom(room)
     }
 
@@ -201,27 +201,27 @@ extension DittoChat {
 extension DittoChat {
     // MARK: Messages
 
-    internal func createMessage(for room: Room, text: String) {
+    public func createMessage(for room: Room, text: String) {
         p2pStore.createMessage(for: room, text: text)
     }
 
-    internal func createImageMessage(for room: Room, image: UIImage, text: String?) async throws {
+    public func createImageMessage(for room: Room, image: UIImage, text: String?) async throws {
         try await p2pStore.createImageMessage(for: room, image: image, text: text)
     }
 
-    internal func saveEditedTextMessage(_ message: Message, in room: Room) {
+    public func saveEditedTextMessage(_ message: Message, in room: Room) {
         p2pStore.saveEditedTextMessage(message, in: room)
     }
 
-    internal func saveDeletedImageMessage(_ message: Message, in room: Room) {
+    public func saveDeletedImageMessage(_ message: Message, in room: Room) {
         p2pStore.saveDeletedImageMessage(message, in: room)
     }
 
-    internal func messagePublisher(for msgId: String, in collectionId: String) -> AnyPublisher<Message, Never> {
+    public func messagePublisher(for msgId: String, in collectionId: String) -> AnyPublisher<Message, Never> {
         p2pStore.messagePublisher(for: msgId, in: collectionId)
     }
 
-    internal func messagesPublisher(for room: Room, retentionDays: Int?) -> AnyPublisher<[Message], Never> {
+    public func messagesPublisher(for room: Room, retentionDays: Int?) -> AnyPublisher<[Message], Never> {
         p2pStore.messagesPublisher(for: room, retentionDays: retentionDays)
     }
 
@@ -235,6 +235,15 @@ extension DittoChat {
     internal func createUpdateMessage(document: [String: Any?]) {
         p2pStore.createUpdateMessage(document: document)
     }
+
+    @discardableResult
+    public func fetchAttachment(
+        token: [String : Any],
+        deliverOn queue: DispatchQueue = .main,
+        onFetchEvent: @escaping (DittoAttachmentFetchEvent) -> Void
+    ) throws -> DittoAttachmentFetcher {
+        try p2pStore.ditto.store.fetchAttachment(token: token, deliverOn: queue, onFetchEvent: onFetchEvent)
+    }
 }
 
 extension DittoChat {
@@ -244,7 +253,7 @@ extension DittoChat {
         localStore.currentUserIdPublisher
     }
 
-    internal func currentUserPublisher() -> AnyPublisher<ChatUser?, Never> {
+    public func currentUserPublisher() -> AnyPublisher<ChatUser?, Never> {
         p2pStore.currentUserPublisher()
     }
 
@@ -252,7 +261,7 @@ extension DittoChat {
         p2pStore.addUser(usr)
     }
 
-    internal func updateUser(withId id: String, firstName: String?, lastName: String?, subscriptions: [String: Date?]?, mentions: [String: [String]]?) {
+    public func updateUser(withId id: String, firstName: String?, lastName: String?, subscriptions: [String: Date?]?, mentions: [String: [String]]?) {
         p2pStore.updateUser(withId: id, firstName: firstName, lastName: lastName, subscriptions: subscriptions, mentions: mentions)
     }
 

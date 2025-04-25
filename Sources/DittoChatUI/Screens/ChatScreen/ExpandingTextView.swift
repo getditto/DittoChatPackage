@@ -7,6 +7,7 @@
 //
 
 import SwiftUI
+import DittoChatCore
 
 struct ExpandingTextView: View {
     /**

@@ -13,6 +13,7 @@
 import QuickLook
 #endif
 import SwiftUI
+import DittoChatCore
 
 #if !os(tvOS)
 struct PreviewView: View {

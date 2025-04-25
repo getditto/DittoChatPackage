@@ -7,6 +7,7 @@
 //
 
 import SwiftUI
+import DittoChatCore
 
 public struct RoomsListScreen: View {
     @ObservedObject var viewModel: RoomsListScreenVM

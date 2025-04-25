@@ -8,7 +8,7 @@
 
 import Combine
 import DittoSwift
-import SwiftUI
+import UIKit
 
 class DittoService: DittoDataInterface {
     @Published var publicRoomsPublisher = CurrentValueSubject<[Room], Never>([])

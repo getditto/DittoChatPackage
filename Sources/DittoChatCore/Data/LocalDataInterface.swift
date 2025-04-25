@@ -8,7 +8,6 @@
 
 import Combine
 import DittoSwift
-import SwiftUI
 
 protocol LocalDataInterface {
     var archivedPublicRoomIDs: [String] { get }
