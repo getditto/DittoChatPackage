@@ -182,7 +182,7 @@ import DittoSwift
 struct ChatScreen_Previews: PreviewProvider {
     static var previews: some View {
         ChatScreen(
-            room: Room(id: "abc", name: "My Room", messagesId: "def", isPrivate: true, userId: "test"),
+            room: Room(id: "abc", name: "My Room", messagesId: "def", userId: "test"),
             dataManager: DataManager(ditto: Ditto(), usersCollection: "users"), retentionDays: 365
         )
     }

@@ -66,18 +66,6 @@ class DittoService: ReplicatingDataInterface {
                 self?.publicRoomsPublisher.value = rooms
             }
             .store(in: &cancellables)
-
-        // update subscriptions for private rooms at launch and for every change
-        privateStore.privateRoomsPublisher
-            .sink {[weak self] rooms in
-                // clear storage variables
-                self?.privateRoomSubscriptions.removeAll(keepingCapacity: true)
-                self?.privateRoomMessagesSubscriptions.removeAll(keepingCapacity: true)
-                rooms.forEach { room in
-                    self?.addSubscriptions(for: room)
-                }
-            }
-            .store(in: &cancellables)
     }
 
     func logout() {
@@ -113,28 +101,12 @@ extension DittoService {
     }
 
     func removeSubscriptions(for room: Room) {
-        if room.isPrivate {
-            guard let rSub = privateRoomSubscriptions[room.id] else {
-                print("\(#function) private room subscription NOT FOUND in privateRoomSubscriptions --> RETURN")
-                return
-            }
-            rSub.cancel()
-            privateRoomSubscriptions.removeValue(forKey: room.id)
-
-            guard let mSub = privateRoomMessagesSubscriptions[room.id] else {
-                print("\(#function) privateRoomMessagesSubscriptions subcription NOT FOUND --> RETURN")
-                return
-            }
-            mSub.cancel()
-            privateRoomMessagesSubscriptions.removeValue(forKey: room.id)
-        } else {
-            guard let rSub = publicRoomMessagesSubscriptions[room.id] else {
-                print("\(#function) publicRoomMessagesSubscriptions subcription NOT FOUND --> RETURN")
-                return
-            }
-            rSub.cancel()
-            publicRoomMessagesSubscriptions.removeValue(forKey: room.id)
+        guard let rSub = publicRoomMessagesSubscriptions[room.id] else {
+            print("\(#function) publicRoomMessagesSubscriptions subcription NOT FOUND --> RETURN")
+            return
         }
+        rSub.cancel()
+        publicRoomMessagesSubscriptions.removeValue(forKey: room.id)
     }
 }
 
@@ -545,21 +517,6 @@ extension DittoService {
             .assign(to: \.allPublicRooms, on: self)
     }
 
-    // TODO: not sure of we need this
-    func roomPublisher(for room: Room) -> AnyPublisher<Room?, Never> {
-        let query = "SELECT * FROM `\(room.isPrivate ? room.collectionId! : publicRoomsCollectionId)` WHERE _id = :id"
-        let args = ["id":room.id]
-
-        return ditto.store.observePublisher(query: query, arguments: args, mapTo: Room.self, onlyFirst: true)
-            .catch { error in
-                assertionFailure("ERROR with \(#function)" + error.localizedDescription)
-                return Empty<Room?, Never>()
-            }
-            .removeDuplicates()
-            .compactMap { $0 } // Remove nil values
-            .eraseToAnyPublisher()
-    }
-
     /// This function returns a room from the Ditto db for the given room. The room argument will be passed from the UI, where
     /// placeholder Room instances are used to display, e.g., archived rooms. In other cases, they are rooms from a publisher of
     /// Room instances,
@@ -596,7 +553,7 @@ extension DittoService {
         }
 
         guard let doc = ditto.store[publicRoomsCollectionId].findByID(id).exec() else {
-            print("DittoService.\(#function): WARNING (except for archived private rooms)" +
+            print("DittoService.\(#function): WARNING" +
                 " - expected non-nil room room.id: \(id)"
             )
             return nil
@@ -605,15 +562,14 @@ extension DittoService {
         return room
     }
 
-    func createRoom(id: String?, name: String, isPrivate: Bool) async -> String? {
-        let collectionId = isPrivate ? UUID().uuidString : publicRoomsCollectionId
+    func createRoom(id: String?, name: String) async -> String? {
+        let collectionId = publicRoomsCollectionId
         let messagesId: String = publicMessagesCollectionId
 
         let room = Room(
             id: id ?? UUID().uuidString,
             name: name,
             messagesId: messagesId,
-            isPrivate: isPrivate,
             userId: privateStore.currentUserId ?? unknownUserIdKey,
             collectionId: collectionId
         )
@@ -649,7 +605,6 @@ extension DittoService {
                     collectionIdKey: publicRoomsCollectionId,
                     messagesIdKey: publicMessagesIdKey,//PUBLIC_MESSAGES_ID,
                     createdOnKey: DateFormatter.isoDate.string(from: Date()),
-                    isPrivateKey: false
                 ]
 
                 try await ditto.store.execute(query: "INSERT INTO `\(publicRoomsCollectionId)` DOCUMENTS (:newDoc) ON ID CONFLICT DO UPDATE", arguments: ["newDoc": newDoc])
@@ -685,16 +640,7 @@ extension DittoService {
     }
 
     func unarchiveRoom(_ room: Room) {
-        if room.isPrivate {
-            unarchivePrivateRoom(room)
-        } else {
-            unarchivePublicRoom(room)
-        }
-    }
-
-    func unarchivePrivateRoom(_ room: Room) {
-        addSubscriptions(for: room)
-        privateStore.unarchivePrivateRoom(roomId: room.id)
+        unarchivePublicRoom(room)
     }
 
     func unarchivePublicRoom(_ room: Room) {
@@ -717,32 +663,6 @@ extension DittoService {
         DispatchQueue.main.async { [weak self] in
             self?.updateAllPublicRooms()
         }
-    }
-
-    func deleteRoom(_ room: Room) {
-        // Currently, only deletion of a private room is exposed in the UI
-        if room.isPrivate {
-            deletePrivateRoom(room)
-        } else {
-            print("DittoService.\(#function): WARNING - unexpected request to delete PUBLIC room. Not supported")
-        }
-    }
-
-    func deletePrivateRoom(_ room: Room) {
-        guard room.collectionId != nil else {
-            print("\(#function): ERROR: Expected PrivateRoom collectionId not NIL")
-            return
-        }
-
-        removeSubscriptions(for: room)
-
-        //Deleting data (remove) is not supported in DQL
-        // additionally remove roomDoc, message collection, and collection itself from DB
-//        ditto.store[collectionId].findByID(room.id).remove()
-//        ditto.store[collectionsKey].findByID(room.messagesId).remove()
-//        ditto.store[collectionsKey].findByID(collectionId).remove()
-
-        privateStore.deleteArchivedPrivateRoom(roomId: room.id)
     }
 
     private func evictRoom(_ room: Room) {

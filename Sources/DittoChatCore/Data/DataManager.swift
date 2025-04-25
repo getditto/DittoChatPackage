@@ -14,14 +14,6 @@ protocol LocalDataInterface {
     var acceptLargeImages: Bool { get set }
     var acceptLargeImagesPublisher: AnyPublisher<Bool, Never> { get }
 
-    var privateRoomsPublisher: AnyPublisher<[Room], Never> { get }
-    func addPrivateRoom(_ room: Room)
-
-    var archivedPrivateRoomsPublisher: AnyPublisher<[Room], Never> { get }
-    func archivePrivateRoom(_ room: Room)
-    @discardableResult func unarchivePrivateRoom(roomId: String) -> Room?
-    func deleteArchivedPrivateRoom(roomId: String)
-
     var archivedPublicRoomIDs: [String] { get }
     var archivedPublicRoomsPublisher: AnyPublisher<[Room], Never> { get }
     func archivePublicRoom(_ room: Room)
@@ -42,11 +34,10 @@ protocol ReplicatingDataInterface {
 
     func room(for room: Room) async -> Room?
     func findPublicRoomById(id: String) -> Room?
-    func createRoom(id: String?, name: String, isPrivate: Bool) async -> String?
+    func createRoom(id: String?, name: String) async -> String?
 
     func archiveRoom(_ room: Room)
     func unarchiveRoom(_ room: Room)
-    func deleteRoom(_ room: Room)
 
     func createMessage(for rooom: Room, text: String)
     func saveEditedTextMessage(_ message: Message, in room: Room)
@@ -75,7 +66,6 @@ protocol ReplicatingDataInterface {
 
 open class DataManager {
     @Published private(set) var publicRoomsPublisher: AnyPublisher<[Room], Never>
-    @Published private(set) var privateRoomsPublisher: AnyPublisher<[Room], Never>
     var retentionPolicy: ChatRetentionPolicy = .init(days: 30)
 
     private var localStore: LocalDataInterface
@@ -86,7 +76,6 @@ open class DataManager {
         self.localStore = localStore
         self.p2pStore = DittoService(privateStore: localStore, ditto: ditto, usersCollection: usersCollection, chatRetentionPolicy: retentionPolicy)
         self.publicRoomsPublisher = p2pStore.publicRoomsPublisher.eraseToAnyPublisher()
-        self.privateRoomsPublisher = localStore.privateRoomsPublisher
     }
 
     func logout() {
@@ -105,8 +94,8 @@ extension DataManager {
         p2pStore.findPublicRoomById(id: id)
     }
 
-    public func createRoom(id: String? = UUID().uuidString, name: String, isPrivate: Bool) async -> String? {
-        return await p2pStore.createRoom(id: id, name: name, isPrivate: isPrivate)
+    public func createRoom(id: String? = UUID().uuidString, name: String) async -> String? {
+        return await p2pStore.createRoom(id: id, name: name)
     }
 
     func archiveRoom(_ room: Room) {
@@ -117,16 +106,8 @@ extension DataManager {
         p2pStore.unarchiveRoom(room)
     }
 
-    func deleteRoom(_ room: Room) {
-        p2pStore.deleteRoom(room)
-    }
-
     func archivedPublicRoomsPublisher() -> AnyPublisher<[Room], Never> {
         localStore.archivedPublicRoomsPublisher
-    }
-
-    func archivedPrivateRoomsPublisher() -> AnyPublisher<[Room], Never> {
-        localStore.archivedPrivateRoomsPublisher
     }
 
     func readMessagesForRoom(room: Room) {

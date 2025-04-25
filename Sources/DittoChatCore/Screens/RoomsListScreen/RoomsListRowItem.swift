@@ -104,7 +104,6 @@ struct RoomsListRowItem_Previews: PreviewProvider {
                 id: "id123",
                 name: "My Room",
                 messagesId: "msgId123",
-                isPrivate: false,
                 userId: "some user"
             ),
             dataManager: DataManager(ditto: Ditto(), usersCollection: "users"),

@@ -25,22 +25,16 @@ public protocol DittoSwiftChat {
     // Update
     func updateRoom(room: Room) async throws
 
-    // Delete
-    func delete(roomById: String) throws
-    func delete(room: Room)
-
     func logout()
 }
 
 public struct RoomConfig {
     public let id: String?
     public let name: String
-    public let isPrivate: Bool
 
-    public init(id: String? = nil, name: String, isPrivate: Bool) {
+    public init(id: String? = nil, name: String) {
         self.id = id
         self.name = name
-        self.isPrivate = isPrivate
     }
 }
 
@@ -134,7 +128,7 @@ public class DittoChat: DittoSwiftChat {
 
     // MARK: Create
     public func createRoom(withConfig config: RoomConfig) async throws -> String {
-        guard let id = await dataManager.createRoom(id: config.id, name: config.name, isPrivate: config.isPrivate) else {
+        guard let id = await dataManager.createRoom(id: config.id, name: config.name) else {
             throw AppError.unknown("room not found")
         }
 
@@ -163,17 +157,6 @@ public class DittoChat: DittoSwiftChat {
     // MARK: Update
     public func updateRoom(room: Room) throws {
         dataManager.updateRoom(room)
-    }
-
-    // MARK: Delete
-    public func delete(roomById id: String) throws {
-        let room = try readRoomById(id: id)
-
-        dataManager.deleteRoom(room)
-    }
-
-    public func delete(room: Room) {
-        dataManager.deleteRoom(room)
     }
 
     /// Clears references to Ditto and running subscritopns as well as observers.

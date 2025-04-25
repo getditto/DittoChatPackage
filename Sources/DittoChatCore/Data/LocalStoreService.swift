@@ -11,23 +11,13 @@ import Foundation
 
 class LocalStoreService: LocalDataInterface {
     private let defaults = UserDefaults.standard
-    private let privateRoomsSubject: CurrentValueSubject<[Room], Never>
-    private let archivedPrivateRoomsSubject: CurrentValueSubject<[Room], Never>
     private let archivedPublicRoomsSubject: CurrentValueSubject<[Room], Never>
 
     init() {
         let tmpDefaults = UserDefaults.standard
 
-        // prime privateRoomsSubject with decoded Room instances
-        var rooms = tmpDefaults.decodeRoomsFromData(Array(tmpDefaults.privateRooms.values))
-        self.privateRoomsSubject = CurrentValueSubject<[Room], Never>(rooms)
-
-        // prime archivedPrivateRoomsSubject with Room decoded instances
-        rooms = tmpDefaults.decodeRoomsFromData(Array(tmpDefaults.archivedPrivateRooms.values))
-        self.archivedPrivateRoomsSubject = CurrentValueSubject<[Room], Never>(rooms)
-
         // prime archivedPublicRoomsSubject with decoded Room instances
-        rooms = tmpDefaults.decodeRoomsFromData(Array(tmpDefaults.archivedPublicRooms.values))
+        var rooms = tmpDefaults.decodeRoomsFromData(Array(tmpDefaults.archivedPublicRooms.values))
         self.archivedPublicRoomsSubject = CurrentValueSubject<[Room], Never>(rooms)
 
         self.basicChat = UserDefaults.standard.basicChat
@@ -60,60 +50,6 @@ class LocalStoreService: LocalDataInterface {
 
     var currentUserIdPublisher: AnyPublisher<String?, Never> {
         defaults.chatUserIdPublisher
-    }
-
-    // MARK: Private Rooms
-
-    var privateRoomsPublisher: AnyPublisher<[Room], Never> {
-        privateRoomsSubject.eraseToAnyPublisher()
-    }
-
-    var archivedPrivateRoomsPublisher: AnyPublisher<[Room], Never> {
-        archivedPrivateRoomsSubject.eraseToAnyPublisher()
-    }
-
-    func addPrivateRoom(_ room: Room) {
-        let roomsData = addRoom(room, to: &defaults.privateRooms)
-        let rooms = defaults.decodeRoomsFromData(roomsData)
-        privateRoomsSubject.send(rooms)
-    }
-
-    func archivePrivateRoom(_ room: Room) {
-        // remove from privateRooms
-        var roomsData = removeRoom(roomId: room.id, from: &defaults.privateRooms)
-        var rooms = defaults.decodeRoomsFromData(roomsData)
-        privateRoomsSubject.send(rooms)
-
-        // add to archivedPrivateRooms
-        roomsData = addRoom(room, to: &defaults.archivedPrivateRooms)
-        rooms = defaults.decodeRoomsFromData(roomsData)
-        archivedPrivateRoomsSubject.send(rooms)
-    }
-
-    @discardableResult
-    func unarchivePrivateRoom(roomId: String) -> Room? {
-        guard let roomData = defaults.archivedPrivateRooms[roomId] else {
-            print("LocalStoreService.\(#function): ERROR expected NON-NIL room data --> RETURN")
-            return nil
-        }
-        let room = defaults.decodeRoomsFromData([roomData]).first!
-
-        // remove from archivedPrivateRooms
-        let roomsData = removeRoom(roomId: roomId, from: &defaults.archivedPrivateRooms)
-        let rooms = defaults.decodeRoomsFromData(roomsData)
-
-        archivedPrivateRoomsSubject.send(rooms)
-
-        // add to privateRooms
-        addPrivateRoom(room)
-
-        return room
-    }
-
-    func deleteArchivedPrivateRoom(roomId: String) {
-        let roomsData = removeRoom(roomId: roomId, from: &defaults.archivedPrivateRooms)
-        let rooms = defaults.decodeRoomsFromData(roomsData)
-        archivedPrivateRoomsSubject.send(rooms)
     }
 
     // MARK: Public Rooms
@@ -167,24 +103,6 @@ class LocalStoreService: LocalDataInterface {
 }
 
 fileprivate extension UserDefaults {
-    @objc var privateRooms: [String: Data] {
-        get {
-            return object(forKey: privateRoomsKey) as? [String:Data] ?? [:]
-        }
-        set(value) {
-            set(value, forKey: privateRoomsKey)
-        }
-    }
-
-    var archivedPrivateRooms: [String: Data] {
-        get {
-            return object(forKey: archivedPrivateRoomsKey) as? [String: Data] ?? [:]
-        }
-        set(value) {
-            set(value, forKey: archivedPrivateRoomsKey)
-        }
-    }
-
     var archivedPublicRooms: [String: Data] {
         get {
             return object(forKey: archivedPublicRoomsKey) as? [String: Data] ?? [:]
