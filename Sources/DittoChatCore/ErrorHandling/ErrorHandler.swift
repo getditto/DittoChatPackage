@@ -9,17 +9,21 @@
 
 import SwiftUI
 
-struct ErrorAlert: Identifiable {
-    var id = UUID()
-    var message: String
-    var title: String?
-    var dismissAction: (() -> Void)?
+public struct ErrorAlert: Identifiable {
+    public var id = UUID()
+    public var message: String
+    public var title: String?
+    public var dismissAction: (() -> Void)?
 }
 
-class ErrorHandler: ObservableObject {
+public class ErrorHandler: ObservableObject {
     @Published var currentAlert: ErrorAlert?
 
-    func handle(error: Error, title: String? = nil) {
+    public init(currentAlert: ErrorAlert? = nil) {
+        self.currentAlert = currentAlert
+    }
+
+    public func handle(error: Error, title: String? = nil) {
         currentAlert = ErrorAlert(message: error.localizedDescription, title: title)
     }
 }

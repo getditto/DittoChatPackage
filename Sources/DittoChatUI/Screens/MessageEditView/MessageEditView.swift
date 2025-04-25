@@ -8,6 +8,7 @@
 
 import Combine
 import SwiftUI
+import DittoChatCore
 
 class MessageEditVM: ObservableObject {
     @Published var editText: String

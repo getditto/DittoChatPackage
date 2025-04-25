@@ -10,55 +10,55 @@ import DittoSwift
 import Foundation
 
 extension Message: Hashable {
-    func hash(into hasher: inout Hasher) {
+    public func hash(into hasher: inout Hasher) {
         hasher.combine(id)
     }
 }
 
-struct Message: Identifiable, Equatable {
-    var id: String
-    var createdOn: Date
-    var roomId: String
-    var text: String
-    var userId: String
-    var largeImageToken: [String: Any]?
-    var thumbnailImageToken: [String: Any]?
+public struct Message: Identifiable, Equatable {
+    public var id: String
+    public var createdOn: Date
+    public var roomId: String
+    public var text: String
+    public var userId: String
+    public var largeImageToken: [String: Any]?
+    public var thumbnailImageToken: [String: Any]?
 
-    var archivedMessage: String?
-    var isArchived: Bool
+    public var archivedMessage: String?
+    public var isArchived: Bool
 
     //TAK specific values
-    var authorCs: String
-    var authorId: String
-    var authorLoc: String
-    var authorType: String
-    var msg: String
-    var parent: String
-    var pks: String
-    var room: String
-    var schver: Int
-    var takUid: String
-    var timeMs: Date
+    public var authorCs: String
+    public var authorId: String
+    public var authorLoc: String
+    public var authorType: String
+    public var msg: String
+    public var parent: String
+    public var pks: String
+    public var room: String
+    public var schver: Int
+    public var takUid: String
+    public var timeMs: Date
 
-    var hasBeenConverted: Bool?
+    public var hasBeenConverted: Bool?
 
-    var isImageMessage: Bool {
+    public var isImageMessage: Bool {
         thumbnailImageToken != nil || largeImageToken != nil
     }
 
     // FIXME: Excluding attachment tokens from equality because Any is not equatable
-        static func == (lhs: Message, rhs: Message) -> Bool {
-            return lhs.id == rhs.id &&
-            lhs.createdOn == rhs.createdOn &&
-            lhs.roomId == rhs.roomId &&
-            lhs.text == rhs.text &&
-            lhs.userId == rhs.userId &&
-            lhs.isImageMessage == rhs.isImageMessage
-        }
+    public static func == (lhs: Message, rhs: Message) -> Bool {
+        return lhs.id == rhs.id &&
+        lhs.createdOn == rhs.createdOn &&
+        lhs.roomId == rhs.roomId &&
+        lhs.text == rhs.text &&
+        lhs.userId == rhs.userId &&
+        lhs.isImageMessage == rhs.isImageMessage
+    }
 }
 
 extension Message: DittoDecodable {
-    init(value: [String: Any?]) {
+    public init(value: [String: Any?]) {
         self.id = value[dbIdKey] as? String ?? ""
         self.createdOn = DateFormatter.isoDate.date(from: value[createdOnKey] as? String ?? "") ?? Date()
         self.roomId = value[roomIdKey] as? String ?? ""
@@ -87,7 +87,7 @@ extension Message: DittoDecodable {
 }
 
 extension Message {
-    init(
+    public init(
         id: String? = nil,
         createdOn: Date? = nil,
         roomId: String,
@@ -134,7 +134,7 @@ extension Message {
     }
 
     // Used for creating new chat types for upload
-    init(
+    public init(
         id: String? = nil,
         createdOn: Date = .now,
         roomId: String,

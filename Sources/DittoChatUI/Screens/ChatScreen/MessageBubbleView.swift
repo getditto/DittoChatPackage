@@ -11,6 +11,7 @@
 import Combine
 import DittoSwift
 import SwiftUI
+import DittoChatCore
 
 struct MessageBubbleView: View {
     @StateObject var errorHandler: ErrorHandler = ErrorHandler()

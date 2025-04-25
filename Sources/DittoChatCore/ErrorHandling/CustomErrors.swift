@@ -94,11 +94,11 @@ extension AttachmentError: LocalizedError {
     }
 }
 
-enum AttachmentType: String, CustomStringConvertible {
+public enum AttachmentType: String, CustomStringConvertible {
     case thumbnailImage
     case largeImage
 
-    var description: String {
+    public var description: String {
         switch self {
         case .thumbnailImage:
             return "thumbnail"

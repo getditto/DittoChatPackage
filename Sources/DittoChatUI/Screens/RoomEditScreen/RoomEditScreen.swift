@@ -7,6 +7,7 @@
 //
 
 import SwiftUI
+import DittoChatCore
 
 struct RoomEditScreen: View {
     @Environment(\.dismiss) private var dismiss

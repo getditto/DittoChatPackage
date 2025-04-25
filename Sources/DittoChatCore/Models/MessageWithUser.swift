@@ -8,10 +8,15 @@
 
 import Foundation
 
-struct MessageWithUser: Identifiable, Hashable, Equatable {
-    var message: Message
-    var user: ChatUser
-    var id: String {
+public struct MessageWithUser: Identifiable, Hashable, Equatable {
+    public var message: Message
+    public var user: ChatUser
+    public var id: String {
         return self.message.id
+    }
+
+    public init(message: Message, user: ChatUser) {
+        self.message = message
+        self.user = user
     }
 }

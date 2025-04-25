@@ -7,6 +7,7 @@
 //
 
 import SwiftUI
+import DittoChatCore
 
 struct ChatInputView: View {
     @Binding var text: String

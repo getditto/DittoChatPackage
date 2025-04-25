@@ -8,6 +8,7 @@
 
 import SwiftUI
 import UniformTypeIdentifiers
+import DittoChatCore
 
 #if !os(tvOS)
 struct DocumentPickerView: View {

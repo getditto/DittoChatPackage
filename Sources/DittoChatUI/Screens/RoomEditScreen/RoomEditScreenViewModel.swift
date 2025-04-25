@@ -8,6 +8,7 @@
 
 import Combine
 import Foundation
+import DittoChatCore
 
 class RoomEditScreenViewModel: ObservableObject {
     @Published var name: String = ""

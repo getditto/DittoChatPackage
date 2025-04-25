@@ -12,7 +12,7 @@ import SwiftUI
 import UIKit
 
 extension DateFormatter {
-    static var shortTime: DateFormatter {
+    public static var shortTime: DateFormatter {
         let format = DateFormatter()
         format.timeStyle = .short
         return format
@@ -47,7 +47,7 @@ extension String {
         return UIImage(systemName: "xmark.circle") ?? UIImage()
     }
 
-    func isValidInput(_ input: String) -> Bool {
+    public func isValidInput(_ input: String) -> Bool {
         let characterLimit = 2500
         guard input.count <= characterLimit else {
             return false
@@ -135,7 +135,7 @@ extension View {
     }
 }
 
-enum KeyboardChangeEvent {
+public enum KeyboardChangeEvent {
     case willShow, didShow, willHide, didHide, unchanged
 }
 
@@ -143,7 +143,7 @@ enum KeyboardChangeEvent {
 // https://www.vadimbulavin.com/how-to-move-swiftui-view-when-keyboard-covers-text-field/
 extension Publishers {
     @MainActor
-    static var keyboardStatus: AnyPublisher<KeyboardChangeEvent, Never> {
+    public static var keyboardStatus: AnyPublisher<KeyboardChangeEvent, Never> {
         let willShow = NotificationCenter.default.publisher(for: UIApplication.keyboardWillShowNotification)
             .map { _ in KeyboardChangeEvent.willShow }
 

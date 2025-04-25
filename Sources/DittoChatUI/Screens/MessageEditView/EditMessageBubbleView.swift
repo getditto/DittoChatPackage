@@ -9,6 +9,7 @@
 import Combine
 import DittoSwift
 import SwiftUI
+import DittoChatCore
 
 struct EditMessageBubbleView: View {
     @ObservedObject var viewModel: MessageEditVM

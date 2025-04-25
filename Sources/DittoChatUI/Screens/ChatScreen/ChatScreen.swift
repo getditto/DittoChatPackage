@@ -8,7 +8,7 @@
 
 import SwiftUI
 import PhotosUI
-import SwiftUI
+import DittoChatCore
 
 public struct ChatScreen: View {
     @StateObject var viewModel: ChatScreenVM

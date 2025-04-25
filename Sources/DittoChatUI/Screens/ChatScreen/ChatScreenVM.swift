@@ -9,6 +9,7 @@
 import Combine
 import PhotosUI
 import SwiftUI
+import DittoChatCore
 
 enum MessageOperation {
     case edit, deleteImage, deleteText, presentAttachment
