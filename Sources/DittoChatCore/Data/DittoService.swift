@@ -10,7 +10,7 @@ import Combine
 import DittoSwift
 import SwiftUI
 
-class DittoService: ReplicatingDataInterface {
+class DittoService: DittoDataInterface {
     @Published var publicRoomsPublisher = CurrentValueSubject<[Room], Never>([])
     @Published fileprivate private(set) var allPublicRooms: [Room] = []
     private var allPublicRoomsCancellable: AnyCancellable = AnyCancellable({})
@@ -556,7 +556,6 @@ extension DittoService {
         }
 
         return nil
-
     }
 
     /// This function returns a room from the Ditto db for the given room id. The id argument will be passed from the UI, In other cases, they are rooms from a publisher of Room instances.
@@ -576,7 +575,7 @@ extension DittoService {
         return room
     }
 
-    func createRoom(id: String?, name: String) async -> String? {
+    func createRoom(id: String?, name: String, isGenerated: Bool = false) async -> String? {
         let collectionId = publicRoomsCollectionId
         let messagesId: String = publicMessagesCollectionId
 
@@ -585,7 +584,8 @@ extension DittoService {
             name: name,
             messagesId: messagesId,
             userId: privateStore.currentUserId ?? unknownUserIdKey,
-            collectionId: collectionId
+            collectionId: collectionId,
+            isGenerated: isGenerated
         )
 
         addSubscriptions(for: room)

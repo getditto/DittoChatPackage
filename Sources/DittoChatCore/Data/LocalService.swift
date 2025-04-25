@@ -1,5 +1,5 @@
 //
-//  LocalStoreService.swift
+//  LocalService.swift
 //  DittoChat
 //
 //  Created by Eric Turner on 1/19/23.
@@ -9,7 +9,7 @@
 import Combine
 import Foundation
 
-class LocalStoreService: LocalDataInterface {
+class LocalService: LocalDataInterface {
     private let defaults = UserDefaults.standard
     private let archivedPublicRoomsSubject: CurrentValueSubject<[Room], Never>
 
@@ -19,26 +19,6 @@ class LocalStoreService: LocalDataInterface {
         // prime archivedPublicRoomsSubject with decoded Room instances
         var rooms = tmpDefaults.decodeRoomsFromData(Array(tmpDefaults.archivedPublicRooms.values))
         self.archivedPublicRoomsSubject = CurrentValueSubject<[Room], Never>(rooms)
-
-        self.basicChat = UserDefaults.standard.basicChat
-    }
-
-    var basicChat: Bool {
-        get { defaults.basicChat }
-        set { defaults.basicChat = newValue }
-    }
-
-    var basicChatPublisher: AnyPublisher<Bool, Never> {
-        defaults.basicChatPublisher
-    }
-
-    var acceptLargeImages: Bool {
-        get { defaults.acceptLargeImages }
-        set { defaults.acceptLargeImages = newValue }
-    }
-
-    var acceptLargeImagesPublisher: AnyPublisher<Bool, Never> {
-        defaults.acceptLargeImagesPublisher
     }
 
     // MARK: Current User
@@ -81,7 +61,7 @@ class LocalStoreService: LocalDataInterface {
     func encodeRoom(_ room: Room) -> Data? {
         let encoder = JSONEncoder()
         guard let jsonData = try? encoder.encode(room) else {
-            print("LocalStoreService.UserDefaults.\(#function): ERROR encoding room from json data")
+            print("LocalService.UserDefaults.\(#function): ERROR encoding room from json data")
             return nil
         }
         return jsonData
@@ -89,7 +69,7 @@ class LocalStoreService: LocalDataInterface {
 
     func addRoom(_ room: Room, to roomsMap: inout [String: Data]) -> [Data] {
         guard let jsonData = encodeRoom(room) else {
-            print("LocalStoreService.UserDefaults.\(#function): ERROR expected NON-NIL room")
+            print("LocalService.UserDefaults.\(#function): ERROR expected NON-NIL room")
             return Array(roomsMap.values)
         }
         roomsMap[room.id] = jsonData
@@ -131,10 +111,10 @@ fileprivate extension UserDefaults {
 }
 
 fileprivate extension UserDefaults {
-    /* This utility function extends UserDefaults, rather than LocalStoreService because
-     LocalStoreService invokes this function in its init() method to initialize its private Combine
+    /* This utility function extends UserDefaults, rather than LocalService because
+     LocalService invokes this function in its init() method to initialize its private Combine
      currentValueSubject properties with Room values. If this function were a method of
-     LocalStoreService, it could not be invoked on self before all properties were initialized.
+     LocalService, it could not be invoked on self before all properties were initialized.
      */
     func decodeRoomsFromData(_ roomsData: [Data]) -> [Room] {
         var rooms = [Room]()
@@ -142,45 +122,11 @@ fileprivate extension UserDefaults {
 
         for jsonData in roomsData {
             guard let room = try? decoder.decode(Room.self, from: jsonData) else {
-                print("LocalStoreService.\(#function): ERROR decoding room from json data")
+                print("LocalService.\(#function): ERROR decoding room from json data")
                 continue
             }
             rooms.append(room)
         }
         return rooms
-    }
-}
-
-fileprivate extension UserDefaults {
-    @objc var acceptLargeImages: Bool {
-        get {
-            object(forKey: acceptLargeImagesKey) as? Bool ?? true
-        }
-        set(value) {
-            set(value, forKey: acceptLargeImagesKey)
-        }
-    }
-
-    var acceptLargeImagesPublisher: AnyPublisher<Bool, Never> {
-        UserDefaults.standard
-            .publisher(for: \.acceptLargeImages)
-            .eraseToAnyPublisher()
-    }
-}
-
-fileprivate extension UserDefaults {
-    @objc var basicChat: Bool {
-        get {
-            object(forKey: basicChatKey) as? Bool ?? true
-        }
-        set(value) {
-            set(value, forKey: basicChatKey)
-        }
-    }
-
-    var basicChatPublisher: AnyPublisher<Bool, Never> {
-        UserDefaults.standard
-            .publisher(for: \.basicChat)
-            .eraseToAnyPublisher()
     }
 }

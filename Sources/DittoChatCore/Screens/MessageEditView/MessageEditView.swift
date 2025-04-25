@@ -53,13 +53,13 @@ class MessageEditVM: ObservableObject {
 struct MessageEditView: View {
     @Environment(\.dismiss) private var dismiss
     @StateObject var viewModel: MessageEditVM
-    private let dataManager: DataManager
+    private let dittoChat: DittoChat
 
     init(
         _ msgsUsers: (editUsrMsg: MessageWithUser, chats: ArraySlice<MessageWithUser>),
         saveEditCallback: @escaping (Message) -> Void,
         cancelEditCallback: @escaping () -> Void,
-        dataManager: DataManager
+        dittoChat: DittoChat
     ) {
         self._viewModel = StateObject(
             wrappedValue: MessageEditVM(
@@ -69,7 +69,7 @@ struct MessageEditView: View {
             )
         )
 
-        self.dataManager = dataManager
+        self.dittoChat = dittoChat
     }
 
     var body: some View {
@@ -149,7 +149,7 @@ struct MessageEditView: View {
                 messageWithUser: usrMsg,
                 messagesId: "placeholder_in_MessageEditView",
                 isEditing: .constant(true),
-                dataManager: dataManager
+                dittoChat: dittoChat
             )
             .id(usrMsg.id)
         } else {

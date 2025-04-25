@@ -11,8 +11,8 @@ import SwiftUI
 struct RoomsListRowItem: View {
     @ObservedObject var viewModel: RoomsListRowItemViewModel
 
-    init(room: Room, dataManager: DataManager, retentionDays: Int? = nil) {
-        self.viewModel = RoomsListRowItemViewModel(room: room, dataManager: dataManager, retentionDays: retentionDays)
+    init(room: Room, dittoChat: DittoChat, retentionDays: Int? = nil) {
+        self.viewModel = RoomsListRowItemViewModel(room: room, dittoChat: dittoChat, retentionDays: retentionDays)
     }
 
     var body: some View {
@@ -46,13 +46,13 @@ class RoomsListRowItemViewModel: ObservableObject {
     @Published var currentUser: ChatUser?
     @Published var room: Room
 
-    init(room: Room, dataManager: DataManager, retentionDays: Int?) {
+    init(room: Room, dittoChat: DittoChat, retentionDays: Int?) {
         self.room = room
 
-        dataManager.messagesPublisher(for: room, retentionDays: retentionDays)
+        dittoChat.messagesPublisher(for: room, retentionDays: retentionDays)
             .assign(to: &$messages)
 
-        dataManager.currentUserPublisher()
+        dittoChat.currentUserPublisher()
             .assign(to: &$currentUser)
     }
 
@@ -106,7 +106,7 @@ struct RoomsListRowItem_Previews: PreviewProvider {
                 messagesId: "msgId123",
                 userId: "some user"
             ),
-            dataManager: DataManager(ditto: Ditto(), usersCollection: "users"),
+            dittoChat: DittoChat(config: ChatConfig(ditto: Ditto(), usersCollection: "users")),
             retentionDays: 365
         )
     }

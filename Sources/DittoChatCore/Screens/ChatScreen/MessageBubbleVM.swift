@@ -19,14 +19,14 @@ class MessageBubbleVM: ObservableObject {
     @Published var presentDeleteAlert = false
     private let messagesId: String
     private var tmpStorage: TemporaryFile?
-    private let dataManager: DataManager
+    private let dittoChat: DittoChat
 
-    init(_ msg: Message, messagesId: String, dataManager: DataManager) {
+    init(_ msg: Message, messagesId: String, dittoChat: DittoChat) {
         self.message = msg
         self.messagesId = messagesId
-        self.dataManager = dataManager
+        self.dittoChat = dittoChat
 
-        dataManager.messagePublisher(for: message.id, in: messagesId)
+        dittoChat.messagePublisher(for: message.id, in: messagesId)
             .receive(on: RunLoop.main)
             .assign(to: &$message)
     }
@@ -93,7 +93,7 @@ class MessageBubbleVM: ObservableObject {
                     // do nothing for large image fetch
                 }
             },
-            dataManager: dataManager
+            dittoChat: dittoChat
         )
     }
 
@@ -120,13 +120,13 @@ struct ImageAttachmentFetcher {
                from collectionId: String,
                onProgress: @escaping ProgressHandler,
                onComplete: @escaping CompletionHandler,
-               dataManager: DataManager
+               dittoChat: DittoChat
     ) {
         guard let token = token else { return }
 
         // Fetch the thumbnail data from Ditto, calling the progress handler to
         // report the operation's ongoing progress.
-        let _ = try? dataManager.p2pStore.ditto.store.fetchAttachment(token: token) { event in
+        let _ = try? dittoChat.p2pStore.ditto.store.fetchAttachment(token: token) { event in
             switch event {
             case .progress(let downloadedBytes, let totalBytes):
                 let percent = Double(downloadedBytes) / Double(totalBytes)

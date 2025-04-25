@@ -13,10 +13,10 @@ class RoomEditScreenViewModel: ObservableObject {
     @Published var name: String = ""
     @Published var saveButtonDisabled = false
     @Published var isValid = true
-    private let dataManager: DataManager
+    private let dittoChat: DittoChat
 
-    init(dataManager: DataManager) {
-        self.dataManager = dataManager
+    init(dittoChat: DittoChat) {
+        self.dittoChat = dittoChat
 
         $name
             .map { $0.isEmpty }
@@ -25,7 +25,7 @@ class RoomEditScreenViewModel: ObservableObject {
 
     func createRoom() {
         Task {
-            let _ = await dataManager.createRoom(name: name)
+            let _ = await dittoChat.createRoom(name: name)
         }
     }
 }

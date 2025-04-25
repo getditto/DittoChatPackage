@@ -12,8 +12,8 @@ struct RoomEditScreen: View {
     @Environment(\.dismiss) private var dismiss
     @ObservedObject var viewModel: RoomEditScreenViewModel
 
-    init(dataManager: DataManager) {
-        self.viewModel = RoomEditScreenViewModel(dataManager: dataManager)
+    init(dittoChat: DittoChat) {
+        self.viewModel = RoomEditScreenViewModel(dittoChat: dittoChat)
     }
 
     var body: some View {
@@ -67,7 +67,7 @@ import DittoSwift
 struct RoomEditScreen_Previews: PreviewProvider {
     static var previews: some View {
         Group {
-            RoomEditScreen(dataManager: DataManager(ditto: Ditto(), usersCollection: "users"))
+            RoomEditScreen(dittoChat: DittoChat(config: ChatConfig(ditto: Ditto(), usersCollection: "users")))
         }
     }
 }
