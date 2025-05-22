@@ -1,11 +1,12 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.example.sample">
+    package="com.ditto.chat.sample">
 
     <application
         android:allowBackup="true"
-        android:label="DittoChat Sample"
-        android:theme="@style/Theme.Material3.DayNight.NoActionBar">
-        <activity android:name=".MainActivity">
+        android:label="DittoChat Sample">
+        <activity
+            android:name=".MainActivity"
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />

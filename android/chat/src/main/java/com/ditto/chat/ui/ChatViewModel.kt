@@ -1,11 +1,11 @@
-package com.example.dittochat.ui
+package com.ditto.chat.ui
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.dittochat.model.ChatUser
-import com.example.dittochat.model.MessageWithUser
-import com.example.dittochat.repository.ChatRepository
-import com.example.dittochat.model.Room
+import com.ditto.chat.model.ChatUser
+import com.ditto.chat.model.MessageWithUser
+import com.ditto.chat.repository.ChatRepository
+import com.ditto.chat.model.Room
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
