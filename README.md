@@ -24,3 +24,7 @@ UI:
 
 - public struct RoomsListScreen: View // Screen with all rooms on it
 - public struct ChatScreen: View // Screen of a specific chat room
+
+## Android Module
+
+An experimental Android implementation lives in [`android/`](android/README.md). It now depends on the Ditto SDK and includes a sample app for manual testing.
