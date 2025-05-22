@@ -1,4 +1,4 @@
-package com.example.dittochat.model
+package com.ditto.chat.model
 
 import java.util.UUID
 

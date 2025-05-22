@@ -1,4 +1,4 @@
-package com.example.sample
+package com.ditto.chat.sample
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -8,12 +8,19 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.example.dittochat.model.ChatUser
-import com.example.dittochat.model.Room
-import com.example.dittochat.repository.ChatRepository
-import com.example.dittochat.ui.ChatScreen
-import com.example.dittochat.ui.ChatViewModel
+import com.ditto.chat.model.ChatUser
+import com.ditto.chat.model.Room
+import com.ditto.chat.repository.ChatRepository
+import com.ditto.chat.ui.ChatScreen
+import com.ditto.chat.ui.ChatViewModel
 import live.ditto.Ditto
+import live.ditto.DittoIdentity
+import live.ditto.DittoDependencies
+import live.ditto.DittoLogLevel
+import live.ditto.DittoLogger
+import live.ditto.android.AndroidDittoDependencies
+import live.ditto.android.DefaultAndroidDittoDependencies
+import live.ditto.transports.DittoTransportConfig
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -39,12 +46,33 @@ class MainActivity : ComponentActivity() {
                         OutlinedTextField(
                             value = token,
                             onValueChange = { token = it },
-                            label = { Text("Auth Token") },
+                            label = { Text("Playground Token") },
                             modifier = Modifier.fillMaxWidth()
                         )
                         Spacer(modifier = Modifier.height(16.dp))
                         Button(onClick = {
-                            ditto = Ditto(appId, token)
+                            DittoLogger.minimumLogLevel = DittoLogLevel.DEBUG
+
+                            val androidDependencies = DefaultAndroidDittoDependencies(applicationContext)
+
+                            // Please get your Ditto App ID and Playground Token from Portal: https://portal.ditto.live/
+                            val identity = DittoIdentity.OnlinePlayground(
+                                dependencies = androidDependencies,
+                                appId = appId,
+                                token = token,
+                                enableDittoCloudSync = false // Cloud sync is disabled
+                            )
+
+                            ditto = Ditto(
+                                dependencies = androidDependencies,
+                                identity = identity
+                            ).apply {
+                                // Disable sync with V3 Ditto
+                                disableSyncWithV3()
+                                // Start sync
+                                startSync()
+                            }
+
                             val repo = ChatRepository(ditto!!)
                             val user = ChatUser("user1", "John", "Doe")
                             viewModel = ChatViewModel(repo, user)

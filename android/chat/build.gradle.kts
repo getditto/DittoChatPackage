@@ -1,15 +1,15 @@
 plugins {
-    id("com.android.library")
-    kotlin("android") version "2.0.0"
+    alias(libs.plugins.android.library)
+    alias(libs.plugins.kotlin.android)
+    alias(libs.plugins.compose.compiler)
 }
 
 android {
-    namespace = "com.example.dittochat"
-    compileSdk = 34
+    namespace = "com.ditto.chat"
+    compileSdk = 35
 
     defaultConfig {
         minSdk = 24
-        targetSdk = 34
     }
 
     compileOptions {
@@ -28,14 +28,20 @@ android {
     composeOptions {
         kotlinCompilerExtensionVersion = "2.0.0"
     }
+    packaging {
+        resources {
+            excludes += "/META-INF/{AL2.0,LGPL2.1}"
+        }
+    }
 }
 
 dependencies {
-    implementation("androidx.core:core-ktx:1.12.0")
-    implementation("androidx.compose.ui:ui:1.6.0")
-    implementation("androidx.compose.material3:material3:1.2.0")
-    implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.6.2")
-    implementation("live.ditto:ditto:4.8.0")
+    implementation(libs.androidx.core.ktx)
+    implementation(libs.androidx.ui)
+    implementation(libs.androidx.material3.android)
+    implementation(libs.androidx.activity.compose)
+    implementation(libs.ditto)
+    implementation(libs.androidx.ui.tooling.preview.android)
 
-    testImplementation("junit:junit:4.13.2")
+    testImplementation(libs.junit)
 }

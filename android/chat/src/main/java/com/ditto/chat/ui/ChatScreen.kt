@@ -1,21 +1,35 @@
-package com.example.dittochat.ui
+package com.ditto.chat.ui
 
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Send
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material.icons.automirrored.filled.Send
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.example.dittochat.model.ChatUser
-import com.example.dittochat.model.MessageWithUser
-import com.example.dittochat.model.Room
-import com.example.dittochat.repository.ChatRepository
-import live.ditto.Ditto
+import com.ditto.chat.model.ChatUser
+import com.ditto.chat.model.MessageWithUser
+import com.ditto.chat.model.Room
 
 @Composable
 fun ChatScreen(room: Room, viewModel: ChatViewModel) {
@@ -42,7 +56,7 @@ fun ChatScreen(room: Room, viewModel: ChatViewModel) {
                 placeholder = { Text("Message") }
             )
             IconButton(onClick = { viewModel.sendMessage(room, text); text = "" }) {
-                Icon(Icons.Default.Send, contentDescription = "Send")
+                Icon(Icons.AutoMirrored.Filled.Send, contentDescription = "Send")
             }
         }
     }
