@@ -1,3 +1,5 @@
+import java.util.Properties
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
@@ -27,6 +29,7 @@ android {
 
     buildFeatures {
         compose = true
+        buildConfig = true
     }
 
     composeOptions {
@@ -35,6 +38,28 @@ android {
     packaging {
         resources {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
+        }
+    }
+
+    defaultConfig {
+        // Load the secrets.properties file
+        val secretsFile = rootProject.file("secrets.properties")
+        val secretsProperties = Properties()
+        if (secretsFile.exists()) {
+            secretsFile.inputStream().use { secretsProperties.load(it) }
+            buildConfigField(
+                "String",
+                "DITTO_APP_ID",
+                "\"${secretsProperties.getProperty("ditto.app.id", "")}\""
+            )
+            buildConfigField(
+                "String",
+                "DITTO_TOKEN",
+                "\"${secretsProperties.getProperty("ditto.token", "")}\""
+            )
+        } else {
+            buildConfigField("String", "DITTO_APP_ID", "\"\"")
+            buildConfigField("String", "DITTO_TOKEN", "\"\"")
         }
     }
 }
