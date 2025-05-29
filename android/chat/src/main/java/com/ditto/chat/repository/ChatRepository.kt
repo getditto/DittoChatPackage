@@ -42,10 +42,11 @@ class ChatRepository(private val ditto: Ditto) {
                 val user = if (userDoc != null) {
                     ChatUser(
                         userDoc.id.toString(),
-                        userDoc.value["firstName"] as String,
-                        userDoc.value["lastName"] as String
+                        userDoc.value["name"] as? String,
+                        userDoc.value["firstName"] as? String,
+                        userDoc.value["lastName"] as? String
                     )
-                } else ChatUser(msg.userId, "", "")
+                } else ChatUser(msg.userId)
                 MessageWithUser(msg, user)
             }
             _messagesFlow.value = withUsers

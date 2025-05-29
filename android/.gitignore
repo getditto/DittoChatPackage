@@ -60,3 +60,4 @@ apikeys.properties
 # Ditto specific
 DittoObjC.framework/
 DittoSwift.xcframework/
+/secrets.properties
