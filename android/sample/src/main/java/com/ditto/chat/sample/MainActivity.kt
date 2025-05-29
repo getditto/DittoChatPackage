@@ -163,7 +163,8 @@ class MainActivity : ComponentActivity() {
                                             viewModel = ChatViewModel(repo, user)
 
                                             Log.d(TAG, "Creating chat room")
-                                            room = repo.createRoom("General")
+                                            room = repo.createRoom("General", user.id)
+                                            repo.createRoom("Random", user.id)
                                         }
 
                                         Log.d(TAG, "Ditto initialization complete")
