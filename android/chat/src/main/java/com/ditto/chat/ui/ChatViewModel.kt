@@ -15,6 +15,11 @@ class ChatViewModel(
 ) : ViewModel() {
 
     val messages: StateFlow<List<MessageWithUser>> = repository.messagesFlow
+    val rooms: StateFlow<List<Room>> = repository.roomsFlow
+
+    fun observeRooms() {
+        repository.observeRooms()
+    }
 
     fun observeMessages(room: Room) {
         repository.observeMessages(room)
@@ -23,6 +28,12 @@ class ChatViewModel(
     fun sendMessage(room: Room, text: String) {
         viewModelScope.launch {
             repository.sendMessage(room, currentUser, text)
+        }
+    }
+
+    fun sendImage(room: Room, uri: String) {
+        viewModelScope.launch {
+            repository.sendImageMessage(room, currentUser, uri)
         }
     }
 }
