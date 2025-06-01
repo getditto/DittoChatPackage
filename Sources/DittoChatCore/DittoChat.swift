@@ -261,14 +261,31 @@ extension DittoChat {
         p2pStore.addUser(usr)
     }
 
-    public func updateUser(withId id: String, firstName: String?, lastName: String?, subscriptions: [String: Date?]?, mentions: [String: [String]]?) {
-        p2pStore.updateUser(withId: id, firstName: firstName, lastName: lastName, subscriptions: subscriptions, mentions: mentions)
+    public func updateUser(withId id: String, name: String? = nil, firstName: String? = nil, lastName: String? = nil, subscriptions: [String: Date?]?, mentions: [String: [String]]?) {
+        if let firstName, let lastName {
+            p2pStore.updateUser(withId: id, name: firstName + lastName, subscriptions: subscriptions, mentions: mentions)
+        } else {
+            p2pStore.updateUser(withId: id, name: name, subscriptions: subscriptions, mentions: mentions)
+        }
     }
 
     internal func updateRoom(_ room: Room) {
         // TODO: Implement
     }
 
+    internal func saveCurrentUser(name: String) {
+        if currentUserId == nil {
+            let userId = UUID().uuidString
+            currentUserId = userId
+        }
+
+        assert(currentUserId != nil, "Error: expected currentUserId to not be NIL")
+
+        let user = ChatUser(id: currentUserId!, name: name, subscriptions: [:], mentions: [:])
+        p2pStore.addUser(user)
+    }
+
+    @available(*, deprecated, renamed: "saveCurrentUser(name:)", message: "First and last name are no needed. Use name instead")
     internal func saveCurrentUser(firstName: String, lastName: String) {
         if currentUserId == nil {
             let userId = UUID().uuidString
@@ -277,7 +294,7 @@ extension DittoChat {
 
         assert(currentUserId != nil, "Error: expected currentUserId to not be NIL")
 
-        let user = ChatUser(id: currentUserId!, firstName: firstName, lastName: lastName, subscriptions: [:], mentions: [:])
+        let user = ChatUser(id: currentUserId!, name: firstName + lastName, subscriptions: [:], mentions: [:])
         p2pStore.addUser(user)
     }
 

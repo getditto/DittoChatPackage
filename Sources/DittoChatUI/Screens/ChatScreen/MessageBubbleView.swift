@@ -121,7 +121,7 @@ struct MessageBubbleView: View {
 
     var body: some View {
         VStack(alignment: side == .right ? .trailing : .leading, spacing: 2) {
-            Text(isSelfUser ? "" : user.fullName)
+            Text(isSelfUser ? "" : user.name)
                 .font(.caption2)
                 .opacity(0.6)
                 .padding(.leading, 15)
@@ -420,7 +420,7 @@ struct MessageBubbleView_Previews: PreviewProvider {
                 text: Self.faker.lorem.sentence(),
                 userId: "max"
             ),
-            user: ChatUser(id: "max", firstName: "Maximilian", lastName: "Alexander", subscriptions: [:], mentions: [:])
+            user: ChatUser(id: "max", name: "Maximilian Alexander", subscriptions: [:], mentions: [:])
         ),
         MessageWithUser(
             message: Message(
@@ -430,7 +430,7 @@ struct MessageBubbleView_Previews: PreviewProvider {
                 text: Self.faker.lorem.paragraph(sentencesAmount: 12),
                 userId: "me"
             ),
-            user: ChatUser(id: "me", firstName: "Me", lastName: "NotYou", subscriptions: [:], mentions: [:])
+            user: ChatUser(id: "me", name: "Me NotYou", subscriptions: [:], mentions: [:])
         ),
         MessageWithUser(
             message: Message(
@@ -440,7 +440,7 @@ struct MessageBubbleView_Previews: PreviewProvider {
                 text: Self.faker.lorem.sentence(),
                 userId: "max"
             ),
-            user: ChatUser(id: "max", firstName: "Maximilian", lastName: "Alexander", subscriptions: [:], mentions: [:])
+            user: ChatUser(id: "max", name: "Maximilian Alexander", subscriptions: [:], mentions: [:])
         ),
         MessageWithUser(
             message: Message(
@@ -450,7 +450,7 @@ struct MessageBubbleView_Previews: PreviewProvider {
                 text: Self.faker.lorem.sentence(),
                 userId: "me"
             ),
-            user: ChatUser(id: "me", firstName: "Me", lastName: "NotYou", subscriptions: [:], mentions: [:])
+            user: ChatUser(id: "me", name: "Me NotYou", subscriptions: [:], mentions: [:])
         ),
     ]
 

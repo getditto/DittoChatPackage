@@ -38,8 +38,7 @@ protocol DittoDataInterface {
     func addUser(_ usr: ChatUser)
     func findUserById(_ id: String, inCollection collection: String) async throws -> ChatUser
     func updateUser(withId id: String,
-                    firstName: String?,
-                    lastName: String?,
+                    name: String?,
                     subscriptions: [String: Date?]?,
                     mentions: [String: [String]]?)
     func currentUserPublisher() -> AnyPublisher<ChatUser?, Never>
