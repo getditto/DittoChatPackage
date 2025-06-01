@@ -35,7 +35,7 @@ extension ChatUser: DittoDecodable {
         if let name = value[nameKey] as? String {
             self.name = name
         } else {
-            name = (value[firstNameKey] as? String ?? "") + (value[lastNameKey] as? String ?? "")
+            name = (value[firstNameKey] as? String ?? "") + " " + (value[lastNameKey] as? String ?? "")
         }
 
         var subscriptionDictionary = value[subscriptionsKey] as? [String : String?] ?? [:]
