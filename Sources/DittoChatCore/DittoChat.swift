@@ -263,7 +263,7 @@ extension DittoChat {
 
     public func updateUser(withId id: String, name: String? = nil, firstName: String? = nil, lastName: String? = nil, subscriptions: [String: Date?]?, mentions: [String: [String]]?) {
         if let firstName, let lastName {
-            p2pStore.updateUser(withId: id, name: firstName + lastName, subscriptions: subscriptions, mentions: mentions)
+            p2pStore.updateUser(withId: id, name: firstName + " " + lastName, subscriptions: subscriptions, mentions: mentions)
         } else {
             p2pStore.updateUser(withId: id, name: name, subscriptions: subscriptions, mentions: mentions)
         }
