@@ -294,7 +294,7 @@ extension DittoChat {
 
         assert(currentUserId != nil, "Error: expected currentUserId to not be NIL")
 
-        let user = ChatUser(id: currentUserId!, name: firstName + lastName, subscriptions: [:], mentions: [:])
+        let user = ChatUser(id: currentUserId!, name: firstName + " " + lastName, subscriptions: [:], mentions: [:])
         p2pStore.addUser(user)
     }
 
