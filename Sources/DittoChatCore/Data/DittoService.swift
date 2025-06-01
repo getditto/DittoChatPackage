@@ -156,8 +156,7 @@ extension DittoService {
     }
 
     func updateUser(withId id: String,
-                    firstName: String?,
-                    lastName: String?,
+                    name: String?,
                     subscriptions: [String: Date?]?,
                     mentions: [String: [String]]?) {
         Task {
@@ -174,8 +173,7 @@ extension DittoService {
                 let subs = subscriptions.mapValues { date in date?.ISO8601Format() }
                 let newDoc = [
                     dbIdKey: id,
-                    firstNameKey: firstName ?? currentUser.firstName,
-                    lastNameKey: lastName ?? currentUser.lastName,
+                    nameKey: name ?? currentUser.name,
                     subscriptionsKey: subs,
                     mentionsKey: mentions ?? currentUser.mentions,
                 ]
@@ -257,7 +255,7 @@ extension DittoService {
 
         // Create the TAK user if it doesnt already exist
         if !message.takUid.isEmpty {
-            let user = ChatUser(id: message.takUid, firstName: message.authorCs, lastName: "", subscriptions: [:], mentions: [:])
+            let user = ChatUser(id: message.takUid, name: message.authorCs, subscriptions: [:], mentions: [:])
             Task {
                 try? await ditto.store.execute(
                     query: """
@@ -446,7 +444,7 @@ extension DittoService {
              */
             filenameKey: fname,
             userIdKey: privateStore.currentUserId ?? "",
-            usernameKey: user(for: privateStore.currentUserId ?? "")?.fullName ?? unknownUserNameKey,
+            usernameKey: user(for: privateStore.currentUserId ?? "")?.name ?? unknownUserNameKey,
             fileformatKey: jpgExtKey,
             filesizeKey: String(image.sizeInBytes),
             timestampKey: timestamp
@@ -468,7 +466,7 @@ extension DittoService {
         timestamp: String,
         ext: String = jpgExtKey
     ) async -> String {
-        var fname = await self.user(for: privateStore.currentUserId ?? "")?.fullName ?? unknownUserNameKey
+        var fname = await self.user(for: privateStore.currentUserId ?? "")?.name ?? unknownUserNameKey
         fname = fname.replacingOccurrences(of: " ", with: "-")
         let tmstamp = timestamp.replacingOccurrences(of: ":", with: "-")
         fname += "_\(type.description)" + "_\(tmstamp)" + ext

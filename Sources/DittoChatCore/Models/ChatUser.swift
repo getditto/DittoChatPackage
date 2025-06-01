@@ -11,64 +11,33 @@ import Foundation
 
 public struct ChatUser: Identifiable, Hashable, Equatable {
     public static func == (lhs: ChatUser, rhs: ChatUser) -> Bool {
-        return lhs.firstName == rhs.firstName &&
-        lhs.lastName == rhs.lastName &&
+        return lhs.name == rhs.name &&
         lhs.id == rhs.id
     }
     
     public var id: String
-    public var firstName: String
-    public var lastName: String
-    public var fullName: String {
-        firstName + " " + lastName
-    }
+    public var name: String
     public var subscriptions: [String : Date?]
     public var mentions: [String: [String]]
 
-    public init(id: String, firstName: String, lastName: String, subscriptions: [String : Date?], mentions: [String : [String]]) {
+    public init(id: String, name: String, subscriptions: [String : Date?], mentions: [String : [String]]) {
         self.id = id
-        self.firstName = firstName
-        self.lastName = lastName
+        self.name = name
         self.subscriptions = subscriptions
         self.mentions = mentions
     }
 }
 
-//public struct RoomSubscription: Hashable, Codable {
-//    var lastReadDate: Date
-//    var isSubscribed: Bool
-//
-//    public init(lastReadDate: Date, isSubscribed: Bool) {
-//        self.lastReadDate = lastReadDate
-//        self.isSubscribed = isSubscribed
-//    }
-//
-//    public init?(string: String) {
-//        let components = string.components(separatedBy: "|")
-//        if let first = components.first, let date = try? Date(components.first!, strategy: .iso8601) {
-//            lastReadDate = date
-//        } else {
-//            return nil
-//        }
-//
-//        if components.last == "true" {
-//            isSubscribed = true
-//        } else {
-//            isSubscribed = false
-//        }
-//    }
-//
-//    public func String() -> String {
-//        "\(lastReadDate.ISO8601Format())|\(isSubscribed.description)"
-//    }
-//}
-
 extension ChatUser: DittoDecodable {
 
     public init(value: [String: Any?]) {
         id = value[dbIdKey] as! String
-        firstName = value[firstNameKey] as? String ?? ""
-        lastName = value[lastNameKey] as? String ?? ""
+        if let name = value[nameKey] as? String {
+            self.name = name
+        } else {
+            name = (value[firstNameKey] as? String ?? "") + " " + (value[lastNameKey] as? String ?? "")
+        }
+
         var subscriptionDictionary = value[subscriptionsKey] as? [String : String?] ?? [:]
         subscriptions = subscriptionDictionary.mapValues { dateString in
             if let dateString {
@@ -85,8 +54,7 @@ extension ChatUser {
     public static func unknownUser() -> ChatUser {
         ChatUser(
             id: unknownUserIdKey,
-            firstName: noFirstNameKey,
-            lastName: noLastNameKey,
+            name: noNameKey,
             subscriptions: [:],
             mentions: [:]
         )
@@ -97,8 +65,7 @@ extension ChatUser {
     func docDictionary() -> [String: Any?] {
         [
             dbIdKey: id,
-            firstNameKey: firstName,
-            lastNameKey: lastName,
+            nameKey: name,
             subscriptionsKey: subscriptions,
             mentionsKey: mentions,
         ]
