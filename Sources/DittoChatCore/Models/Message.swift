@@ -18,7 +18,7 @@ extension Message: Hashable {
 public struct Message: Identifiable, Equatable {
     public var id: String
     public var createdOn: Date
-    public var roomId: String
+    public var roomId: String // Shared
     public var text: String
     public var userId: String
     public var largeImageToken: [String: Any]?
@@ -27,18 +27,32 @@ public struct Message: Identifiable, Equatable {
     public var archivedMessage: String?
     public var isArchived: Bool
 
-    //TAK specific values
+    // TAK specific values Beta -1.0
     public var authorCs: String
     public var authorId: String
-    public var authorLoc: String
-    public var authorType: String
-    public var msg: String
-    public var parent: String
+    public var authorLoc: String // Shared
+    public var authorType: String // Shared
+    public var msg: String // Shared
+    public var parent: String // Shared
     public var pks: String
-    public var room: String
+    public var room: String // Shared
     public var schver: Int
     public var takUid: String
     public var timeMs: Date
+
+    // TAK specific values 1.0
+     public var _r: Bool // false,
+     public var _v: Int // 2,
+     public var a: String// "pkAocCgkMCHR2rZKkzOQCuNctl7TISZ-CHLQSponngkXJBvYn4IcE",
+     public var b: Date // 1748900833112,
+     public var d: String // "ANDROID-0fdedc6978d14b12",
+     public var e: String // "LUMP",
+//    public var authorLoc: String// "39.55585,-105.088471,1682.3389318704824,HAE,9.935046195983887,NaN",
+//    public var authorType: // "a-f-G-U-C",
+//     public var msg: String // "testing 1.0",
+//     public var parent: String // "RootContactGroup",
+//     public var room: String // "Ditto",
+//     public var roomId: String // "ChatContact-Ditto"
 
     public var hasBeenConverted: Bool?
 
@@ -81,7 +95,32 @@ extension Message: DittoDecodable {
         self.roomId = value[roomIdKey] as? String ?? ""
         self.schver = value[schverKey] as? Int ?? 0
         self.takUid = value[takUidKey] as? String ?? ""
-        self.timeMs = Date(timeIntervalSince1970InMilliSeconds: value[timeMsKey] as? Int ?? 0)
+
+
+        // TAK 1.0
+        self._r = value["_r"] as? Bool ?? false
+        self._v = value["_v"] as? Int ?? 2
+        self.a = value["a"] as? String ?? ""
+        self.d = value["d"] as? String ?? ""
+        self.e = value["e"] as? String ?? ""
+
+        if let timeMs = value[timeMsKey] as? Double {
+            self.timeMs = Date(timeIntervalSince1970InMilliSeconds: timeMs)
+            self.b = Date(timeIntervalSince1970InMilliSeconds: timeMs)
+        } else if let timeMs = value[timeMsKey] as? Int {
+            self.timeMs = Date(timeIntervalSince1970InMilliSeconds: timeMs)
+            self.b = Date(timeIntervalSince1970InMilliSeconds: timeMs)
+        } else if let timeMs = value["b"] as? Double {
+            self.timeMs = Date(timeIntervalSince1970InMilliSeconds: timeMs)
+            self.b = Date(timeIntervalSince1970InMilliSeconds: timeMs)
+        } else if let timeMs = value["b"] as? Int {
+            self.timeMs = Date(timeIntervalSince1970InMilliSeconds: timeMs)
+            self.b = Date(timeIntervalSince1970InMilliSeconds: timeMs)
+        } else {
+            self.b = Date()
+            self.timeMs = Date()
+        }
+
         self.hasBeenConverted = value[hasBeenConvertedKey] as? Bool
     }
 }
@@ -107,7 +146,13 @@ extension Message {
         room: String? = nil,
         schver: Int? = nil,
         takUid: String? = nil,
-        timeMs: Date? = nil
+        timeMs: Date? = nil,
+        _r: Bool? = nil,
+        _v: Int? = nil,
+        a: String? = nil,
+        b: Date? = nil,
+        d: String? = nil,
+        e: String? = nil
     ) {
         self.id = id ?? UUID().uuidString
         self.createdOn = createdOn ?? Date()
@@ -130,7 +175,13 @@ extension Message {
         self.schver = schver ?? .zero
         self.takUid = takUid ?? ""
         self.timeMs = timeMs ?? Date()
-
+        // TAK 1.0
+        self._r = _r ?? false
+        self._v = _v ?? 2
+        self.a = a ?? pks ?? ""
+        self.b = b ?? Date()
+        self.d = d ?? ""
+        self.e = e ?? ""
     }
 
     // Used for creating new chat types for upload
@@ -173,6 +224,14 @@ extension Message {
         self.takUid = UUID().uuidString
         self.timeMs = createdOn
         self.hasBeenConverted = hasBeenConverted
+
+        // TAK 1.0
+        self._r = false
+        self._v = 2
+        self.a = peerKey
+        self.b = createdOn
+        self.d = userId
+        self.e = userName
     }
 }
 
@@ -200,6 +259,14 @@ extension Message {
             takUidKey: takUid,
             timeMsKey: timeMs.timeIntervalSince1970InMilliSeconds,
             hasBeenConvertedKey: hasBeenConverted,
+
+            // TAk 1.0
+            "_r": _r,
+            "_v": _v,
+            "a": a,
+            "b": b.timeIntervalSince1970InMilliSeconds,
+            "d": d,
+            "e": e,
         ]
     }
 }
@@ -209,7 +276,15 @@ extension Date {
         self = Date(timeIntervalSince1970: Double(timeIntervalSince1970InMilliSeconds) / 1000)
     }
 
+    init(timeIntervalSince1970InMilliSeconds: Double) {
+        self = Date(timeIntervalSince1970: Double(timeIntervalSince1970InMilliSeconds) / 1000)
+    }
+
     var timeIntervalSince1970InMilliSeconds: Int {
         Int(self.timeIntervalSince1970 * 1000)
     }
+
+//    var timeIntervalSince1970InMilliSeconds: Double {
+//        Double(self.timeIntervalSince1970 * 1000)
+//    }
 }
