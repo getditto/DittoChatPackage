@@ -223,12 +223,13 @@ extension DittoService {
         let retentionDaysAgo = Date().addingTimeInterval(-retentionDaysDouble * 24 * 60 * 60)
         let query = """
                     SELECT * FROM COLLECTION `\(room.messagesId)` (\(thumbnailImageTokenKey) ATTACHMENT, \(largeImageTokenKey) ATTACHMENT)
-                    WHERE roomId == :roomId AND createdOn >= :date
+                    WHERE roomId == :roomId AND createdOn >= :date OR timeMs >= :dateMs
                     ORDER BY \(createdOnKey) ASC
                     """
-        let args = [
+        let args: [String: Any?] = [
             "roomId": room.id,
-            "date": retentionDaysAgo.ISO8601Format()
+            "date": retentionDaysAgo.ISO8601Format(),
+            "dateMs": retentionDaysAgo.timeIntervalSince1970InMilliSeconds
         ]
 
         return ditto.store.observePublisher(query: query, arguments: args, mapTo: Message.self)
@@ -248,14 +249,17 @@ extension DittoService {
     /// - Parameter message: The message to check to see if conversion is needed
     /// - Returns: The same message just with hasBeenConverted set to true if it was false or empty
     func convertChat(message: Message) -> Message {
-        guard message.hasBeenConverted == false else { return message }
+        guard message.hasBeenConverted != true else { return message }
 
         var message = message
         message.hasBeenConverted = true
+        message.text = message.msg
+        message.userId = message.authorId
+        message.createdOn = message.timeMs
 
         // Create the TAK user if it doesnt already exist
-        if !message.takUid.isEmpty {
-            let user = ChatUser(id: message.takUid, name: message.authorCs, subscriptions: [:], mentions: [:])
+        if !message.authorId.isEmpty {
+            let user = ChatUser(id: message.authorId, name: message.authorCs, subscriptions: [:], mentions: [:])
             Task {
                 try? await ditto.store.execute(
                     query: """

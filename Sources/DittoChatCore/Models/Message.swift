@@ -81,7 +81,13 @@ extension Message: DittoDecodable {
         self.roomId = value[roomIdKey] as? String ?? ""
         self.schver = value[schverKey] as? Int ?? 0
         self.takUid = value[takUidKey] as? String ?? ""
-        self.timeMs = Date(timeIntervalSince1970InMilliSeconds: value[timeMsKey] as? Int ?? 0)
+        if let timeMs = value[timeMsKey] as? Double {
+            self.timeMs = Date(timeIntervalSince1970InMilliSeconds: timeMs)
+        } else if let timeMs = value[timeMsKey] as? Int {
+            self.timeMs = Date(timeIntervalSince1970InMilliSeconds: timeMs)
+        } else {
+            self.timeMs = Date()
+        }
         self.hasBeenConverted = value[hasBeenConvertedKey] as? Bool
     }
 }
@@ -209,7 +215,15 @@ extension Date {
         self = Date(timeIntervalSince1970: Double(timeIntervalSince1970InMilliSeconds) / 1000)
     }
 
+    init(timeIntervalSince1970InMilliSeconds: Double) {
+        self = Date(timeIntervalSince1970: Double(timeIntervalSince1970InMilliSeconds) / 1000)
+    }
+
     var timeIntervalSince1970InMilliSeconds: Int {
         Int(self.timeIntervalSince1970 * 1000)
     }
+
+//    var timeIntervalSince1970InMilliSeconds: Double {
+//        Double(self.timeIntervalSince1970 * 1000)
+//    }
 }
