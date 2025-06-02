@@ -605,7 +605,7 @@ extension DittoService {
 
     private func createDefaultPublicRoom() {
         // Only create default Public room if user does not yet exist, i.e. first launch
-        if privateStore.currentUserId != nil {
+        if allPublicRooms.count > 1 {
             return
         }
 
