@@ -8,12 +8,12 @@ plugins {
 
 android {
     namespace = "com.ditto.chat.sample"
-    compileSdk = 35
+    compileSdk = 36
 
     defaultConfig {
         applicationId = "com.ditto.chat.sample"
         minSdk = 24
-        targetSdk = 34
+        targetSdk = 36
         versionCode = 1
         versionName = "1.0"
     }
@@ -32,6 +32,7 @@ android {
         buildConfig = true
     }
 
+    @Suppress("UnstableApiUsage")
     composeOptions {
         kotlinCompilerExtensionVersion = "2.0.0"
     }
