@@ -1,0 +1,507 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 77;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		7873E56D2E68F390003DC9B2 /* DittoChatCore in Frameworks */ = {isa = PBXBuildFile; productRef = 7873E56C2E68F390003DC9B2 /* DittoChatCore */; };
+		7873E56F2E68F390003DC9B2 /* DittoChatUI in Frameworks */ = {isa = PBXBuildFile; productRef = 7873E56E2E68F390003DC9B2 /* DittoChatUI */; };
+		7873E5782E68F47B003DC9B2 /* DittoChatCore in Frameworks */ = {isa = PBXBuildFile; productRef = 7873E5772E68F47B003DC9B2 /* DittoChatCore */; };
+		7873E57A2E68F47B003DC9B2 /* DittoChatUI in Frameworks */ = {isa = PBXBuildFile; productRef = 7873E5792E68F47B003DC9B2 /* DittoChatUI */; };
+		7873E57D2E68F4F1003DC9B2 /* DittoChatCore in Frameworks */ = {isa = PBXBuildFile; productRef = 7873E57C2E68F4F1003DC9B2 /* DittoChatCore */; };
+		7873E57F2E68F4F1003DC9B2 /* DittoChatUI in Frameworks */ = {isa = PBXBuildFile; productRef = 7873E57E2E68F4F1003DC9B2 /* DittoChatUI */; };
+		7873E5882E68F5A2003DC9B2 /* DittoChatCore in Frameworks */ = {isa = PBXBuildFile; productRef = 7873E5872E68F5A2003DC9B2 /* DittoChatCore */; };
+		7873E58A2E68F5A2003DC9B2 /* DittoChatUI in Frameworks */ = {isa = PBXBuildFile; productRef = 7873E5892E68F5A2003DC9B2 /* DittoChatUI */; };
+		7873E6152E6905FA003DC9B2 /* DittoAllToolsMenu in Frameworks */ = {isa = PBXBuildFile; productRef = 7873E6142E6905FA003DC9B2 /* DittoAllToolsMenu */; };
+		7873E6172E6905FA003DC9B2 /* DittoDataBrowser in Frameworks */ = {isa = PBXBuildFile; productRef = 7873E6162E6905FA003DC9B2 /* DittoDataBrowser */; };
+		7873E6192E6905FA003DC9B2 /* DittoDiskUsage in Frameworks */ = {isa = PBXBuildFile; productRef = 7873E6182E6905FA003DC9B2 /* DittoDiskUsage */; };
+		7873E61B2E6905FA003DC9B2 /* DittoExportData in Frameworks */ = {isa = PBXBuildFile; productRef = 7873E61A2E6905FA003DC9B2 /* DittoExportData */; };
+		7873E61D2E6905FA003DC9B2 /* DittoExportLogs in Frameworks */ = {isa = PBXBuildFile; productRef = 7873E61C2E6905FA003DC9B2 /* DittoExportLogs */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		7873E55D2E68F35E003DC9B2 /* DittoChatDemo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = DittoChatDemo.app; sourceTree = BUILT_PRODUCTS_DIR; };
+/* End PBXFileReference section */
+
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		7873E6122E6902E2003DC9B2 /* Exceptions for "DittoChatDemo" folder in "DittoChatDemo" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = 7873E55C2E68F35E003DC9B2 /* DittoChatDemo */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
+/* Begin PBXFileSystemSynchronizedRootGroup section */
+		7873E55F2E68F35E003DC9B2 /* DittoChatDemo */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				7873E6122E6902E2003DC9B2 /* Exceptions for "DittoChatDemo" folder in "DittoChatDemo" target */,
+			);
+			path = DittoChatDemo;
+			sourceTree = "<group>";
+		};
+/* End PBXFileSystemSynchronizedRootGroup section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		7873E55A2E68F35E003DC9B2 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				7873E5882E68F5A2003DC9B2 /* DittoChatCore in Frameworks */,
+				7873E57D2E68F4F1003DC9B2 /* DittoChatCore in Frameworks */,
+				7873E57F2E68F4F1003DC9B2 /* DittoChatUI in Frameworks */,
+				7873E5782E68F47B003DC9B2 /* DittoChatCore in Frameworks */,
+				7873E6172E6905FA003DC9B2 /* DittoDataBrowser in Frameworks */,
+				7873E6192E6905FA003DC9B2 /* DittoDiskUsage in Frameworks */,
+				7873E57A2E68F47B003DC9B2 /* DittoChatUI in Frameworks */,
+				7873E61B2E6905FA003DC9B2 /* DittoExportData in Frameworks */,
+				7873E6152E6905FA003DC9B2 /* DittoAllToolsMenu in Frameworks */,
+				7873E58A2E68F5A2003DC9B2 /* DittoChatUI in Frameworks */,
+				7873E56D2E68F390003DC9B2 /* DittoChatCore in Frameworks */,
+				7873E56F2E68F390003DC9B2 /* DittoChatUI in Frameworks */,
+				7873E61D2E6905FA003DC9B2 /* DittoExportLogs in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		7873E5542E68F35E003DC9B2 = {
+			isa = PBXGroup;
+			children = (
+				7873E55F2E68F35E003DC9B2 /* DittoChatDemo */,
+				7873E55E2E68F35E003DC9B2 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		7873E55E2E68F35E003DC9B2 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				7873E55D2E68F35E003DC9B2 /* DittoChatDemo.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		7873E55C2E68F35E003DC9B2 /* DittoChatDemo */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 7873E5682E68F35F003DC9B2 /* Build configuration list for PBXNativeTarget "DittoChatDemo" */;
+			buildPhases = (
+				7873E5592E68F35E003DC9B2 /* Sources */,
+				7873E55A2E68F35E003DC9B2 /* Frameworks */,
+				7873E55B2E68F35E003DC9B2 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			fileSystemSynchronizedGroups = (
+				7873E55F2E68F35E003DC9B2 /* DittoChatDemo */,
+			);
+			name = DittoChatDemo;
+			packageProductDependencies = (
+				7873E56C2E68F390003DC9B2 /* DittoChatCore */,
+				7873E56E2E68F390003DC9B2 /* DittoChatUI */,
+				7873E5772E68F47B003DC9B2 /* DittoChatCore */,
+				7873E5792E68F47B003DC9B2 /* DittoChatUI */,
+				7873E57C2E68F4F1003DC9B2 /* DittoChatCore */,
+				7873E57E2E68F4F1003DC9B2 /* DittoChatUI */,
+				7873E5872E68F5A2003DC9B2 /* DittoChatCore */,
+				7873E5892E68F5A2003DC9B2 /* DittoChatUI */,
+				7873E6142E6905FA003DC9B2 /* DittoAllToolsMenu */,
+				7873E6162E6905FA003DC9B2 /* DittoDataBrowser */,
+				7873E6182E6905FA003DC9B2 /* DittoDiskUsage */,
+				7873E61A2E6905FA003DC9B2 /* DittoExportData */,
+				7873E61C2E6905FA003DC9B2 /* DittoExportLogs */,
+			);
+			productName = DittoChatDemo;
+			productReference = 7873E55D2E68F35E003DC9B2 /* DittoChatDemo.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		7873E5552E68F35E003DC9B2 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = 1;
+				LastSwiftUpdateCheck = 2600;
+				LastUpgradeCheck = 2600;
+				TargetAttributes = {
+					7873E55C2E68F35E003DC9B2 = {
+						CreatedOnToolsVersion = 26.0;
+					};
+				};
+			};
+			buildConfigurationList = 7873E5582E68F35E003DC9B2 /* Build configuration list for PBXProject "DittoChatDemo" */;
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = 7873E5542E68F35E003DC9B2;
+			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				7873E5862E68F5A2003DC9B2 /* XCLocalSwiftPackageReference "../../../DittoChatPackage" */,
+				7873E6132E6905FA003DC9B2 /* XCRemoteSwiftPackageReference "DittoSwiftTools" */,
+			);
+			preferredProjectObjectVersion = 77;
+			productRefGroup = 7873E55E2E68F35E003DC9B2 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				7873E55C2E68F35E003DC9B2 /* DittoChatDemo */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		7873E55B2E68F35E003DC9B2 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		7873E5592E68F35E003DC9B2 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		7873E5662E68F35F003DC9B2 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEVELOPMENT_TEAM = 3T2VMFZPPQ;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+			};
+			name = Debug;
+		};
+		7873E5672E68F35F003DC9B2 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEVELOPMENT_TEAM = 3T2VMFZPPQ;
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				SWIFT_COMPILATION_MODE = wholemodule;
+			};
+			name = Release;
+		};
+		7873E5692E68F35F003DC9B2 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 3T2VMFZPPQ;
+				ENABLE_APP_SANDBOX = YES;
+				ENABLE_HARDENED_RUNTIME = YES;
+				ENABLE_PREVIEWS = YES;
+				ENABLE_USER_SELECTED_FILES = readonly;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = DittoChatDemo/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = "Ditto Chat Demo";
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.developer-tools";
+				INFOPLIST_KEY_NSBluetoothAlwaysUsageDescription = "We will use Bluetooth to Communicate Locally";
+				INFOPLIST_KEY_NSBluetoothPeripheralUsageDescription = "Uses Bluetooth to connect and sync with nearby devices";
+				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "Uses location to fetch user's location for address lookup";
+				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "Access to your photo library required to select photos for upload";
+				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;
+				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphonesimulator*]" = YES;
+				"INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents[sdk=iphoneos*]" = YES;
+				"INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents[sdk=iphonesimulator*]" = YES;
+				"INFOPLIST_KEY_UILaunchScreen_Generation[sdk=iphoneos*]" = YES;
+				"INFOPLIST_KEY_UILaunchScreen_Generation[sdk=iphonesimulator*]" = YES;
+				"INFOPLIST_KEY_UIStatusBarStyle[sdk=iphoneos*]" = UIStatusBarStyleDefault;
+				"INFOPLIST_KEY_UIStatusBarStyle[sdk=iphonesimulator*]" = UIStatusBarStyleDefault;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
+				LD_RUNPATH_SEARCH_PATHS = "@executable_path/Frameworks";
+				"LD_RUNPATH_SEARCH_PATHS[sdk=macosx*]" = "@executable_path/../Frameworks";
+				MACOSX_DEPLOYMENT_TARGET = 15.6;
+				MARKETING_VERSION = 1.0.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.ditto.DittoChatDemo;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				REGISTER_APP_GROUPS = YES;
+				SDKROOT = auto;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator macosx xros xrsimulator";
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2,7";
+				XROS_DEPLOYMENT_TARGET = 18.0;
+			};
+			name = Debug;
+		};
+		7873E56A2E68F35F003DC9B2 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 3T2VMFZPPQ;
+				ENABLE_APP_SANDBOX = YES;
+				ENABLE_HARDENED_RUNTIME = YES;
+				ENABLE_PREVIEWS = YES;
+				ENABLE_USER_SELECTED_FILES = readonly;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = DittoChatDemo/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = "Ditto Chat Demo";
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.developer-tools";
+				INFOPLIST_KEY_NSBluetoothAlwaysUsageDescription = "We will use Bluetooth to Communicate Locally";
+				INFOPLIST_KEY_NSBluetoothPeripheralUsageDescription = "Uses Bluetooth to connect and sync with nearby devices";
+				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "Uses location to fetch user's location for address lookup";
+				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "Access to your photo library required to select photos for upload";
+				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;
+				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphonesimulator*]" = YES;
+				"INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents[sdk=iphoneos*]" = YES;
+				"INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents[sdk=iphonesimulator*]" = YES;
+				"INFOPLIST_KEY_UILaunchScreen_Generation[sdk=iphoneos*]" = YES;
+				"INFOPLIST_KEY_UILaunchScreen_Generation[sdk=iphonesimulator*]" = YES;
+				"INFOPLIST_KEY_UIStatusBarStyle[sdk=iphoneos*]" = UIStatusBarStyleDefault;
+				"INFOPLIST_KEY_UIStatusBarStyle[sdk=iphonesimulator*]" = UIStatusBarStyleDefault;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
+				LD_RUNPATH_SEARCH_PATHS = "@executable_path/Frameworks";
+				"LD_RUNPATH_SEARCH_PATHS[sdk=macosx*]" = "@executable_path/../Frameworks";
+				MACOSX_DEPLOYMENT_TARGET = 15.6;
+				MARKETING_VERSION = 1.0.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.ditto.DittoChatDemo;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				REGISTER_APP_GROUPS = YES;
+				SDKROOT = auto;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator macosx xros xrsimulator";
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2,7";
+				XROS_DEPLOYMENT_TARGET = 18.0;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		7873E5582E68F35E003DC9B2 /* Build configuration list for PBXProject "DittoChatDemo" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				7873E5662E68F35F003DC9B2 /* Debug */,
+				7873E5672E68F35F003DC9B2 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		7873E5682E68F35F003DC9B2 /* Build configuration list for PBXNativeTarget "DittoChatDemo" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				7873E5692E68F35F003DC9B2 /* Debug */,
+				7873E56A2E68F35F003DC9B2 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+
+/* Begin XCLocalSwiftPackageReference section */
+		7873E5862E68F5A2003DC9B2 /* XCLocalSwiftPackageReference "../../../DittoChatPackage" */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = ../../../DittoChatPackage;
+		};
+/* End XCLocalSwiftPackageReference section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		7873E6132E6905FA003DC9B2 /* XCRemoteSwiftPackageReference "DittoSwiftTools" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/getditto/DittoSwiftTools";
+			requirement = {
+				branch = main;
+				kind = branch;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		7873E56C2E68F390003DC9B2 /* DittoChatCore */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = DittoChatCore;
+		};
+		7873E56E2E68F390003DC9B2 /* DittoChatUI */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = DittoChatUI;
+		};
+		7873E5772E68F47B003DC9B2 /* DittoChatCore */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = DittoChatCore;
+		};
+		7873E5792E68F47B003DC9B2 /* DittoChatUI */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = DittoChatUI;
+		};
+		7873E57C2E68F4F1003DC9B2 /* DittoChatCore */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = DittoChatCore;
+		};
+		7873E57E2E68F4F1003DC9B2 /* DittoChatUI */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = DittoChatUI;
+		};
+		7873E5872E68F5A2003DC9B2 /* DittoChatCore */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = DittoChatCore;
+		};
+		7873E5892E68F5A2003DC9B2 /* DittoChatUI */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = DittoChatUI;
+		};
+		7873E6142E6905FA003DC9B2 /* DittoAllToolsMenu */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 7873E6132E6905FA003DC9B2 /* XCRemoteSwiftPackageReference "DittoSwiftTools" */;
+			productName = DittoAllToolsMenu;
+		};
+		7873E6162E6905FA003DC9B2 /* DittoDataBrowser */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 7873E6132E6905FA003DC9B2 /* XCRemoteSwiftPackageReference "DittoSwiftTools" */;
+			productName = DittoDataBrowser;
+		};
+		7873E6182E6905FA003DC9B2 /* DittoDiskUsage */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 7873E6132E6905FA003DC9B2 /* XCRemoteSwiftPackageReference "DittoSwiftTools" */;
+			productName = DittoDiskUsage;
+		};
+		7873E61A2E6905FA003DC9B2 /* DittoExportData */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 7873E6132E6905FA003DC9B2 /* XCRemoteSwiftPackageReference "DittoSwiftTools" */;
+			productName = DittoExportData;
+		};
+		7873E61C2E6905FA003DC9B2 /* DittoExportLogs */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 7873E6132E6905FA003DC9B2 /* XCRemoteSwiftPackageReference "DittoSwiftTools" */;
+			productName = DittoExportLogs;
+		};
+/* End XCSwiftPackageProductDependency section */
+	};
+	rootObject = 7873E5552E68F35E003DC9B2 /* Project object */;
+}
