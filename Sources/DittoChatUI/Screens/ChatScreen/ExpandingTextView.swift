@@ -88,7 +88,10 @@ struct ExpandingTextView: View {
 
     private func textDidChange(_ textView: UITextView) {
         guard let lineHeight = textView.font?.lineHeight else { return }
-        self.height = max(textView.contentSize.height, lineHeight)
+        self.height = min(
+            lineHeight * 6,
+            max(textView.contentSize.height, lineHeight)
+        )
     }
 }
 
